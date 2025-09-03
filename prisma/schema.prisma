@@ -1,0 +1,159 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Entidades de Domínio - CRM/ERP
+
+// Usuários do sistema (autenticação)
+model Usuario {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  senha         String
+  nome          String
+  ativo         Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  // Relacionamentos
+  colaboradorId String?  @unique
+  colaborador   Colaborador? @relation(fields: [colaboradorId], references: [id])
+  
+  @@map("usuarios")
+}
+
+// Clientes e Leads
+model Cliente {
+  id             String      @id @default(cuid())
+  nome           String
+  email          String?     @unique
+  telefone       String?
+  documento      String?     // CPF/CNPJ
+  tipo           TipoCliente @default(PESSOA_FISICA)
+  status         StatusCliente @default(LEAD)
+  endereco       String?
+  cidade         String?
+  estado         String?
+  cep            String?
+  observacoes    String?
+  valorPotencial Float?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  
+  // Relacionamentos
+  grupoHierarquicoId String?
+  grupoHierarquico   GrupoHierarquico? @relation(fields: [grupoHierarquicoId], references: [id])
+  
+  @@map("clientes")
+}
+
+// Grupos Hierárquicos (departamentos, equipes, etc.)
+model GrupoHierarquico {
+  id          String            @id @default(cuid())
+  nome        String
+  descricao   String?
+  ativo       Boolean           @default(true)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  
+  // Hierarquia
+  parentId    String?
+  parent      GrupoHierarquico? @relation("GrupoHierarquia", fields: [parentId], references: [id])
+  children    GrupoHierarquico[] @relation("GrupoHierarquia")
+  
+  // Relacionamentos
+  clientes    Cliente[]
+  colaboradores Colaborador[]
+  
+  @@map("grupos_hierarquicos")
+}
+
+// Permissões do sistema (RBAC)
+model Permissao {
+  id          String   @id @default(cuid())
+  nome        String   @unique
+  descricao   String?
+  recurso     String   // ex: "clientes", "colaboradores"
+  acao        String   // ex: "criar", "ler", "editar", "excluir"
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relacionamentos
+  perfis      PerfilPermissao[]
+  
+  @@map("permissoes")
+}
+
+// Perfis de acesso (RBAC)
+model Perfil {
+  id          String   @id @default(cuid())
+  nome        String   @unique
+  descricao   String?
+  ativo       Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relacionamentos
+  permissoes  PerfilPermissao[]
+  colaboradores Colaborador[]
+  
+  @@map("perfis")
+}
+
+// Tabela associativa entre Perfil e Permissão
+model PerfilPermissao {
+  perfilId    String
+  permissaoId String
+  
+  perfil      Perfil   @relation(fields: [perfilId], references: [id], onDelete: Cascade)
+  permissao   Permissao @relation(fields: [permissaoId], references: [id], onDelete: Cascade)
+  
+  @@id([perfilId, permissaoId])
+  @@map("perfil_permissao")
+}
+
+// Colaboradores/Empregados
+model Colaborador {
+  id             String   @id @default(cuid())
+  nome           String
+  email          String   @unique
+  telefone       String?
+  documento      String?  // CPF
+  cargo          String?
+  dataAdmissao   DateTime?
+  ativo          Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  
+  // Relacionamentos
+  usuarios       Usuario[]
+  perfilId       String?
+  perfil         Perfil?  @relation(fields: [perfilId], references: [id])
+  grupoHierarquicoId String?
+  grupoHierarquico   GrupoHierarquico? @relation(fields: [grupoHierarquicoId], references: [id])
+  
+  @@map("colaboradores")
+}
+
+// Enums
+enum TipoCliente {
+  PESSOA_FISICA
+  PESSOA_JURIDICA
+}
+
+enum StatusCliente {
+  LEAD
+  PROSPECT
+  CLIENTE
+  INATIVO
+}
