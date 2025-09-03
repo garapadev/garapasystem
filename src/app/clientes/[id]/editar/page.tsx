@@ -1,10 +1,9 @@
 'use client';
 
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { MainLayout } from '@/components/layout/MainLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -37,7 +36,7 @@ export default function EditarClientePage() {
       estado: '',
       cep: '',
       observacoes: '',
-      valorPotencial: 0
+      valorPotencial: '0'
     }
   });
 
@@ -57,7 +56,7 @@ export default function EditarClientePage() {
         estado: cliente.estado || '',
         cep: cliente.cep || '',
         observacoes: cliente.observacoes || '',
-        valorPotencial: cliente.valorPotencial || 0
+        valorPotencial: cliente.valorPotencial?.toString() || '0'
       });
     }
   }, [cliente, form]);
@@ -65,18 +64,9 @@ export default function EditarClientePage() {
   const onSubmit = async (data: ClienteFormData) => {
     try {
       const clienteData = {
-        nome: data.nome,
-        email: data.email,
-        tipo: data.tipo,
-        status: data.status,
-        ...(data.telefone && { telefone: data.telefone }),
-        ...(data.documento && { documento: data.documento }),
-        ...(data.endereco && { endereco: data.endereco }),
-        ...(data.cidade && { cidade: data.cidade }),
-        ...(data.estado && { estado: data.estado }),
-        ...(data.cep && { cep: data.cep }),
-        ...(data.observacoes && { observacoes: data.observacoes }),
-        ...(data.valorPotencial && { valorPotencial: data.valorPotencial })
+        ...data,
+        valorPotencial: data.valorPotencial ? parseFloat(data.valorPotencial) : undefined,
+        status: data.status as 'LEAD' | 'PROSPECT' | 'CLIENTE'
       };
 
       await updateCliente(params.id as string, clienteData);
@@ -99,68 +89,61 @@ export default function EditarClientePage() {
 
   if (loading) {
     return (
-      <MainLayout>
-        <div className="flex items-center justify-center h-64">
-          <Loader2 className="h-8 w-8 animate-spin" />
-        </div>
-      </MainLayout>
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
     );
   }
 
   if (fetchError) {
     return (
-      <MainLayout>
-        <div className="flex flex-col items-center justify-center h-64 space-y-4">
-          <Alert variant="destructive">
-            <AlertDescription>{fetchError}</AlertDescription>
-          </Alert>
-          <Link href="/clientes">
-            <Button variant="outline">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Voltar para Clientes
-            </Button>
-          </Link>
-        </div>
-      </MainLayout>
+      <div className="flex flex-col items-center justify-center h-64 space-y-4">
+        <Alert variant="destructive">
+          <AlertDescription>{fetchError}</AlertDescription>
+        </Alert>
+        <Link href="/clientes">
+          <Button variant="outline">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Voltar para Clientes
+          </Button>
+        </Link>
+      </div>
     );
   }
 
   if (!cliente) {
     return (
-      <MainLayout>
-        <div className="flex flex-col items-center justify-center h-64 space-y-4">
-          <p>Cliente não encontrado</p>
-          <Link href="/clientes">
-            <Button variant="outline">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Voltar para Clientes
-            </Button>
-          </Link>
-        </div>
-      </MainLayout>
+      <div className="flex flex-col items-center justify-center h-64 space-y-4">
+        <p>Cliente não encontrado</p>
+        <Link href="/clientes">
+          <Button variant="outline">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Voltar para Clientes
+          </Button>
+        </Link>
+      </div>
     );
   }
 
   return (
-    <MainLayout>
-      <div className="space-y-6">
-        <div className="flex items-center space-x-4">
-          <Link href="/clientes">
-            <Button variant="ghost" size="sm">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Voltar
-            </Button>
-          </Link>
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Editar Cliente</h1>
-            <p className="text-muted-foreground">
-              Atualize as informações do cliente
-            </p>
-          </div>
+    <div className="space-y-6">
+      <div className="flex items-center space-x-4">
+        <Link href="/clientes">
+          <Button variant="ghost" size="sm">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Voltar
+          </Button>
+        </Link>
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Editar Cliente</h1>
+          <p className="text-muted-foreground">
+            Atualize as informações do cliente
+          </p>
         </div>
+      </div>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <div className="grid gap-6 md:grid-cols-2">
             {/* Informações Básicas */}
             <Card>
@@ -189,7 +172,7 @@ export default function EditarClientePage() {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email *</FormLabel>
+                      <FormLabel>Email</FormLabel>
                       <FormControl>
                         <Input type="email" placeholder="Digite o email" {...field} />
                       </FormControl>
@@ -240,7 +223,7 @@ export default function EditarClientePage() {
                   name="tipo"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Tipo *</FormLabel>
+                      <FormLabel>Tipo</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger>
@@ -261,7 +244,7 @@ export default function EditarClientePage() {
                   name="status"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Status *</FormLabel>
+                      <FormLabel>Status</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger>
@@ -290,7 +273,7 @@ export default function EditarClientePage() {
                           step="0.01"
                           placeholder="0.00"
                           {...field}
-                          onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                          onChange={(e) => field.onChange(e.target.value)}
                         />
                       </FormControl>
                       <FormMessage />
@@ -411,8 +394,7 @@ export default function EditarClientePage() {
             </Button>
           </div>
         </form>
-        </Form>
-      </div>
-    </MainLayout>
+      </Form>
+    </div>
   );
 }

@@ -1,9 +1,9 @@
 'use client';
 
+import React from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { MainLayout } from '@/components/layout/MainLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -34,7 +34,7 @@ export default function NovoClientePage() {
       estado: '',
       cep: '',
       observacoes: '',
-      valorPotencial: ''
+      valorPotencial: '0'
     }
   });
 
@@ -43,10 +43,10 @@ export default function NovoClientePage() {
       const clienteData = {
         nome: data.nome,
         email: data.email,
+        telefone: data.telefone,
+        documento: data.documento,
         tipo: data.tipo,
-        status: data.status,
-        ...(data.telefone && { telefone: data.telefone }),
-        ...(data.documento && { documento: data.documento }),
+        status: data.status as 'LEAD' | 'PROSPECT' | 'CLIENTE',
         ...(data.endereco && { endereco: data.endereco }),
         ...(data.cidade && { cidade: data.cidade }),
         ...(data.estado && { estado: data.estado }),
@@ -74,25 +74,24 @@ export default function NovoClientePage() {
   };
 
   return (
-    <MainLayout>
-      <div className="space-y-6">
-        <div className="flex items-center space-x-4">
-          <Link href="/clientes">
-            <Button variant="ghost" size="sm">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Voltar
-            </Button>
-          </Link>
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Novo Cliente</h1>
-            <p className="text-muted-foreground">
-              Cadastre um novo cliente ou lead
-            </p>
-          </div>
+    <div className="space-y-6">
+      <div className="flex items-center space-x-4">
+        <Link href="/clientes">
+          <Button variant="ghost" size="sm">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Voltar
+          </Button>
+        </Link>
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Novo Cliente</h1>
+          <p className="text-muted-foreground">
+            Cadastre um novo cliente ou lead
+          </p>
         </div>
+      </div>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <div className="grid gap-6 md:grid-cols-2">
             {/* Informações Básicas */}
             <Card>
@@ -204,7 +203,6 @@ export default function NovoClientePage() {
                           <SelectItem value="LEAD">Lead</SelectItem>
                           <SelectItem value="PROSPECT">Prospect</SelectItem>
                           <SelectItem value="CLIENTE">Cliente</SelectItem>
-                          <SelectItem value="INATIVO">Inativo</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -223,7 +221,7 @@ export default function NovoClientePage() {
                           step="0.01"
                           placeholder="0.00"
                           {...field}
-                          onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                          onChange={(e) => field.onChange(e.target.value)}
                         />
                       </FormControl>
                       <FormMessage />
@@ -344,8 +342,7 @@ export default function NovoClientePage() {
             </Button>
           </div>
         </form>
-        </Form>
-      </div>
-    </MainLayout>
+      </Form>
+    </div>
   );
 }
