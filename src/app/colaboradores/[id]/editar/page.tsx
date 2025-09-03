@@ -8,71 +8,91 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Save, UserCircle, Building2, Shield } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { ArrowLeft, Save, UserCircle, Building2, Shield, Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import { useColaborador, updateColaborador } from '@/hooks/useColaboradores';
+import { usePerfis } from '@/hooks/usePerfis';
+import { useGruposHierarquicos } from '@/hooks/useGruposHierarquicos';
+import { useToast } from '@/hooks/use-toast';
 
-// Dados mockados para exemplo
-const mockColaborador = {
-  id: '1',
-  nome: 'Carlos Oliveira',
-  email: 'carlos.oliveira@empresa.com',
-  telefone: '(11) 99999-9999',
-  documento: '123.456.789-00',
-  cargo: 'Gerente de Vendas',
-  dataAdmissao: '2023-01-15',
-  ativo: true,
-  perfilId: '2',
-  grupoHierarquicoId: '2',
-  createdAt: '2024-01-15'
-};
 
-// Dados mockados para perfis e grupos
-const mockPerfis = [
-  { id: '1', nome: 'Administrador' },
-  { id: '2', nome: 'Gerente de Vendas' },
-  { id: '3', nome: 'Vendedor' },
-  { id: '4', nome: 'Desenvolvedor' },
-  { id: '5', nome: 'RH' },
-];
-
-const mockGrupos = [
-  { id: '1', nome: 'Diretoria' },
-  { id: '2', nome: 'Vendas' },
-  { id: '3', nome: 'TI' },
-  { id: '4', nome: 'RH' },
-  { id: '5', nome: 'Vendas Internas' },
-];
 
 export default function EditarColaboradorPage() {
   const params = useParams();
   const router = useRouter();
-  const [formData, setFormData] = useState(mockColaborador);
-  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [formData, setFormData] = useState({
+    nome: '',
+    email: '',
+    telefone: '',
+    documento: '',
+    cargo: '',
+    dataAdmissao: '',
+    ativo: true,
+    perfilId: '',
+    grupoHierarquicoId: ''
+  });
+
+  const { colaborador, loading, error: fetchError } = useColaborador(params.id as string);
+  const { perfis, loading: perfisLoading } = usePerfis({ page: 1, limit: 100 });
+  const { grupos, loading: gruposLoading } = useGruposHierarquicos({ page: 1, limit: 100 });
 
   useEffect(() => {
-    // Simulando busca do colaborador pelo ID
-    const fetchColaborador = async () => {
-      // Aqui você faria a chamada API para buscar o colaborador
-      // const response = await fetch(`/api/colaboradores/${params.id}`);
-      // const data = await response.json();
-      
-      // Por enquanto, usando dados mockados
-      setTimeout(() => {
-        setLoading(false);
-      }, 500);
-    };
+    if (colaborador) {
+      setFormData({
+        nome: colaborador.nome,
+        email: colaborador.email,
+        telefone: colaborador.telefone || '',
+        documento: colaborador.documento || '',
+        cargo: colaborador.cargo,
+        dataAdmissao: colaborador.dataAdmissao,
+        ativo: colaborador.ativo,
+        perfilId: colaborador.perfilId || '',
+        grupoHierarquicoId: colaborador.grupoHierarquicoId || ''
+      });
+    }
+  }, [colaborador]);
 
-    fetchColaborador();
-  }, [params.id]);
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Aqui você implementaria a lógica para atualizar o colaborador
-    console.log('Atualizando colaborador:', formData);
-    // Simulando atualização e redirecionamento
-    setTimeout(() => {
+    setSubmitting(true);
+    setError(null);
+
+    try {
+      const colaboradorData = {
+        nome: formData.nome,
+        email: formData.email,
+        cargo: formData.cargo,
+        dataAdmissao: formData.dataAdmissao,
+        ativo: formData.ativo,
+        ...(formData.telefone && { telefone: formData.telefone }),
+        ...(formData.documento && { documento: formData.documento }),
+        ...(formData.perfilId && { perfilId: formData.perfilId }),
+        ...(formData.grupoHierarquicoId && { grupoHierarquicoId: formData.grupoHierarquicoId })
+      };
+
+      await updateColaborador(params.id as string, colaboradorData);
+      
+      toast({
+        title: "Sucesso!",
+        description: "Colaborador atualizado com sucesso.",
+      });
+      
       router.push('/colaboradores');
-    }, 1000);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao atualizar colaborador';
+      setError(errorMessage);
+      toast({
+        title: "Erro",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleChange = (field: string, value: string | boolean) => {
@@ -86,7 +106,38 @@ export default function EditarColaboradorPage() {
     return (
       <MainLayout>
         <div className="flex items-center justify-center h-64">
-          <div>Carregando...</div>
+          <div className="text-center">
+            <Loader2 className="h-8 w-8 animate-spin mx-auto" />
+            <p className="mt-2 text-gray-600">Carregando colaborador...</p>
+          </div>
+        </div>
+      </MainLayout>
+    );
+  }
+
+  if (fetchError) {
+    return (
+      <MainLayout>
+        <div className="flex items-center justify-center h-64">
+          <Alert variant="destructive" className="max-w-md">
+            <AlertDescription>
+              Erro ao carregar colaborador: {fetchError}
+            </AlertDescription>
+          </Alert>
+        </div>
+      </MainLayout>
+    );
+  }
+
+  if (!colaborador) {
+    return (
+      <MainLayout>
+        <div className="flex items-center justify-center h-64">
+          <Alert className="max-w-md">
+            <AlertDescription>
+              Colaborador não encontrado.
+            </AlertDescription>
+          </Alert>
         </div>
       </MainLayout>
     );
@@ -227,11 +278,11 @@ export default function EditarColaboradorPage() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {mockPerfis.map((perfil) => (
-                        <SelectItem key={perfil.id} value={perfil.id}>
-                          {perfil.nome}
-                        </SelectItem>
-                      ))}
+                      {perfis?.map((perfil) => (
+                      <SelectItem key={perfil.id} value={perfil.id}>
+                        {perfil.nome}
+                      </SelectItem>
+                    ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -266,11 +317,11 @@ export default function EditarColaboradorPage() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {mockGrupos.map((grupo) => (
-                        <SelectItem key={grupo.id} value={grupo.id}>
-                          {grupo.nome}
-                        </SelectItem>
-                      ))}
+                      {grupos?.map((grupo) => (
+                      <SelectItem key={grupo.id} value={grupo.id}>
+                        {grupo.nome}
+                      </SelectItem>
+                    ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -287,14 +338,30 @@ export default function EditarColaboradorPage() {
             </Card>
           </div>
 
+          {/* Exibir erro se houver */}
+          {(error || fetchError) && (
+            <Alert variant="destructive" className="mt-6">
+              <AlertDescription>{error || fetchError}</AlertDescription>
+            </Alert>
+          )}
+
           {/* Botões de ação */}
           <div className="flex justify-end space-x-4 mt-6">
             <Link href="/colaboradores">
-              <Button variant="outline">Cancelar</Button>
+              <Button variant="outline" disabled={submitting}>Cancelar</Button>
             </Link>
-            <Button type="submit">
-              <Save className="mr-2 h-4 w-4" />
-              Atualizar Colaborador
+            <Button type="submit" disabled={submitting}>
+              {submitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Salvando...
+                </>
+              ) : (
+                <>
+                  <Save className="mr-2 h-4 w-4" />
+                  Atualizar Colaborador
+                </>
+              )}
             </Button>
           </div>
         </form>

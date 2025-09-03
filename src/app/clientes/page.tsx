@@ -1,61 +1,43 @@
 'use client';
 
 import { useState } from 'react';
-import { MainLayout } from '@/components/layout/MainLayout';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Search, Edit, Trash2, Eye } from 'lucide-react';
-import Link from 'next/link';
+import { Plus, Search, Edit, Trash2, Eye, Loader2 } from 'lucide-react';
+import { useClientes, deleteCliente } from '@/hooks/useClientes';
+import { useAuth } from '@/hooks/useAuth';
+import { useSocket } from '@/hooks/useSocket';
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 
-// Dados mockados para exemplo
-const mockClientes = [
-  {
-    id: '1',
-    nome: 'João Silva',
-    email: 'joao.silva@email.com',
-    telefone: '(11) 99999-9999',
-    tipo: 'PESSOA_FISICA',
-    status: 'CLIENTE',
-    valorPotencial: 15000,
-    createdAt: '2024-01-15'
-  },
-  {
-    id: '2',
-    nome: 'Empresa ABC Ltda',
-    email: 'contato@abc.com',
-    telefone: '(11) 3333-3333',
-    tipo: 'PESSOA_JURIDICA',
-    status: 'LEAD',
-    valorPotencial: 50000,
-    createdAt: '2024-01-20'
-  },
-  {
-    id: '3',
-    nome: 'Maria Santos',
-    email: 'maria.santos@email.com',
-    telefone: '(11) 88888-8888',
-    tipo: 'PESSOA_FISICA',
-    status: 'PROSPECT',
-    valorPotencial: 8000,
-    createdAt: '2024-01-25'
-  }
-];
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import { toast } from 'sonner';
 
-const getStatusColor = (status: string) => {
+const getStatusVariant = (status: string) => {
   switch (status) {
     case 'CLIENTE':
-      return 'bg-green-100 text-green-800';
+      return 'default';
     case 'LEAD':
-      return 'bg-blue-100 text-blue-800';
+      return 'outline';
     case 'PROSPECT':
-      return 'bg-yellow-100 text-yellow-800';
+      return 'secondary';
     case 'INATIVO':
-      return 'bg-gray-100 text-gray-800';
+      return 'destructive';
     default:
-      return 'bg-gray-100 text-gray-800';
+      return 'secondary';
   }
 };
 
@@ -67,16 +49,42 @@ const formatCurrency = (value: number) => {
 };
 
 export default function ClientesPage() {
+  const router = useRouter();
+  const { canAccess } = useAuth();
+  const { emitEntityUpdate } = useSocket();
   const [searchTerm, setSearchTerm] = useState('');
-  const [clientes] = useState(mockClientes);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const limit = 10;
+  
+  const { clientes, loading, error, meta, refetch } = useClientes({
+    page: currentPage,
+    limit,
+    search: searchTerm
+  });
 
-  const filteredClientes = clientes.filter(cliente =>
-    cliente.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    cliente.email?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const handleDelete = async (id: string) => {
+    try {
+      setDeletingId(id);
+      const cliente = clientes.find(c => c.id === id);
+      await deleteCliente(id, cliente?.nome, emitEntityUpdate);
+      toast.success('Cliente excluído com sucesso!');
+      refetch();
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao excluir cliente';
+      toast.error(errorMessage);
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
+  const handleSearch = (value: string) => {
+    setSearchTerm(value);
+    setCurrentPage(1); // Reset to first page when searching
+  };
 
   return (
-    <MainLayout>
+    <ProtectedRoute requiredPermission={{ recurso: 'clientes', acao: 'ler' }}>
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <div>
@@ -85,12 +93,12 @@ export default function ClientesPage() {
               Gerencie seus clientes e leads
             </p>
           </div>
-          <Link href="/clientes/novo">
-            <Button>
+          {canAccess.clientes.create && (
+            <Button onClick={() => router.push('/clientes/novo')}>
               <Plus className="mr-2 h-4 w-4" />
               Novo Cliente
             </Button>
-          </Link>
+          )}
         </div>
 
         {/* Card de busca e filtros */}
@@ -108,7 +116,7 @@ export default function ClientesPage() {
                 <Input
                   placeholder="Buscar clientes..."
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={(e) => handleSearch(e.target.value)}
                   className="pl-8"
                 />
               </div>
@@ -121,67 +129,162 @@ export default function ClientesPage() {
           <CardHeader>
             <CardTitle>Lista de Clientes</CardTitle>
             <CardDescription>
-              {filteredClientes.length} clientes encontrados
+              {loading ? 'Carregando...' : `${meta.total} clientes encontrados`}
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="rounded-md border">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Nome</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Telefone</TableHead>
-                    <TableHead>Tipo</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Valor Potencial</TableHead>
-                    <TableHead>Ações</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredClientes.map((cliente) => (
-                    <TableRow key={cliente.id}>
-                      <TableCell className="font-medium">
-                        {cliente.nome}
-                      </TableCell>
-                      <TableCell>{cliente.email}</TableCell>
-                      <TableCell>{cliente.telefone}</TableCell>
-                      <TableCell className="capitalize">
-                        {cliente.tipo === 'PESSOA_FISICA' ? 'Pessoa Física' : 'Pessoa Jurídica'}
-                      </TableCell>
-                      <TableCell>
-                        <Badge className={getStatusColor(cliente.status)}>
-                          {cliente.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        {cliente.valorPotencial ? formatCurrency(cliente.valorPotencial) : '-'}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center space-x-2">
-                          <Link href={`/clientes/${cliente.id}`}>
-                            <Button variant="ghost" size="sm">
-                              <Eye className="h-4 w-4" />
-                            </Button>
-                          </Link>
-                          <Link href={`/clientes/${cliente.id}/editar`}>
-                            <Button variant="ghost" size="sm">
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                          </Link>
-                          <Button variant="ghost" size="sm">
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
+            {error && (
+              <div className="mb-4 p-4 border border-red-200 bg-red-50 rounded-md">
+                <p className="text-red-800">
+                  {error}
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={refetch}
+                    className="ml-2"
+                  >
+                    Tentar novamente
+                  </Button>
+                </p>
+              </div>
+            )}
+            
+            {loading ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="h-8 w-8 animate-spin" />
+                <span className="ml-2">Carregando clientes...</span>
+              </div>
+            ) : (
+              <div className="rounded-md border">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Nome</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Telefone</TableHead>
+                      <TableHead>Tipo</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Valor Potencial</TableHead>
+                      <TableHead>Ações</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </MainLayout>
-  );
-}
+                  </TableHeader>
+                  <TableBody>
+                    {clientes.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={7} className="text-center py-8">
+                          Nenhum cliente encontrado
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      clientes.map((cliente) => (
+                         <TableRow key={cliente.id}>
+                           <TableCell className="font-medium">
+                             {cliente.nome}
+                           </TableCell>
+                           <TableCell>{cliente.email || '-'}</TableCell>
+                           <TableCell>{cliente.telefone || '-'}</TableCell>
+                           <TableCell className="capitalize">
+                             {cliente.tipo === 'PESSOA_FISICA' ? 'Pessoa Física' : 'Pessoa Jurídica'}
+                           </TableCell>
+                           <TableCell>
+                             <Badge variant={getStatusVariant(cliente.status)}>
+                               {cliente.status}
+                             </Badge>
+                           </TableCell>
+                           <TableCell>
+                             {cliente.valorPotencial ? formatCurrency(cliente.valorPotencial) : '-'}
+                           </TableCell>
+                           <TableCell>
+                             <div className="flex items-center space-x-2">
+                               {canAccess.clientes.read && (
+                                 <Button 
+                                   variant="ghost" 
+                                   size="sm"
+                                   onClick={() => router.push(`/clientes/${cliente.id}`)}
+                                 >
+                                   <Eye className="h-4 w-4" />
+                                 </Button>
+                               )}
+                               {canAccess.clientes.update && (
+                                 <Button 
+                                   variant="ghost" 
+                                   size="sm"
+                                   onClick={() => router.push(`/clientes/${cliente.id}/editar`)}
+                                 >
+                                   <Edit className="h-4 w-4" />
+                                 </Button>
+                               )}
+                               {canAccess.clientes.delete && (
+                                 <AlertDialog>
+                                   <AlertDialogTrigger asChild>
+                                     <Button 
+                                       variant="ghost" 
+                                       size="sm"
+                                       disabled={deletingId === cliente.id}
+                                     >
+                                       {deletingId === cliente.id ? (
+                                         <Loader2 className="h-4 w-4 animate-spin" />
+                                       ) : (
+                                         <Trash2 className="h-4 w-4" />
+                                       )}
+                                     </Button>
+                                   </AlertDialogTrigger>
+                                   <AlertDialogContent>
+                                     <AlertDialogHeader>
+                                       <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+                                       <AlertDialogDescription>
+                                         Tem certeza que deseja excluir o cliente "{cliente.nome}"? Esta ação não pode ser desfeita.
+                                       </AlertDialogDescription>
+                                     </AlertDialogHeader>
+                                     <AlertDialogFooter>
+                                       <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                       <AlertDialogAction onClick={() => handleDelete(cliente.id)}>
+                                         Excluir
+                                       </AlertDialogAction>
+                                     </AlertDialogFooter>
+                                   </AlertDialogContent>
+                                 </AlertDialog>
+                               )}
+                             </div>
+                           </TableCell>
+                         </TableRow>
+                       ))
+                     )}
+                   </TableBody>
+                 </Table>
+               </div>
+             )}
+           </CardContent>
+         </Card>
+
+         {/* Pagination */}
+         {!loading && meta.totalPages > 1 && (
+           <div className="flex items-center justify-between">
+             <p className="text-sm text-muted-foreground">
+               Página {meta.page} de {meta.totalPages} ({meta.total} clientes)
+             </p>
+             <div className="flex items-center space-x-2">
+               <Button
+                 variant="outline"
+                 size="sm"
+                 onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                 disabled={currentPage === 1}
+               >
+                 Anterior
+               </Button>
+               <Button
+                 variant="outline"
+                 size="sm"
+                 onClick={() => setCurrentPage(prev => Math.min(prev + 1, meta.totalPages))}
+                 disabled={currentPage === meta.totalPages}
+               >
+                 Próxima
+               </Button>
+             </div>
+           </div>
+         )}
+       </div>
+
+     </ProtectedRoute>
+   );
+ }

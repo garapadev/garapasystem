@@ -1,78 +1,141 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Save } from 'lucide-react';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { ArrowLeft, Save, Loader2 } from 'lucide-react';
 import Link from 'next/link';
-
-// Dados mockados para exemplo
-const mockCliente = {
-  id: '1',
-  nome: 'João Silva',
-  email: 'joao.silva@email.com',
-  telefone: '(11) 99999-9999',
-  documento: '123.456.789-00',
-  tipo: 'PESSOA_FISICA',
-  status: 'CLIENTE',
-  endereco: 'Rua das Flores, 123',
-  cidade: 'São Paulo',
-  estado: 'SP',
-  cep: '01234-567',
-  observacoes: 'Cliente importante, comprar produtos mensalmente',
-  valorPotencial: '15000'
-};
+import { useCliente, updateCliente } from '@/hooks/useClientes';
+import { useToast } from '@/hooks/use-toast';
+import { clienteSchema, type ClienteFormData } from '@/lib/validations/cliente';
 
 export default function EditarClientePage() {
   const params = useParams();
   const router = useRouter();
-  const [formData, setFormData] = useState(mockCliente);
-  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
+  
+  const form = useForm<ClienteFormData>({
+    resolver: zodResolver(clienteSchema),
+    defaultValues: {
+      nome: '',
+      email: '',
+      telefone: '',
+      documento: '',
+      tipo: 'PESSOA_FISICA',
+      status: 'LEAD',
+      endereco: '',
+      cidade: '',
+      estado: '',
+      cep: '',
+      observacoes: '',
+      valorPotencial: 0
+    }
+  });
+
+  const { cliente, loading, error: fetchError } = useCliente(params.id as string);
 
   useEffect(() => {
-    // Simulando busca do cliente pelo ID
-    const fetchCliente = async () => {
-      // Aqui você faria a chamada API para buscar o cliente
-      // const response = await fetch(`/api/clientes/${params.id}`);
-      // const data = await response.json();
+    if (cliente) {
+      form.reset({
+        nome: cliente.nome,
+        email: cliente.email,
+        telefone: cliente.telefone || '',
+        documento: cliente.documento || '',
+        tipo: cliente.tipo,
+        status: cliente.status,
+        endereco: cliente.endereco || '',
+        cidade: cliente.cidade || '',
+        estado: cliente.estado || '',
+        cep: cliente.cep || '',
+        observacoes: cliente.observacoes || '',
+        valorPotencial: cliente.valorPotencial || 0
+      });
+    }
+  }, [cliente, form]);
+
+  const onSubmit = async (data: ClienteFormData) => {
+    try {
+      const clienteData = {
+        nome: data.nome,
+        email: data.email,
+        tipo: data.tipo,
+        status: data.status,
+        ...(data.telefone && { telefone: data.telefone }),
+        ...(data.documento && { documento: data.documento }),
+        ...(data.endereco && { endereco: data.endereco }),
+        ...(data.cidade && { cidade: data.cidade }),
+        ...(data.estado && { estado: data.estado }),
+        ...(data.cep && { cep: data.cep }),
+        ...(data.observacoes && { observacoes: data.observacoes }),
+        ...(data.valorPotencial && { valorPotencial: data.valorPotencial })
+      };
+
+      await updateCliente(params.id as string, clienteData);
       
-      // Por enquanto, usando dados mockados
-      setTimeout(() => {
-        setLoading(false);
-      }, 500);
-    };
-
-    fetchCliente();
-  }, [params.id]);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Aqui você implementaria a lógica para atualizar o cliente
-    console.log('Atualizando cliente:', formData);
-    // Simulando atualização e redirecionamento
-    setTimeout(() => {
+      toast({
+        title: "Sucesso!",
+        description: "Cliente atualizado com sucesso.",
+      });
+      
       router.push('/clientes');
-    }, 1000);
-  };
-
-  const handleChange = (field: string, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao atualizar cliente';
+      toast({
+        title: "Erro",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    }
   };
 
   if (loading) {
     return (
       <MainLayout>
         <div className="flex items-center justify-center h-64">
-          <div>Carregando...</div>
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+      </MainLayout>
+    );
+  }
+
+  if (fetchError) {
+    return (
+      <MainLayout>
+        <div className="flex flex-col items-center justify-center h-64 space-y-4">
+          <Alert variant="destructive">
+            <AlertDescription>{fetchError}</AlertDescription>
+          </Alert>
+          <Link href="/clientes">
+            <Button variant="outline">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Voltar para Clientes
+            </Button>
+          </Link>
+        </div>
+      </MainLayout>
+    );
+  }
+
+  if (!cliente) {
+    return (
+      <MainLayout>
+        <div className="flex flex-col items-center justify-center h-64 space-y-4">
+          <p>Cliente não encontrado</p>
+          <Link href="/clientes">
+            <Button variant="outline">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Voltar para Clientes
+            </Button>
+          </Link>
         </div>
       </MainLayout>
     );
@@ -96,7 +159,8 @@ export default function EditarClientePage() {
           </div>
         </div>
 
-        <form onSubmit={handleSubmit}>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <div className="grid gap-6 md:grid-cols-2">
             {/* Informações Básicas */}
             <Card>
@@ -107,41 +171,58 @@ export default function EditarClientePage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="nome">Nome *</Label>
-                  <Input
-                    id="nome"
-                    value={formData.nome}
-                    onChange={(e) => handleChange('nome', e.target.value)}
-                    required
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => handleChange('email', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="telefone">Telefone</Label>
-                  <Input
-                    id="telefone"
-                    value={formData.telefone}
-                    onChange={(e) => handleChange('telefone', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="documento">Documento</Label>
-                  <Input
-                    id="documento"
-                    value={formData.documento}
-                    onChange={(e) => handleChange('documento', e.target.value)}
-                    placeholder={formData.tipo === 'PESSOA_FISICA' ? 'CPF' : 'CNPJ'}
-                  />
-                </div>
+                <FormField
+                  control={form.control}
+                  name="nome"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Nome *</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Digite o nome" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email *</FormLabel>
+                      <FormControl>
+                        <Input type="email" placeholder="Digite o email" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="telefone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Telefone</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Digite o telefone" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="documento"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>CPF/CNPJ</FormLabel>
+                      <FormControl>
+                        <Input placeholder="CPF ou CNPJ" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </CardContent>
             </Card>
 
@@ -154,42 +235,68 @@ export default function EditarClientePage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="tipo">Tipo</Label>
-                  <Select value={formData.tipo} onValueChange={(value) => handleChange('tipo', value)}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="PESSOA_FISICA">Pessoa Física</SelectItem>
-                      <SelectItem value="PESSOA_JURIDICA">Pessoa Jurídica</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="status">Status</Label>
-                  <Select value={formData.status} onValueChange={(value) => handleChange('status', value)}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="LEAD">Lead</SelectItem>
-                      <SelectItem value="PROSPECT">Prospect</SelectItem>
-                      <SelectItem value="CLIENTE">Cliente</SelectItem>
-                      <SelectItem value="INATIVO">Inativo</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="valorPotencial">Valor Potencial (R$)</Label>
-                  <Input
-                    id="valorPotencial"
-                    type="number"
-                    step="0.01"
-                    value={formData.valorPotencial}
-                    onChange={(e) => handleChange('valorPotencial', e.target.value)}
-                  />
-                </div>
+                <FormField
+                  control={form.control}
+                  name="tipo"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Tipo *</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione o tipo" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="PESSOA_FISICA">Pessoa Física</SelectItem>
+                          <SelectItem value="PESSOA_JURIDICA">Pessoa Jurídica</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="status"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Status *</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione o status" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="LEAD">Lead</SelectItem>
+                          <SelectItem value="PROSPECT">Prospect</SelectItem>
+                          <SelectItem value="CLIENTE">Cliente</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="valorPotencial"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Valor Potencial (R$)</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          placeholder="0.00"
+                          {...field}
+                          onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </CardContent>
             </Card>
 
@@ -202,40 +309,60 @@ export default function EditarClientePage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="endereco">Endereço</Label>
-                  <Input
-                    id="endereco"
-                    value={formData.endereco}
-                    onChange={(e) => handleChange('endereco', e.target.value)}
-                  />
-                </div>
+                <FormField
+                  control={form.control}
+                  name="endereco"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Endereço</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Rua, número, bairro" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="cidade">Cidade</Label>
-                    <Input
-                      id="cidade"
-                      value={formData.cidade}
-                      onChange={(e) => handleChange('cidade', e.target.value)}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="estado">Estado</Label>
-                    <Input
-                      id="estado"
-                      value={formData.estado}
-                      onChange={(e) => handleChange('estado', e.target.value)}
-                    />
-                  </div>
-                </div>
-                <div>
-                  <Label htmlFor="cep">CEP</Label>
-                  <Input
-                    id="cep"
-                    value={formData.cep}
-                    onChange={(e) => handleChange('cep', e.target.value)}
+                  <FormField
+                    control={form.control}
+                    name="cidade"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Cidade</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Cidade" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="estado"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Estado</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Estado" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
                 </div>
+                <FormField
+                  control={form.control}
+                  name="cep"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>CEP</FormLabel>
+                      <FormControl>
+                        <Input placeholder="00000-000" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </CardContent>
             </Card>
 
@@ -248,15 +375,23 @@ export default function EditarClientePage() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div>
-                  <Label htmlFor="observacoes">Observações</Label>
-                  <Textarea
-                    id="observacoes"
-                    value={formData.observacoes}
-                    onChange={(e) => handleChange('observacoes', e.target.value)}
-                    rows={4}
-                  />
-                </div>
+                <FormField
+                  control={form.control}
+                  name="observacoes"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Observações</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Informações adicionais sobre o cliente"
+                          rows={4}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </CardContent>
             </Card>
           </div>
@@ -264,14 +399,19 @@ export default function EditarClientePage() {
           {/* Botões de ação */}
           <div className="flex justify-end space-x-4 mt-6">
             <Link href="/clientes">
-              <Button variant="outline">Cancelar</Button>
+              <Button variant="outline" disabled={form.formState.isSubmitting}>Cancelar</Button>
             </Link>
-            <Button type="submit">
-              <Save className="mr-2 h-4 w-4" />
-              Atualizar Cliente
+            <Button type="submit" disabled={form.formState.isSubmitting}>
+              {form.formState.isSubmitting ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Save className="mr-2 h-4 w-4" />
+              )}
+              {form.formState.isSubmitting ? 'Salvando...' : 'Atualizar Cliente'}
             </Button>
           </div>
         </form>
+        </Form>
       </div>
     </MainLayout>
   );

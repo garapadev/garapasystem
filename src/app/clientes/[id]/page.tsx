@@ -1,35 +1,16 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Edit, Mail, Phone, MapPin, Building2, DollarSign } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { ArrowLeft, Edit, Mail, Phone, MapPin, Building2, DollarSign, Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import { useCliente } from '@/hooks/useClientes';
 
-// Dados mockados para exemplo
-const mockCliente = {
-  id: '1',
-  nome: 'João Silva',
-  email: 'joao.silva@email.com',
-  telefone: '(11) 99999-9999',
-  documento: '123.456.789-00',
-  tipo: 'PESSOA_FISICA',
-  status: 'CLIENTE',
-  endereco: 'Rua das Flores, 123',
-  cidade: 'São Paulo',
-  estado: 'SP',
-  cep: '01234-567',
-  observacoes: 'Cliente importante, comprar produtos mensalmente',
-  valorPotencial: 15000,
-  createdAt: '2024-01-15',
-  grupoHierarquico: {
-    id: '1',
-    nome: 'Vendas'
-  }
-};
+
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -55,30 +36,47 @@ const formatCurrency = (value: number) => {
 
 export default function ClienteDetalhePage() {
   const params = useParams();
-  const [cliente, setCliente] = useState(mockCliente);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // Simulando busca do cliente pelo ID
-    const fetchCliente = async () => {
-      // Aqui você faria a chamada API para buscar o cliente
-      // const response = await fetch(`/api/clientes/${params.id}`);
-      // const data = await response.json();
-      
-      // Por enquanto, usando dados mockados
-      setTimeout(() => {
-        setLoading(false);
-      }, 500);
-    };
-
-    fetchCliente();
-  }, [params.id]);
+  const { cliente, loading, error } = useCliente(params.id as string);
 
   if (loading) {
     return (
       <MainLayout>
         <div className="flex items-center justify-center h-64">
-          <div>Carregando...</div>
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+      </MainLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <MainLayout>
+        <div className="flex flex-col items-center justify-center h-64 space-y-4">
+          <Alert variant="destructive">
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+          <Link href="/clientes">
+            <Button variant="outline">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Voltar para Clientes
+            </Button>
+          </Link>
+        </div>
+      </MainLayout>
+    );
+  }
+
+  if (!cliente) {
+    return (
+      <MainLayout>
+        <div className="flex flex-col items-center justify-center h-64 space-y-4">
+          <p>Cliente não encontrado</p>
+          <Link href="/clientes">
+            <Button variant="outline">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Voltar para Clientes
+            </Button>
+          </Link>
         </div>
       </MainLayout>
     );
@@ -144,7 +142,7 @@ export default function ClienteDetalhePage() {
               <div className="flex items-center space-x-2">
                 <DollarSign className="h-4 w-4 text-muted-foreground" />
                 <span className="font-medium">Valor Potencial:</span>
-                <span>{formatCurrency(cliente.valorPotencial)}</span>
+                <span>{cliente.valorPotencial ? formatCurrency(cliente.valorPotencial) : 'Não informado'}</span>
               </div>
             </CardContent>
           </Card>

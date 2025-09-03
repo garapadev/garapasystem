@@ -1,107 +1,93 @@
 'use client';
 
 import { useState } from 'react';
-import { MainLayout } from '@/components/layout/MainLayout';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Search, Edit, Trash2, Eye, Shield } from 'lucide-react';
-import Link from 'next/link';
+import { Plus, Search, Edit, Trash2, Eye, Shield, Loader2 } from 'lucide-react';
+import { usePermissoes } from '@/hooks/usePermissoes';
+import { useAuth } from '@/hooks/useAuth';
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import { toast } from 'sonner';
 
-// Dados mockados para exemplo
-const mockPermissoes = [
-  {
-    id: '1',
-    nome: 'Criar Clientes',
-    descricao: 'Permite criar novos clientes e leads',
-    recurso: 'clientes',
-    acao: 'criar',
-    createdAt: '2024-01-15'
-  },
-  {
-    id: '2',
-    nome: 'Editar Clientes',
-    descricao: 'Permite editar informações de clientes existentes',
-    recurso: 'clientes',
-    acao: 'editar',
-    createdAt: '2024-01-15'
-  },
-  {
-    id: '3',
-    nome: 'Excluir Clientes',
-    descricao: 'Permite excluir clientes do sistema',
-    recurso: 'clientes',
-    acao: 'excluir',
-    createdAt: '2024-01-15'
-  },
-  {
-    id: '4',
-    nome: 'Visualizar Clientes',
-    descricao: 'Permite visualizar informações de clientes',
-    recurso: 'clientes',
-    acao: 'ler',
-    createdAt: '2024-01-15'
-  },
-  {
-    id: '5',
-    nome: 'Gerenciar Colaboradores',
-    descricao: 'Permite criar, editar e excluir colaboradores',
-    recurso: 'colaboradores',
-    acao: 'gerenciar',
-    createdAt: '2024-01-20'
-  },
-  {
-    id: '6',
-    nome: 'Gerenciar Grupos',
-    descricao: 'Permite criar, editar e excluir grupos hierárquicos',
-    recurso: 'grupos',
-    acao: 'gerenciar',
-    createdAt: '2024-01-20'
-  },
-  {
-    id: '7',
-    nome: 'Administrar Sistema',
-    descricao: 'Acesso completo ao sistema',
-    recurso: 'sistema',
-    acao: 'administrar',
-    createdAt: '2024-01-10'
-  }
-];
+const formatDate = (dateString: string) => {
+  return new Date(dateString).toLocaleDateString('pt-BR');
+};
 
-const getAcaoColor = (acao: string) => {
+const getAcaoVariant = (acao: string) => {
   switch (acao) {
     case 'criar':
-      return 'bg-green-100 text-green-800';
+    case 'CREATE':
+      return 'default';
     case 'editar':
-      return 'bg-blue-100 text-blue-800';
+    case 'UPDATE':
+      return 'secondary';
     case 'excluir':
-      return 'bg-red-100 text-red-800';
+    case 'DELETE':
+      return 'destructive';
     case 'ler':
-      return 'bg-gray-100 text-gray-800';
+    case 'READ':
+      return 'outline';
     case 'gerenciar':
-      return 'bg-purple-100 text-purple-800';
+    case 'MANAGE':
+      return 'default';
     case 'administrar':
-      return 'bg-orange-100 text-orange-800';
+    case 'ADMIN':
+      return 'destructive';
     default:
-      return 'bg-gray-100 text-gray-800';
+      return 'secondary';
   }
 };
 
 export default function PermissoesPage() {
+  const router = useRouter();
+  const { canAccess } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
-  const [permissoes] = useState(mockPermissoes);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const limit = 10;
 
-  const filteredPermissoes = permissoes.filter(permissao =>
-    permissao.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    permissao.descricao?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    permissao.recurso.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    permissao.acao.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const { permissoes, loading, error, meta, refetch, deletePermissao } = usePermissoes({
+    page: currentPage,
+    limit,
+    search: searchTerm || undefined
+  });
+
+  const handleSearch = (value: string) => {
+    setSearchTerm(value);
+    setCurrentPage(1);
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      setDeletingId(id);
+      await deletePermissao(id);
+      toast.success('Permissão excluída com sucesso!');
+      refetch();
+    } catch (error) {
+      toast.error('Erro ao excluir permissão');
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   return (
-    <MainLayout>
+    <ProtectedRoute requiredPermission={{ recurso: 'permissoes', acao: 'ler' }}>
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-2">
@@ -113,12 +99,12 @@ export default function PermissoesPage() {
               </p>
             </div>
           </div>
-          <Link href="/permissoes/novo">
-            <Button>
+          {canAccess.permissoes.create && (
+            <Button onClick={() => router.push('/permissoes/novo')}>
               <Plus className="mr-2 h-4 w-4" />
               Nova Permissão
             </Button>
-          </Link>
+          )}
         </div>
 
         {/* Card de busca e filtros */}
@@ -144,66 +130,164 @@ export default function PermissoesPage() {
           </CardContent>
         </Card>
 
+        {/* Loading State */}
+        {loading && (
+          <Card>
+            <CardContent className="flex items-center justify-center py-8">
+              <Loader2 className="h-8 w-8 animate-spin" />
+              <span className="ml-2">Carregando permissões...</span>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Error State */}
+         {error && (
+           <Alert variant="destructive">
+             <AlertDescription>
+               Erro ao carregar permissões: {typeof error === 'string' ? error : 'Erro desconhecido'}
+             </AlertDescription>
+           </Alert>
+         )}
+
         {/* Tabela de permissões */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Lista de Permissões</CardTitle>
-            <CardDescription>
-              {filteredPermissoes.length} permissões encontradas
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="rounded-md border">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Nome</TableHead>
-                    <TableHead>Descrição</TableHead>
-                    <TableHead>Recurso</TableHead>
-                    <TableHead>Ação</TableHead>
-                    <TableHead>Ações</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredPermissoes.map((permissao) => (
-                    <TableRow key={permissao.id}>
-                      <TableCell className="font-medium">
-                        {permissao.nome}
-                      </TableCell>
-                      <TableCell>{permissao.descricao}</TableCell>
-                      <TableCell className="capitalize">
-                        {permissao.recurso}
-                      </TableCell>
-                      <TableCell>
-                        <Badge className={getAcaoColor(permissao.acao)}>
-                          {permissao.acao}
-                        </Badge>
-                      </TableCell>
+        {!loading && !error && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Lista de Permissões</CardTitle>
+              <CardDescription>
+                {meta?.total || 0} permissões encontradas
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="rounded-md border">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Nome</TableHead>
+                      <TableHead>Descrição</TableHead>
+                      <TableHead>Recurso</TableHead>
+                      <TableHead>Ação</TableHead>
+                      <TableHead>Data de Criação</TableHead>
+                      <TableHead>Ações</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {permissoes && permissoes.length > 0 ? (
+                      permissoes.map((permissao) => (
+                        <TableRow key={permissao.id}>
+                          <TableCell className="font-medium">
+                            {permissao.nome}
+                          </TableCell>
+                          <TableCell>{permissao.descricao}</TableCell>
+                          <TableCell className="capitalize">
+                            {permissao.recurso}
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant={getAcaoVariant(permissao.acao)}>
+                              {permissao.acao}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            {formatDate(permissao.createdAt)}
+                          </TableCell>
                       <TableCell>
                         <div className="flex items-center space-x-2">
-                          <Link href={`/permissoes/${permissao.id}`}>
-                            <Button variant="ghost" size="sm">
-                              <Eye className="h-4 w-4" />
-                            </Button>
-                          </Link>
-                          <Link href={`/permissoes/${permissao.id}/editar`}>
-                            <Button variant="ghost" size="sm">
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => router.push(`/permissoes/${permissao.id}`)}
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                          {canAccess.permissoes.update && (
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => router.push(`/permissoes/${permissao.id}/editar`)}
+                            >
                               <Edit className="h-4 w-4" />
                             </Button>
-                          </Link>
-                          <Button variant="ghost" size="sm">
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
+                          )}
+                          {canAccess.permissoes.delete && (
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm"
+                                  disabled={deletingId === permissao.id}
+                                >
+                                  {deletingId === permissao.id ? (
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                  ) : (
+                                    <Trash2 className="h-4 w-4" />
+                                  )}
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    Tem certeza que deseja excluir a permissão "{permissao.nome}"? 
+                                    Esta ação não pode ser desfeita.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                  <AlertDialogAction 
+                                    onClick={() => handleDelete(permissao.id)}
+                                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                  >
+                                    Excluir
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          )}
                         </div>
                       </TableCell>
                     </TableRow>
-                  ))}
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={6} className="text-center py-8">
+                      Nenhuma permissão encontrada
+                    </TableCell>
+                  </TableRow>
+                )}
                 </TableBody>
               </Table>
             </div>
+            
+            {/* Pagination */}
+             {meta && meta.totalPages > 1 && (
+               <div className="flex items-center justify-between px-2 py-4">
+                 <div className="text-sm text-muted-foreground">
+                   Página {meta.page} de {meta.totalPages} ({meta.total} total)
+                 </div>
+                <div className="flex items-center space-x-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
+                  >
+                    Anterior
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, meta.totalPages))}
+                    disabled={currentPage === meta.totalPages}
+                  >
+                    Próxima
+                  </Button>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
+        )}
       </div>
-    </MainLayout>
+    </ProtectedRoute>
   );
 }

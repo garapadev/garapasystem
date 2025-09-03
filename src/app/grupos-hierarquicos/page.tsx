@@ -1,71 +1,68 @@
 'use client';
 
 import React, { useState } from 'react';
-import { MainLayout } from '@/components/layout/MainLayout';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Search, Edit, Trash2, Eye, Users } from 'lucide-react';
-import Link from 'next/link';
+import { Plus, Search, Edit, Trash2, Eye, Users, Loader2 } from 'lucide-react';
+import { useGruposHierarquicos, deleteGrupoHierarquico } from '@/hooks/useGruposHierarquicos';
+import { useAuth } from '@/hooks/useAuth';
+import { useSocket } from '@/hooks/useSocket';
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import { toast } from 'sonner';
 
-// Dados mockados para exemplo
-const mockGrupos = [
-  {
-    id: '1',
-    nome: 'Diretoria',
-    descricao: 'Nível estratégico da empresa',
-    ativo: true,
-    parent: null,
-    childrenCount: 2,
-    clientesCount: 0,
-    colaboradoresCount: 3,
-    createdAt: '2024-01-15'
-  },
-  {
-    id: '2',
-    nome: 'Vendas',
-    descricao: 'Equipe de vendas e comerciais',
-    ativo: true,
-    parent: 'Diretoria',
-    childrenCount: 1,
-    clientesCount: 45,
-    colaboradoresCount: 8,
-    createdAt: '2024-01-20'
-  },
-  {
-    id: '3',
-    nome: 'TI',
-    descricao: 'Departamento de tecnologia',
-    ativo: true,
-    parent: 'Diretoria',
-    childrenCount: 0,
-    clientesCount: 0,
-    colaboradoresCount: 5,
-    createdAt: '2024-01-25'
-  },
-  {
-    id: '4',
-    nome: 'Vendas Internas',
-    descricao: 'Equipe de vendas internas',
-    ativo: true,
-    parent: 'Vendas',
-    childrenCount: 0,
-    clientesCount: 23,
-    colaboradoresCount: 4,
-    createdAt: '2024-02-01'
-  }
-];
+const formatDate = (dateString: string) => {
+  return new Date(dateString).toLocaleDateString('pt-BR');
+};
 
 export default function GruposHierarquicosPage() {
+  const router = useRouter();
+  const { canAccess } = useAuth();
+  const { emitEntityUpdate } = useSocket();
   const [searchTerm, setSearchTerm] = useState('');
-  const [grupos] = useState(mockGrupos);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const limit = 10;
 
-  const filteredGrupos = grupos.filter(grupo =>
-    grupo.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    grupo.descricao?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const { grupos, loading, error, meta, refetch } = useGruposHierarquicos({
+    page: currentPage,
+    limit,
+    search: searchTerm || undefined
+  });
+
+  const handleSearch = (value: string) => {
+    setSearchTerm(value);
+    setCurrentPage(1);
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      setDeletingId(id);
+      const grupo = grupos.find(g => g.id === id);
+      await deleteGrupoHierarquico(id, grupo?.nome, emitEntityUpdate);
+      toast.success('Grupo hierárquico excluído com sucesso!');
+      refetch();
+    } catch (error: any) {
+      toast.error(error.message || 'Erro ao excluir grupo hierárquico');
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   const buildHierarchy = (grupos: any[], parentId: string | null = null): any[] => {
     return grupos
@@ -100,19 +97,57 @@ export default function GruposHierarquicosPage() {
           <TableCell>{grupo.colaboradoresCount}</TableCell>
           <TableCell>
             <div className="flex items-center space-x-2">
-              <Link href={`/grupos-hierarquicos/${grupo.id}`}>
-                <Button variant="ghost" size="sm">
-                  <Eye className="h-4 w-4" />
-                </Button>
-              </Link>
-              <Link href={`/grupos-hierarquicos/${grupo.id}/editar`}>
-                <Button variant="ghost" size="sm">
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => router.push(`/grupos-hierarquicos/${grupo.id}`)}
+              >
+                <Eye className="h-4 w-4" />
+              </Button>
+              {canAccess.grupos.update && (
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => router.push(`/grupos-hierarquicos/${grupo.id}/editar`)}
+                >
                   <Edit className="h-4 w-4" />
                 </Button>
-              </Link>
-              <Button variant="ghost" size="sm">
-                <Trash2 className="h-4 w-4" />
-              </Button>
+              )}
+              {canAccess.grupos.delete && (
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      disabled={deletingId === grupo.id}
+                    >
+                      {deletingId === grupo.id ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Trash2 className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Tem certeza que deseja excluir o grupo "{grupo.nome}"? 
+                        Esta ação não pode ser desfeita e todos os subgrupos também serão excluídos.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                      <AlertDialogAction 
+                        onClick={() => handleDelete(grupo.id)}
+                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                      >
+                        Excluir
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              )}
             </div>
           </TableCell>
         </TableRow>
@@ -121,10 +156,10 @@ export default function GruposHierarquicosPage() {
     );
   };
 
-  const hierarchicalGrupos = buildHierarchy(filteredGrupos);
+  const hierarchicalGrupos = buildHierarchy(grupos);
 
   return (
-    <MainLayout>
+    <ProtectedRoute requiredPermission={{ recurso: 'gruposHierarquicos', acao: 'ler' }}>
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <div>
@@ -133,12 +168,12 @@ export default function GruposHierarquicosPage() {
               Gerencie a estrutura organizacional da empresa
             </p>
           </div>
-          <Link href="/grupos-hierarquicos/novo">
-            <Button>
+          {canAccess.grupos.create && (
+            <Button onClick={() => router.push('/grupos-hierarquicos/novo')}>
               <Plus className="mr-2 h-4 w-4" />
               Novo Grupo
             </Button>
-          </Link>
+          )}
         </div>
 
         {/* Card de busca e filtros */}
@@ -156,7 +191,7 @@ export default function GruposHierarquicosPage() {
                 <Input
                   placeholder="Buscar grupos..."
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={(e) => handleSearch(e.target.value)}
                   className="pl-8"
                 />
               </div>
@@ -169,11 +204,33 @@ export default function GruposHierarquicosPage() {
           <CardHeader>
             <CardTitle>Estrutura Hierárquica</CardTitle>
             <CardDescription>
-              {filteredGrupos.length} grupos encontrados
+              {loading ? 'Carregando...' : `${meta.total} grupos encontrados`}
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="rounded-md border">
+            {error && (
+              <Alert className="mb-4">
+                <AlertDescription>
+                  {error}
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={refetch}
+                    className="ml-2"
+                  >
+                    Tentar novamente
+                  </Button>
+                </AlertDescription>
+              </Alert>
+            )}
+            
+            {loading ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="h-8 w-8 animate-spin" />
+                <span className="ml-2">Carregando grupos...</span>
+              </div>
+            ) : (
+              <div className="rounded-md border">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -188,13 +245,49 @@ export default function GruposHierarquicosPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {hierarchicalGrupos.map((grupo) => renderGrupoRow(grupo))}
+                  {grupos.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={8} className="text-center py-8">
+                        Nenhum grupo encontrado
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    hierarchicalGrupos.map((grupo) => renderGrupoRow(grupo))
+                  )}
                 </TableBody>
               </Table>
             </div>
+            )}
+            
+            {/* Pagination */}
+            {!loading && meta.totalPages > 1 && (
+              <div className="flex items-center justify-between mt-4">
+                <p className="text-sm text-muted-foreground">
+                  Página {currentPage} de {meta.totalPages} ({meta.total} grupos)
+                </p>
+                <div className="flex items-center space-x-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(currentPage - 1)}
+                    disabled={currentPage === 1}
+                  >
+                    Anterior
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(currentPage + 1)}
+                    disabled={currentPage === meta.totalPages}
+                  >
+                    Próxima
+                  </Button>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
-    </MainLayout>
+    </ProtectedRoute>
   );
 }

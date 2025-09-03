@@ -8,28 +8,21 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Save, UserCircle, Building2, Shield } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { ArrowLeft, Save, UserCircle, Building2, Shield, Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import { createColaborador } from '@/hooks/useColaboradores';
+import { usePerfis } from '@/hooks/usePerfis';
+import { useGruposHierarquicos } from '@/hooks/useGruposHierarquicos';
+import { useToast } from '@/hooks/use-toast';
 
-// Dados mockados para perfis e grupos
-const mockPerfis = [
-  { id: '1', nome: 'Administrador' },
-  { id: '2', nome: 'Gerente de Vendas' },
-  { id: '3', nome: 'Vendedor' },
-  { id: '4', nome: 'Desenvolvedor' },
-  { id: '5', nome: 'RH' },
-];
 
-const mockGrupos = [
-  { id: '1', nome: 'Diretoria' },
-  { id: '2', nome: 'Vendas' },
-  { id: '3', nome: 'TI' },
-  { id: '4', nome: 'RH' },
-  { id: '5', nome: 'Vendas Internas' },
-];
 
 export default function NovoColaboradorPage() {
   const router = useRouter();
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     nome: '',
     email: '',
@@ -42,14 +35,46 @@ export default function NovoColaboradorPage() {
     grupoHierarquicoId: ''
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const { perfis, loading: perfisLoading } = usePerfis({ page: 1, limit: 100 });
+  const { grupos, loading: gruposLoading } = useGruposHierarquicos({ page: 1, limit: 100 });
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Aqui você implementaria a lógica para salvar o colaborador
-    console.log('Salvando colaborador:', formData);
-    // Simulando salvamento e redirecionamento
-    setTimeout(() => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const colaboradorData = {
+        nome: formData.nome,
+        email: formData.email,
+        cargo: formData.cargo,
+        dataAdmissao: formData.dataAdmissao,
+        ativo: formData.ativo,
+        ...(formData.telefone && { telefone: formData.telefone }),
+        ...(formData.documento && { documento: formData.documento }),
+        ...(formData.perfilId && { perfilId: formData.perfilId }),
+        ...(formData.grupoHierarquicoId && { grupoHierarquicoId: formData.grupoHierarquicoId })
+      };
+
+      await createColaborador(colaboradorData);
+      
+      toast({
+        title: "Sucesso!",
+        description: "Colaborador criado com sucesso.",
+      });
+      
       router.push('/colaboradores');
-    }, 1000);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao criar colaborador';
+      setError(errorMessage);
+      toast({
+        title: "Erro",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleChange = (field: string, value: string | boolean) => {
@@ -194,11 +219,11 @@ export default function NovoColaboradorPage() {
                       <SelectValue placeholder="Selecione o perfil de acesso" />
                     </SelectTrigger>
                     <SelectContent>
-                      {mockPerfis.map((perfil) => (
-                        <SelectItem key={perfil.id} value={perfil.id}>
-                          {perfil.nome}
-                        </SelectItem>
-                      ))}
+                      {perfis?.map((perfil) => (
+                      <SelectItem key={perfil.id} value={perfil.id}>
+                        {perfil.nome}
+                      </SelectItem>
+                    ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -233,11 +258,11 @@ export default function NovoColaboradorPage() {
                       <SelectValue placeholder="Selecione o grupo hierárquico" />
                     </SelectTrigger>
                     <SelectContent>
-                      {mockGrupos.map((grupo) => (
-                        <SelectItem key={grupo.id} value={grupo.id}>
-                          {grupo.nome}
-                        </SelectItem>
-                      ))}
+                      {grupos?.map((grupo) => (
+                      <SelectItem key={grupo.id} value={grupo.id}>
+                        {grupo.nome}
+                      </SelectItem>
+                    ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -254,14 +279,30 @@ export default function NovoColaboradorPage() {
             </Card>
           </div>
 
+          {/* Exibir erro se houver */}
+          {error && (
+            <Alert variant="destructive" className="mt-6">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+
           {/* Botões de ação */}
           <div className="flex justify-end space-x-4 mt-6">
             <Link href="/colaboradores">
-              <Button variant="outline">Cancelar</Button>
+              <Button variant="outline" disabled={loading}>Cancelar</Button>
             </Link>
-            <Button type="submit">
-              <Save className="mr-2 h-4 w-4" />
-              Salvar Colaborador
+            <Button type="submit" disabled={loading}>
+              {loading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Salvando...
+                </>
+              ) : (
+                <>
+                  <Save className="mr-2 h-4 w-4" />
+                  Salvar Colaborador
+                </>
+              )}
             </Button>
           </div>
         </form>

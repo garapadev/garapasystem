@@ -1,65 +1,88 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { ArrowLeft, Edit, Building2, Users, UserPlus, Calendar, Hash } from 'lucide-react';
+import { ArrowLeft, Edit, Building2, Users, UserPlus, Calendar, Hash, Loader2, Trash2 } from 'lucide-react';
 import Link from 'next/link';
-
-// Dados mockados para exemplo
-const mockGrupo = {
-  id: '2',
-  nome: 'Vendas',
-  descricao: 'Equipe de vendas e comerciais',
-  ativo: true,
-  parent: { id: '1', nome: 'Diretoria' },
-  children: [
-    { id: '4', nome: 'Vendas Internas' },
-    { id: '5', nome: 'Vendas Externas' }
-  ],
-  clientes: [
-    { id: '1', nome: 'João Silva', email: 'joao@email.com' },
-    { id: '2', nome: 'Empresa ABC', email: 'contato@abc.com' },
-    { id: '3', nome: 'Maria Santos', email: 'maria@email.com' }
-  ],
-  colaboradores: [
-    { id: '1', nome: 'Carlos Oliveira', email: 'carlos@empresa.com', cargo: 'Gerente de Vendas' },
-    { id: '2', nome: 'Ana Costa', email: 'ana@empresa.com', cargo: 'Vendedor' },
-    { id: '3', nome: 'Pedro Souza', email: 'pedro@empresa.com', cargo: 'Vendedor' }
-  ],
-  createdAt: '2024-01-20'
-};
+import { useGrupoHierarquico, deleteGrupoHierarquico } from '@/hooks/useGruposHierarquicos';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { useToast } from '@/hooks/use-toast';
+import { useState } from 'react';
 
 export default function GrupoHierarquicoDetalhePage() {
   const params = useParams();
-  const [grupo, setGrupo] = useState(mockGrupo);
-  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+  const id = params.id as string;
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const { toast } = useToast();
+  
+  const { grupo, loading, error } = useGrupoHierarquico(id);
 
-  useEffect(() => {
-    // Simulando busca do grupo pelo ID
-    const fetchGrupo = async () => {
-      // Aqui você faria a chamada API para buscar o grupo
-      // const response = await fetch(`/api/grupos-hierarquicos/${params.id}`);
-      // const data = await response.json();
-      
-      // Por enquanto, usando dados mockados
-      setTimeout(() => {
-        setLoading(false);
-      }, 500);
-    };
+  const handleDeleteClick = () => {
+    setDeleteDialogOpen(true);
+  };
 
-    fetchGrupo();
-  }, [params.id]);
+  const handleDeleteConfirm = async () => {
+    if (!grupo) return;
+
+    setIsDeleting(true);
+    try {
+      await deleteGrupoHierarquico(grupo.id);
+      toast({
+        title: 'Sucesso',
+        description: 'Grupo hierárquico excluído com sucesso.',
+      });
+      router.push('/grupos-hierarquicos');
+    } catch (error: any) {
+      toast({
+        title: 'Erro',
+        description: error.message || 'Erro ao excluir grupo hierárquico.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsDeleting(false);
+      setDeleteDialogOpen(false);
+    }
+  };
 
   if (loading) {
     return (
       <MainLayout>
         <div className="flex items-center justify-center h-64">
-          <div>Carregando...</div>
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+      </MainLayout>
+    );
+  }
+
+  if (error || !grupo) {
+    return (
+      <MainLayout>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <h2 className="text-lg font-semibold mb-2">Grupo não encontrado</h2>
+            <p className="text-muted-foreground mb-4">O grupo hierárquico solicitado não foi encontrado.</p>
+            <Link href="/grupos-hierarquicos">
+              <Button variant="outline">
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Voltar para Grupos
+              </Button>
+            </Link>
+          </div>
         </div>
       </MainLayout>
     );
@@ -86,12 +109,21 @@ export default function GrupoHierarquicoDetalhePage() {
               </div>
             </div>
           </div>
-          <Link href={`/grupos-hierarquicos/${grupo.id}/editar`}>
-            <Button>
-              <Edit className="mr-2 h-4 w-4" />
-              Editar
+          <div className="flex space-x-2">
+            <Link href={`/grupos-hierarquicos/${grupo.id}/editar`}>
+              <Button>
+                <Edit className="mr-2 h-4 w-4" />
+                Editar
+              </Button>
+            </Link>
+            <Button 
+              variant="destructive" 
+              onClick={handleDeleteClick}
+            >
+              <Trash2 className="mr-2 h-4 w-4" />
+              Excluir Grupo
             </Button>
-          </Link>
+          </div>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2">
@@ -103,7 +135,7 @@ export default function GrupoHierarquicoDetalhePage() {
             <CardContent className="space-y-4">
               <div className="flex items-center space-x-2">
                 <span className="font-medium">Descrição:</span>
-                <span>{grupo.descricao}</span>
+                <span>{grupo.descricao || 'Sem descrição'}</span>
               </div>
               <div className="flex items-center space-x-2">
                 <span className="font-medium">Status:</span>
@@ -136,28 +168,28 @@ export default function GrupoHierarquicoDetalhePage() {
                   <Building2 className="h-4 w-4 text-muted-foreground" />
                   <span>Subgrupos</span>
                 </div>
-                <Badge variant="outline">{grupo.children.length}</Badge>
+                <Badge variant="outline">{grupo.children?.length || 0}</Badge>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <Users className="h-4 w-4 text-muted-foreground" />
                   <span>Clientes</span>
                 </div>
-                <Badge variant="outline">{grupo.clientes.length}</Badge>
+                <Badge variant="outline">{grupo.clientes?.length || 0}</Badge>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <UserPlus className="h-4 w-4 text-muted-foreground" />
                   <span>Colaboradores</span>
                 </div>
-                <Badge variant="outline">{grupo.colaboradores.length}</Badge>
+                <Badge variant="outline">{grupo.colaboradores?.length || 0}</Badge>
               </div>
             </CardContent>
           </Card>
         </div>
 
         {/* Subgrupos */}
-        {grupo.children.length > 0 && (
+        {grupo.children && grupo.children.length > 0 && (
           <Card>
             <CardHeader>
               <CardTitle>Subgrupos</CardTitle>
@@ -175,7 +207,7 @@ export default function GrupoHierarquicoDetalhePage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {grupo.children.map((child) => (
+                    {grupo.children?.map((child) => (
                       <TableRow key={child.id}>
                         <TableCell className="font-medium">{child.nome}</TableCell>
                         <TableCell>
@@ -215,21 +247,29 @@ export default function GrupoHierarquicoDetalhePage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {grupo.clientes.map((cliente) => (
-                    <TableRow key={cliente.id}>
-                      <TableCell className="font-medium">{cliente.nome}</TableCell>
-                      <TableCell>{cliente.email}</TableCell>
-                      <TableCell>
-                        <div className="flex items-center space-x-2">
-                          <Link href={`/clientes/${cliente.id}`}>
-                            <Button variant="ghost" size="sm">
-                              Ver Detalhes
-                            </Button>
-                          </Link>
-                        </div>
+                  {grupo.clientes && grupo.clientes.length > 0 ? (
+                    grupo.clientes.map((cliente) => (
+                      <TableRow key={cliente.id}>
+                        <TableCell className="font-medium">{cliente.nome}</TableCell>
+                        <TableCell>{cliente.email}</TableCell>
+                        <TableCell>
+                          <div className="flex items-center space-x-2">
+                            <Link href={`/clientes/${cliente.id}`}>
+                              <Button variant="ghost" size="sm">
+                                Ver Detalhes
+                              </Button>
+                            </Link>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={3} className="text-center text-muted-foreground">
+                        Nenhum cliente associado a este grupo
                       </TableCell>
                     </TableRow>
-                  ))}
+                  )}
                 </TableBody>
               </Table>
             </div>
@@ -256,22 +296,30 @@ export default function GrupoHierarquicoDetalhePage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {grupo.colaboradores.map((colaborador) => (
-                    <TableRow key={colaborador.id}>
-                      <TableCell className="font-medium">{colaborador.nome}</TableCell>
-                      <TableCell>{colaborador.email}</TableCell>
-                      <TableCell>{colaborador.cargo}</TableCell>
-                      <TableCell>
-                        <div className="flex items-center space-x-2">
-                          <Link href={`/colaboradores/${colaborador.id}`}>
-                            <Button variant="ghost" size="sm">
-                              Ver Detalhes
-                            </Button>
-                          </Link>
-                        </div>
+                  {grupo.colaboradores && grupo.colaboradores.length > 0 ? (
+                    grupo.colaboradores.map((colaborador) => (
+                      <TableRow key={colaborador.id}>
+                        <TableCell className="font-medium">{colaborador.nome}</TableCell>
+                        <TableCell>{colaborador.email}</TableCell>
+                        <TableCell>{colaborador.cargo}</TableCell>
+                        <TableCell>
+                          <div className="flex items-center space-x-2">
+                            <Link href={`/colaboradores/${colaborador.id}`}>
+                              <Button variant="ghost" size="sm">
+                                Ver Detalhes
+                              </Button>
+                            </Link>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={4} className="text-center text-muted-foreground">
+                        Nenhum colaborador associado a este grupo
                       </TableCell>
                     </TableRow>
-                  ))}
+                  )}
                 </TableBody>
               </Table>
             </div>
@@ -299,6 +347,35 @@ export default function GrupoHierarquicoDetalhePage() {
           </CardContent>
         </Card>
       </div>
+
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirmar Exclusão</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja excluir o grupo hierárquico "{grupo?.nome}"?
+              Esta ação não pode ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteConfirm}
+              disabled={isDeleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {isDeleting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Excluindo...
+                </>
+              ) : (
+                'Excluir'
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </MainLayout>
   );
 }

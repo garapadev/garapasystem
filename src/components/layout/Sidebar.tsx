@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/hooks/useAuth';
 import { 
   Users, 
   Building2, 
@@ -10,21 +11,95 @@ import {
   UserCircle, 
   Home,
   Settings,
-  BarChart3
+  BarChart3,
+  Key
 } from 'lucide-react';
 
-const navigation = [
+interface NavigationItem {
+  name: string;
+  href: string;
+  icon: any;
+  requiredPermission?: {
+    recurso: string;
+    acao: string;
+  };
+  requireAdmin?: boolean;
+}
+
+const navigation: NavigationItem[] = [
   { name: 'Dashboard', href: '/', icon: Home },
-  { name: 'Clientes', href: '/clientes', icon: Users },
-  { name: 'Grupos Hierárquicos', href: '/grupos-hierarquicos', icon: Building2 },
-  { name: 'Permissões', href: '/permissoes', icon: Shield },
-  { name: 'Colaboradores', href: '/colaboradores', icon: UserCircle },
-  { name: 'Relatórios', href: '/relatorios', icon: BarChart3 },
-  { name: 'Configurações', href: '/configuracoes', icon: Settings },
+  { 
+    name: 'Clientes', 
+    href: '/clientes', 
+    icon: Users,
+    requiredPermission: { recurso: 'clientes', acao: 'ler' }
+  },
+  { 
+    name: 'Colaboradores', 
+    href: '/colaboradores', 
+    icon: UserCircle,
+    requiredPermission: { recurso: 'colaboradores', acao: 'ler' }
+  },
+  { 
+    name: 'Grupos Hierárquicos', 
+    href: '/grupos-hierarquicos', 
+    icon: Building2,
+    requiredPermission: { recurso: 'grupos', acao: 'ler' }
+  },
+  { 
+    name: 'Perfis', 
+    href: '/perfis', 
+    icon: Key,
+    requiredPermission: { recurso: 'perfis', acao: 'ler' }
+  },
+  { 
+    name: 'Permissões', 
+    href: '/permissoes', 
+    icon: Shield,
+    requiredPermission: { recurso: 'permissoes', acao: 'ler' }
+  },
+  { 
+    name: 'Usuários', 
+    href: '/usuarios', 
+    icon: UserCircle,
+    requiredPermission: { recurso: 'usuarios', acao: 'ler' }
+  },
+  { 
+    name: 'Relatórios', 
+    href: '/relatorios', 
+    icon: BarChart3,
+    requireAdmin: true
+  },
+  { 
+    name: 'Configurações', 
+    href: '/configuracoes', 
+    icon: Settings,
+    requireAdmin: true
+  },
 ];
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { hasPermission, isAdmin, isAuthenticated } = useAuth();
+
+  if (!isAuthenticated) {
+    return null;
+  }
+
+  const filteredNavigation = navigation.filter((item) => {
+    // Dashboard é sempre visível
+    if (item.href === '/') return true;
+    
+    // Verificar se requer admin
+    if (item.requireAdmin && !isAdmin) return false;
+    
+    // Verificar permissão específica
+    if (item.requiredPermission) {
+      return hasPermission(item.requiredPermission.recurso, item.requiredPermission.acao);
+    }
+    
+    return true;
+  });
 
   return (
     <div className="flex h-full w-64 flex-col bg-gray-50 border-r">
@@ -32,7 +107,7 @@ export function Sidebar() {
         <h1 className="text-xl font-semibold text-gray-900">CRM/ERP</h1>
       </div>
       <nav className="flex-1 space-y-1 px-3 py-4">
-        {navigation.map((item) => {
+        {filteredNavigation.map((item) => {
           const isActive = pathname === item.href || 
             (item.href !== '/' && pathname.startsWith(item.href));
           

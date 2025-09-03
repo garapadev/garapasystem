@@ -1,60 +1,58 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { ArrowLeft, Edit, UserCircle, Mail, Phone, Building2, Shield, Calendar, Hash, Briefcase } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { ArrowLeft, Edit, UserCircle, Mail, Phone, Building2, Shield, Calendar, Hash, Briefcase, Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import { useColaborador } from '@/hooks/useColaboradores';
 
-// Dados mockados para exemplo
-const mockColaborador = {
-  id: '1',
-  nome: 'Carlos Oliveira',
-  email: 'carlos.oliveira@empresa.com',
-  telefone: '(11) 99999-9999',
-  documento: '123.456.789-00',
-  cargo: 'Gerente de Vendas',
-  dataAdmissao: '2023-01-15',
-  ativo: true,
-  perfil: { id: '2', nome: 'Gerente de Vendas', descricao: 'Gerencia equipe de vendas' },
-  grupoHierarquico: { id: '2', nome: 'Vendas', descricao: 'Equipe de vendas e comerciais' },
-  createdAt: '2024-01-15',
-  clientes: [
-    { id: '1', nome: 'João Silva', email: 'joao@email.com' },
-    { id: '2', nome: 'Empresa ABC', email: 'contato@abc.com' }
-  ]
-};
+
 
 export default function ColaboradorDetalhePage() {
   const params = useParams();
-  const [colaborador, setColaborador] = useState(mockColaborador);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // Simulando busca do colaborador pelo ID
-    const fetchColaborador = async () => {
-      // Aqui você faria a chamada API para buscar o colaborador
-      // const response = await fetch(`/api/colaboradores/${params.id}`);
-      // const data = await response.json();
-      
-      // Por enquanto, usando dados mockados
-      setTimeout(() => {
-        setLoading(false);
-      }, 500);
-    };
-
-    fetchColaborador();
-  }, [params.id]);
+  const { colaborador, loading, error } = useColaborador(params.id as string);
 
   if (loading) {
     return (
       <MainLayout>
         <div className="flex items-center justify-center h-64">
-          <div>Carregando...</div>
+          <div className="text-center">
+            <Loader2 className="h-8 w-8 animate-spin mx-auto" />
+            <p className="mt-2 text-gray-600">Carregando colaborador...</p>
+          </div>
+        </div>
+      </MainLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <MainLayout>
+        <div className="flex items-center justify-center h-64">
+          <Alert variant="destructive" className="max-w-md">
+            <AlertDescription>
+              Erro ao carregar colaborador: {error}
+            </AlertDescription>
+          </Alert>
+        </div>
+      </MainLayout>
+    );
+  }
+
+  if (!colaborador) {
+    return (
+      <MainLayout>
+        <div className="flex items-center justify-center h-64">
+          <Alert className="max-w-md">
+            <AlertDescription>
+              Colaborador não encontrado.
+            </AlertDescription>
+          </Alert>
         </div>
       </MainLayout>
     );
@@ -232,7 +230,7 @@ export default function ColaboradorDetalhePage() {
         )}
 
         {/* Clientes Associados */}
-        {colaborador.clientes.length > 0 && (
+        {colaborador.clientes?.length > 0 && (
           <Card>
             <CardHeader>
               <CardTitle>Clientes Associados</CardTitle>
@@ -251,21 +249,29 @@ export default function ColaboradorDetalhePage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {colaborador.clientes.map((cliente) => (
-                      <TableRow key={cliente.id}>
-                        <TableCell className="font-medium">{cliente.nome}</TableCell>
-                        <TableCell>{cliente.email}</TableCell>
-                        <TableCell>
-                          <div className="flex items-center space-x-2">
-                            <Link href={`/clientes/${cliente.id}`}>
-                              <Button variant="ghost" size="sm">
-                                Ver Detalhes
-                              </Button>
-                            </Link>
-                          </div>
+                    {colaborador.clientes?.length ? (
+                      colaborador.clientes.map((cliente) => (
+                        <TableRow key={cliente.id}>
+                          <TableCell className="font-medium">{cliente.nome}</TableCell>
+                          <TableCell>{cliente.email}</TableCell>
+                          <TableCell>
+                            <div className="flex items-center space-x-2">
+                              <Link href={`/clientes/${cliente.id}`}>
+                                <Button variant="ghost" size="sm">
+                                  Ver Detalhes
+                                </Button>
+                              </Link>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={3} className="text-center text-muted-foreground">
+                          Nenhum cliente atribuído
                         </TableCell>
                       </TableRow>
-                    ))}
+                    )}
                   </TableBody>
                 </Table>
               </div>

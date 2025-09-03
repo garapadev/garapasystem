@@ -9,34 +9,56 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Save, Building2 } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { ArrowLeft, Save, Building2, Loader2 } from 'lucide-react';
 import Link from 'next/link';
-
-// Dados mockados para grupos existentes
-const mockGrupos = [
-  { id: '1', nome: 'Diretoria' },
-  { id: '2', nome: 'Vendas' },
-  { id: '3', nome: 'TI' },
-  { id: '4', nome: 'RH' },
-];
+import { createGrupoHierarquico, useAllGruposHierarquicos } from '@/hooks/useGruposHierarquicos';
+import { useToast } from '@/hooks/use-toast';
 
 export default function NovoGrupoHierarquicoPage() {
   const router = useRouter();
+  const { toast } = useToast();
+  const { data: grupos, isLoading: gruposLoading } = useAllGruposHierarquicos();
+  
   const [formData, setFormData] = useState({
     nome: '',
     descricao: '',
     ativo: true,
     parentId: ''
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Aqui você implementaria a lógica para salvar o grupo
-    console.log('Salvando grupo:', formData);
-    // Simulando salvamento e redirecionamento
-    setTimeout(() => {
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      await createGrupoHierarquico({
+        nome: formData.nome,
+        descricao: formData.descricao || undefined,
+        ativo: formData.ativo,
+        parentId: formData.parentId || undefined
+      });
+
+      toast({
+        title: "Sucesso",
+        description: "Grupo hierárquico criado com sucesso.",
+      });
+
       router.push('/grupos-hierarquicos');
-    }, 1000);
+    } catch (error) {
+      console.error('Erro ao criar grupo:', error);
+      setError('Erro ao criar grupo hierárquico. Tente novamente.');
+      toast({
+        title: "Erro",
+        description: "Erro ao criar grupo hierárquico.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (field: string, value: string | boolean) => {
@@ -66,6 +88,12 @@ export default function NovoGrupoHierarquicoPage() {
             </div>
           </div>
         </div>
+
+        {error && (
+          <Alert variant="destructive">
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
 
         <form onSubmit={handleSubmit}>
           <div className="grid gap-6 md:grid-cols-2">
@@ -125,13 +153,13 @@ export default function NovoGrupoHierarquicoPage() {
               <CardContent className="space-y-4">
                 <div>
                   <Label htmlFor="parentId">Grupo Superior</Label>
-                  <Select value={formData.parentId} onValueChange={(value) => handleChange('parentId', value)}>
+                  <Select value={formData.parentId} onValueChange={(value) => handleChange('parentId', value)} disabled={gruposLoading}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Selecione o grupo superior (opcional)" />
+                      <SelectValue placeholder={gruposLoading ? "Carregando grupos..." : "Selecione o grupo superior (opcional)"} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="">Nenhum (Grupo Raiz)</SelectItem>
-                      {mockGrupos.map((grupo) => (
+                      {grupos?.map((grupo) => (
                         <SelectItem key={grupo.id} value={grupo.id}>
                           {grupo.nome}
                         </SelectItem>
@@ -157,9 +185,13 @@ export default function NovoGrupoHierarquicoPage() {
             <Link href="/grupos-hierarquicos">
               <Button variant="outline">Cancelar</Button>
             </Link>
-            <Button type="submit">
-              <Save className="mr-2 h-4 w-4" />
-              Salvar Grupo
+            <Button type="submit" disabled={isSubmitting || gruposLoading}>
+              {isSubmitting ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Save className="mr-2 h-4 w-4" />
+              )}
+              {isSubmitting ? 'Salvando...' : 'Salvar Grupo'}
             </Button>
           </div>
         </form>
