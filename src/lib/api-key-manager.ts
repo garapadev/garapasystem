@@ -55,7 +55,7 @@ export class ApiKeyManager {
         data: {
           nome: options.nome,
           chave: chaveHash,
-          permissoes: options.permissoes,
+          permissoes: options.permissoes ? JSON.stringify(options.permissoes) : null,
           expiresAt: options.expiresAt,
           limiteTaxa: options.limiteTaxa,
           descricao: options.descricao,
@@ -68,7 +68,7 @@ export class ApiKeyManager {
         nome: apiKey.nome,
         chave, // Retorna a chave original apenas na criação
         chaveHash: apiKey.chave,
-        permissoes: apiKey.permissoes,
+        permissoes: apiKey.permissoes ? JSON.parse(apiKey.permissoes) : [],
         ativo: apiKey.ativo,
         expiresAt: apiKey.expiresAt,
         limiteTaxa: apiKey.limiteTaxa,
@@ -95,7 +95,7 @@ export class ApiKeyManager {
       return apiKeys.map(key => ({
         id: key.id,
         nome: key.nome,
-        permissoes: key.permissoes,
+        permissoes: key.permissoes ? JSON.parse(key.permissoes) : [],
         ativo: key.ativo,
         expiresAt: key.expiresAt,
         limiteTaxa: key.limiteTaxa,
@@ -126,7 +126,7 @@ export class ApiKeyManager {
       return {
         id: apiKey.id,
         nome: apiKey.nome,
-        permissoes: apiKey.permissoes,
+        permissoes: apiKey.permissoes ? JSON.parse(apiKey.permissoes) : [],
         ativo: apiKey.ativo,
         expiresAt: apiKey.expiresAt,
         limiteTaxa: apiKey.limiteTaxa,
@@ -149,15 +149,21 @@ export class ApiKeyManager {
     updates: Partial<Pick<CreateApiKeyOptions, 'nome' | 'permissoes' | 'expiresAt' | 'limiteTaxa' | 'descricao'>>
   ): Promise<Omit<ApiKeyInfo, 'chave' | 'chaveHash'>> {
     try {
+      // Converte permissoes para JSON string se fornecido
+      const dataToUpdate = {
+        ...updates,
+        ...(updates.permissoes && { permissoes: JSON.stringify(updates.permissoes) })
+      };
+
       const apiKey = await db.apiKey.update({
         where: { id },
-        data: updates
+        data: dataToUpdate
       });
 
       return {
         id: apiKey.id,
         nome: apiKey.nome,
-        permissoes: apiKey.permissoes,
+        permissoes: apiKey.permissoes ? JSON.parse(apiKey.permissoes) : [],
         ativo: apiKey.ativo,
         expiresAt: apiKey.expiresAt,
         limiteTaxa: apiKey.limiteTaxa,
@@ -261,7 +267,7 @@ export class ApiKeyManager {
         apiKey: {
           id: apiKey.id,
           nome: apiKey.nome,
-          permissoes: apiKey.permissoes,
+          permissoes: apiKey.permissoes ? JSON.parse(apiKey.permissoes) : [],
           ativo: apiKey.ativo,
           expiresAt: apiKey.expiresAt,
           limiteTaxa: apiKey.limiteTaxa,
@@ -311,7 +317,7 @@ export class ApiKeyManager {
         nome: apiKey.nome,
         chave: novaChave, // Retorna a nova chave
         chaveHash: apiKey.chave,
-        permissoes: apiKey.permissoes,
+        permissoes: apiKey.permissoes ? JSON.parse(apiKey.permissoes) : [],
         ativo: apiKey.ativo,
         expiresAt: apiKey.expiresAt,
         limiteTaxa: apiKey.limiteTaxa,

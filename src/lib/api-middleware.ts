@@ -123,7 +123,7 @@ export class ApiMiddleware {
         apiKey: {
           id: apiKey.id,
           nome: apiKey.nome,
-          permissoes: apiKey.permissoes,
+          permissoes: apiKey.permissoes ? JSON.parse(apiKey.permissoes) : [],
           limiteTaxa: apiKey.limiteTaxa || undefined
         }
       };
@@ -194,14 +194,46 @@ export class ApiMiddleware {
   /**
    * Verifica se a chave de API tem permissão para acessar um endpoint
    */
-  static hasPermission(apiKey: { permissoes: string[] }, endpoint: string, method: string): boolean {
+  static hasPermission(apiKey: { permissoes: string[] | string }, endpoint: string, method: string): boolean {
+    // Converte permissoes para array se for string
+    let permissoes: string[] = [];
+    
+    try {
+      if (typeof apiKey.permissoes === 'string') {
+        permissoes = JSON.parse(apiKey.permissoes || '[]');
+      } else if (Array.isArray(apiKey.permissoes)) {
+        permissoes = apiKey.permissoes;
+      }
+    } catch (error) {
+      console.error('Erro ao converter permissões:', error, 'Valor:', apiKey.permissoes);
+      permissoes = [];
+    }
+    
+    // Garante que permissoes é um array
+    if (!Array.isArray(permissoes)) {
+      console.error('Permissões não é um array:', permissoes);
+      permissoes = [];
+    }
+    
     // Se tem permissão de admin, permite tudo
-    if (apiKey.permissoes.includes('admin')) {
+    if (permissoes.includes('admin')) {
       return true;
     }
 
     // Mapeia endpoints para permissões necessárias
     const endpointPermissions: Record<string, string[]> = {
+      // API Keys
+      'GET:/api/api-keys': ['admin'],
+      'POST:/api/api-keys': ['admin'],
+      'PUT:/api/api-keys': ['admin'],
+      'DELETE:/api/api-keys': ['admin'],
+      
+      // Webhooks
+      'GET:/api/webhooks': ['admin'],
+      'POST:/api/webhooks': ['admin'],
+      'PUT:/api/webhooks': ['admin'],
+      'DELETE:/api/webhooks': ['admin'],
+      
       // Clientes
       'GET:/api/clientes': ['clientes.read', 'clientes.write'],
       'POST:/api/clientes': ['clientes.write'],
@@ -239,7 +271,7 @@ export class ApiMiddleware {
     
     // Verifica se tem pelo menos uma das permissões necessárias
     return requiredPermissions.some(permission => 
-      apiKey.permissoes.includes(permission)
+      permissoes.includes(permission)
     );
   }
 

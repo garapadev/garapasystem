@@ -5,11 +5,12 @@ export interface WebhookConfig {
   id: string;
   nome: string;
   url: string;
-  evento: string;
+  eventos: string;
   ativo: boolean;
   secret?: string;
   headers?: string;
-  ultimoEnvio?: Date;
+  timeout?: number;
+  retries?: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -17,19 +18,23 @@ export interface WebhookConfig {
 export interface CreateWebhookData {
   nome: string;
   url: string;
-  evento: string;
+  eventos: string[];
   secret?: string;
   headers?: object;
   ativo?: boolean;
+  timeout?: number;
+  retries?: number;
 }
 
 export interface UpdateWebhookData {
   nome?: string;
   url?: string;
-  evento?: string;
+  eventos?: string[];
   ativo?: boolean;
   secret?: string;
   headers?: object;
+  timeout?: number;
+  retries?: number;
 }
 
 export interface WebhookTestResult {
@@ -58,7 +63,7 @@ export function useWebhooks() {
       }
       
       const data = await response.json();
-      setWebhooks(data);
+      setWebhooks(data.webhooks || []);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erro desconhecido';
       setError(errorMessage);
@@ -70,6 +75,9 @@ export function useWebhooks() {
 
   const createWebhook = async (data: CreateWebhookData): Promise<WebhookConfig | null> => {
     try {
+      console.log('Dados sendo enviados para a API:', data);
+      console.log('JSON stringified:', JSON.stringify(data));
+      
       const response = await fetch('/api/webhooks', {
         method: 'POST',
         headers: {

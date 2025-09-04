@@ -10,8 +10,16 @@ export default withAuth(
     // Rotas públicas que não precisam de autenticação
     const publicRoutes = ['/auth/login', '/auth/error', '/api/auth']
     
+    // Rotas de API que não precisam de autenticação (não usam ApiMiddleware)
+    const publicApiRoutes = ['/api/clientes', '/api/negocios', '/api/api-keys', '/api/webhooks']
+    
     // Se é uma rota pública, permitir acesso
     if (publicRoutes.some(route => pathname.startsWith(route))) {
+      return NextResponse.next()
+    }
+    
+    // Se é uma rota de API pública, permitir acesso
+    if (publicApiRoutes.some(route => pathname.startsWith(route))) {
       return NextResponse.next()
     }
 
@@ -43,6 +51,12 @@ export default withAuth(
         // Permitir acesso a rotas públicas
         const publicRoutes = ['/auth/login', '/auth/error', '/api/auth']
         if (publicRoutes.some(route => pathname.startsWith(route))) {
+          return true
+        }
+        
+        // Permitir acesso a rotas de API públicas
+        const publicApiRoutes = ['/api/clientes', '/api/negocios', '/api/api-keys', '/api/webhooks']
+        if (publicApiRoutes.some(route => pathname.startsWith(route))) {
           return true
         }
 

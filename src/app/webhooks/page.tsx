@@ -1,7 +1,10 @@
 'use client';
 
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
 import {
   Table,
   TableBody,
@@ -16,7 +19,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Plus, MoreHorizontal, Edit, Trash2, Play, CheckCircle, XCircle, Clock, Webhook, ExternalLink } from 'lucide-react';
+import { Plus, MoreHorizontal, Edit, Trash2, Play, CheckCircle, XCircle, Clock, Webhook, Search } from 'lucide-react';
 import { useWebhooks } from '@/hooks/useWebhooks';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
@@ -47,8 +50,9 @@ function getStatusIcon(status: boolean) {
   );
 }
 
-export function WebhooksSection() {
+export default function WebhooksPage() {
   const { webhooks, loading, deleteWebhook, toggleWebhookStatus } = useWebhooks();
+  const [searchTerm, setSearchTerm] = useState('');
   const router = useRouter();
 
   const handleDeleteWebhook = async (id: string) => {
@@ -57,54 +61,59 @@ export function WebhooksSection() {
     }
   };
 
+  const filteredWebhooks = webhooks.filter(webhook =>
+    webhook.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    webhook.url.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   if (loading) {
     return (
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-2xl font-bold">Webhooks</h2>
-            <p className="text-muted-foreground">
-              Configure webhooks para receber notificações de eventos do sistema.
-            </p>
+      <div className="container mx-auto py-6">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Carregando webhooks...</p>
           </div>
-          <div className="animate-pulse bg-muted h-10 w-32 rounded"></div>
         </div>
-        <div className="animate-pulse bg-muted h-64 rounded"></div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="container mx-auto py-6">
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-2xl font-bold">Webhooks</h2>
-          <p className="text-muted-foreground">
+          <h1 className="text-3xl font-bold">Webhooks</h1>
+          <p className="text-muted-foreground mt-2">
             Configure webhooks para receber notificações de eventos do sistema.
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <Link href="/webhooks">
-            <Button variant="outline" size="sm">
-              <ExternalLink className="mr-2 h-4 w-4" />
-              Ver Todos
-            </Button>
-          </Link>
-          <Link href="/webhooks/novo">
-            <Button>
-              <Plus className="mr-2 h-4 w-4" />
-              Novo Webhook
-            </Button>
-          </Link>
+        <Link href="/webhooks/novo">
+          <Button>
+            <Plus className="mr-2 h-4 w-4" />
+            Novo Webhook
+          </Button>
+        </Link>
+      </div>
+
+      <div className="flex items-center gap-4 mb-6">
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+          <Input
+            placeholder="Buscar webhooks..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10"
+          />
         </div>
       </div>
 
-      {webhooks.length === 0 ? (
-        <div className="text-center py-12 border rounded-lg">
+      {filteredWebhooks.length === 0 ? (
+        <div className="text-center py-12">
           <Webhook className="mx-auto h-12 w-12 mb-4 text-muted-foreground" />
-          <h3 className="text-lg font-semibold mb-2">Nenhum webhook configurado</h3>
+          <h3 className="text-lg font-semibold mb-2">Nenhum webhook encontrado</h3>
           <p className="text-muted-foreground mb-4">
-            Configure webhooks para receber notificações automáticas de eventos do sistema.
+            {searchTerm ? 'Nenhum webhook corresponde à sua busca.' : 'Você ainda não configurou nenhum webhook.'}
           </p>
           <Link href="/webhooks/novo">
             <Button>
@@ -127,7 +136,7 @@ export function WebhooksSection() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {webhooks.slice(0, 5).map((webhook) => {
+              {filteredWebhooks.map((webhook) => {
                 const eventos = Array.isArray(webhook.eventos) 
                   ? webhook.eventos 
                   : JSON.parse(webhook.eventos || '[]');
@@ -140,16 +149,11 @@ export function WebhooksSection() {
                     </TableCell>
                     <TableCell>
                       <div className="flex flex-wrap gap-1">
-                        {eventos.slice(0, 2).map((evento: string) => (
+                        {eventos.map((evento: string) => (
                           <Badge key={evento} variant="secondary" className="text-xs">
                             {getEventLabel(evento)}
                           </Badge>
                         ))}
-                        {eventos.length > 2 && (
-                          <Badge variant="outline" className="text-xs">
-                            +{eventos.length - 2}
-                          </Badge>
-                        )}
                       </div>
                     </TableCell>
                     <TableCell>
@@ -210,21 +214,6 @@ export function WebhooksSection() {
               })}
             </TableBody>
           </Table>
-          
-          {webhooks.length > 5 && (
-            <div className="p-4 border-t bg-muted/50">
-              <div className="flex items-center justify-between">
-                <p className="text-sm text-muted-foreground">
-                  Mostrando 5 de {webhooks.length} webhooks
-                </p>
-                <Link href="/webhooks">
-                  <Button variant="outline" size="sm">
-                    Ver Todos
-                  </Button>
-                </Link>
-              </div>
-            </div>
-          )}
         </div>
       )}
     </div>

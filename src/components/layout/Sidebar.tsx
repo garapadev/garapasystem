@@ -15,7 +15,9 @@ import {
   Key,
   Menu,
   X,
-  TrendingUp
+  TrendingUp,
+  Webhook,
+  KeyRound
 } from 'lucide-react';
 
 interface NavigationItem {
@@ -72,6 +74,18 @@ const navigation: NavigationItem[] = [
     href: '/usuarios', 
     icon: UserCircle,
     requiredPermission: { recurso: 'usuarios', acao: 'ler' }
+  },
+  { 
+    name: 'Webhooks', 
+    href: '/webhooks', 
+    icon: Webhook,
+    requiredPermission: { recurso: 'webhooks', acao: 'ler' }
+  },
+  { 
+    name: 'Chaves de API', 
+    href: '/chaves-api', 
+    icon: KeyRound,
+    requiredPermission: { recurso: 'api_keys', acao: 'ler' }
   },
   { 
     name: 'Configurações', 
