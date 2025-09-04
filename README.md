@@ -1,8 +1,8 @@
-# 🚀 GSMVP30 - Sistema de Gestão Empresarial
+# 🚀 GarapaSystem - Sistema de Gestão Empresarial
 
 **Plataforma Moderna de Gestão Empresarial**
 
-O GSMVP30 é um sistema de gestão empresarial desenvolvido com Next.js 15 e TypeScript, implementando arquitetura Domain-Driven Design (DDD). A plataforma oferece funcionalidades completas para administração de usuários, clientes, colaboradores e processos de negócio, com interface moderna e comunicação em tempo real.
+O GarapaSystem é um sistema de gestão empresarial desenvolvido com Next.js 15 e TypeScript, implementando arquitetura Domain-Driven Design (DDD). A plataforma oferece funcionalidades completas para administração de usuários, clientes, colaboradores e processos de negócio, com interface moderna e comunicação em tempo real.
 
 ## ✨ Principais Funcionalidades
 
@@ -230,7 +230,7 @@ const response = await fetch('/api/negocios', {
 ## 📁 Estrutura do Projeto
 
 ```
-GSMVP30/
+GarapaSystem/
 ├── 📁 backup/                 # Backups de sanitização
 ├── 📁 docs/                   # Documentação do projeto
 ├── 📁 prisma/                 # Configuração do banco de dados
@@ -626,6 +626,6 @@ Todos os arquivos removidos foram preservados em backup. Consulte o arquivo `SAN
 
 ---
 
-**GSMVP30** - Sistema de gestão empresarial moderno e eficiente 🚀
+**GarapaSystem** - Sistema de gestão empresarial moderno e eficiente 🚀
 
 *Desenvolvido com ❤️ pela equipe GarapaDev*
