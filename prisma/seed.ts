@@ -9,74 +9,152 @@ async function main() {
   // Criar permissões básicas
   console.log('📋 Criando permissões...')
   const permissoes = await Promise.all([
+    // Dashboard
     prisma.permissao.upsert({
-      where: { nome: 'dashboard_view' },
+      where: { nome: 'dashboard_ler' },
       update: {},
       create: {
-        nome: 'dashboard_view',
+        nome: 'dashboard_ler',
         descricao: 'Visualizar dashboard',
         recurso: 'dashboard',
-        acao: 'view'
+        acao: 'ler'
       }
     }),
+    // Clientes
     prisma.permissao.upsert({
-      where: { nome: 'usuarios_view' },
+      where: { nome: 'clientes_ler' },
       update: {},
       create: {
-        nome: 'usuarios_view',
-        descricao: 'Visualizar usuários',
-        recurso: 'usuarios',
-        acao: 'view'
-      }
-    }),
-    prisma.permissao.upsert({
-      where: { nome: 'usuarios_create' },
-      update: {},
-      create: {
-        nome: 'usuarios_create',
-        descricao: 'Criar usuários',
-        recurso: 'usuarios',
-        acao: 'create'
-      }
-    }),
-    prisma.permissao.upsert({
-      where: { nome: 'usuarios_edit' },
-      update: {},
-      create: {
-        nome: 'usuarios_edit',
-        descricao: 'Editar usuários',
-        recurso: 'usuarios',
-        acao: 'edit'
-      }
-    }),
-    prisma.permissao.upsert({
-      where: { nome: 'usuarios_delete' },
-      update: {},
-      create: {
-        nome: 'usuarios_delete',
-        descricao: 'Deletar usuários',
-        recurso: 'usuarios',
-        acao: 'delete'
-      }
-    }),
-    prisma.permissao.upsert({
-      where: { nome: 'clientes_view' },
-      update: {},
-      create: {
-        nome: 'clientes_view',
+        nome: 'clientes_ler',
         descricao: 'Visualizar clientes',
         recurso: 'clientes',
-        acao: 'view'
+        acao: 'ler'
       }
     }),
     prisma.permissao.upsert({
-      where: { nome: 'colaboradores_view' },
+      where: { nome: 'clientes_criar' },
       update: {},
       create: {
-        nome: 'colaboradores_view',
+        nome: 'clientes_criar',
+        descricao: 'Criar clientes',
+        recurso: 'clientes',
+        acao: 'criar'
+      }
+    }),
+    // Colaboradores
+    prisma.permissao.upsert({
+      where: { nome: 'colaboradores_ler' },
+      update: {},
+      create: {
+        nome: 'colaboradores_ler',
         descricao: 'Visualizar colaboradores',
         recurso: 'colaboradores',
-        acao: 'view'
+        acao: 'ler'
+      }
+    }),
+    prisma.permissao.upsert({
+      where: { nome: 'colaboradores_criar' },
+      update: {},
+      create: {
+        nome: 'colaboradores_criar',
+        descricao: 'Criar colaboradores',
+        recurso: 'colaboradores',
+        acao: 'criar'
+      }
+    }),
+    // Grupos
+    prisma.permissao.upsert({
+      where: { nome: 'grupos_ler' },
+      update: {},
+      create: {
+        nome: 'grupos_ler',
+        descricao: 'Visualizar grupos hierárquicos',
+        recurso: 'grupos',
+        acao: 'ler'
+      }
+    }),
+    prisma.permissao.upsert({
+      where: { nome: 'grupos_criar' },
+      update: {},
+      create: {
+        nome: 'grupos_criar',
+        descricao: 'Criar grupos hierárquicos',
+        recurso: 'grupos',
+        acao: 'criar'
+      }
+    }),
+    // Perfis
+    prisma.permissao.upsert({
+      where: { nome: 'perfis_ler' },
+      update: {},
+      create: {
+        nome: 'perfis_ler',
+        descricao: 'Visualizar perfis',
+        recurso: 'perfis',
+        acao: 'ler'
+      }
+    }),
+    prisma.permissao.upsert({
+      where: { nome: 'perfis_criar' },
+      update: {},
+      create: {
+        nome: 'perfis_criar',
+        descricao: 'Criar perfis',
+        recurso: 'perfis',
+        acao: 'criar'
+      }
+    }),
+    // Permissões
+    prisma.permissao.upsert({
+      where: { nome: 'permissoes_ler' },
+      update: {},
+      create: {
+        nome: 'permissoes_ler',
+        descricao: 'Visualizar permissões',
+        recurso: 'permissoes',
+        acao: 'ler'
+      }
+    }),
+    prisma.permissao.upsert({
+      where: { nome: 'permissoes_criar' },
+      update: {},
+      create: {
+        nome: 'permissoes_criar',
+        descricao: 'Criar permissões',
+        recurso: 'permissoes',
+        acao: 'criar'
+      }
+    }),
+    // Usuários
+    prisma.permissao.upsert({
+      where: { nome: 'usuarios_ler' },
+      update: {},
+      create: {
+        nome: 'usuarios_ler',
+        descricao: 'Visualizar usuários',
+        recurso: 'usuarios',
+        acao: 'ler'
+      }
+    }),
+    prisma.permissao.upsert({
+      where: { nome: 'usuarios_criar' },
+      update: {},
+      create: {
+        nome: 'usuarios_criar',
+        descricao: 'Criar usuários',
+        recurso: 'usuarios',
+        acao: 'criar'
+      }
+    }),
+    // Sistema (admin)
+    prisma.permissao.upsert({
+      where: { nome: 'sistema_administrar' },
+      update: {},
+      create: {
+        nome: 'sistema_administrar',
+        descricao: 'Administrar sistema',
+        recurso: 'sistema',
+        acao: 'administrar'
       }
     })
   ])

@@ -20,6 +20,11 @@ export default withAuth(
       return NextResponse.redirect(new URL('/auth/login', req.url))
     }
 
+    // Se há token e é uma rota da API (exceto /api/auth), permitir acesso
+    if (token && pathname.startsWith('/api/') && !pathname.startsWith('/api/auth')) {
+      return NextResponse.next()
+    }
+
     // Verificar permissões específicas baseadas na rota
     const colaborador = token?.colaborador
     

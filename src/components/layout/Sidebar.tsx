@@ -14,7 +14,8 @@ import {
   Settings,
   Key,
   Menu,
-  X
+  X,
+  TrendingUp
 } from 'lucide-react';
 
 interface NavigationItem {
@@ -35,6 +36,12 @@ const navigation: NavigationItem[] = [
     href: '/clientes', 
     icon: Users,
     requiredPermission: { recurso: 'clientes', acao: 'ler' }
+  },
+  { 
+    name: 'Negócios', 
+    href: '/negocios', 
+    icon: TrendingUp,
+    requiredPermission: { recurso: 'negocios', acao: 'ler' }
   },
   { 
     name: 'Colaboradores', 

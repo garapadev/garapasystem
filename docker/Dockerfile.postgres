@@ -1,0 +1,41 @@
+FROM garapadev/postgres-postgis-pgvector:15
+
+# Instalar Node.js e npm
+RUN apt-get update && apt-get install -y nodejs npm && rm -rf /var/lib/apt/lists/*
+
+# Criar diretório da aplicação
+WORKDIR /app
+
+# Copiar arquivos necessários do Prisma
+COPY ../package*.json ./
+COPY ../prisma/ ./prisma/
+COPY ../tsconfig.json ./
+
+# Instalar dependências necessárias
+RUN npm install --omit=dev
+RUN npm install -g tsx
+
+# Gerar cliente Prisma
+RUN npx prisma generate
+
+# Copiar scripts de inicialização
+COPY docker/init-database.sh /usr/local/bin/
+COPY docker/entrypoint.sh /usr/local/bin/
+COPY docker/init-db.sql /docker-entrypoint-initdb.d/
+
+# Tornar scripts executáveis
+RUN chmod +x /usr/local/bin/init-database.sh && \
+    chmod +x /usr/local/bin/entrypoint.sh
+
+# Configurar variáveis de ambiente
+ENV POSTGRES_DB=crm_erp
+ENV POSTGRES_USER=crm_user
+ENV POSTGRES_PASSWORD=crm_password
+ENV DATABASE_URL="postgresql://crm_user:crm_password@localhost:5432/crm_erp?schema=public"
+
+# Expor porta
+EXPOSE 5432
+
+# Usar entrypoint customizado
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD ["postgres"]

@@ -29,6 +29,9 @@ model Usuario {
   colaboradorId String?  @unique
   colaborador   Colaborador? @relation(fields: [colaboradorId], references: [id])
   
+  // Histórico de oportunidades
+  historicoOportunidades HistoricoOportunidade[]
+  
   @@map("usuarios")
 }
 
@@ -53,6 +56,9 @@ model Cliente {
   // Relacionamentos
   grupoHierarquicoId String?
   grupoHierarquico   GrupoHierarquico? @relation(fields: [grupoHierarquicoId], references: [id])
+  
+  // Oportunidades
+  oportunidades  Oportunidade[]
   
   @@map("clientes")
 }
@@ -142,7 +148,72 @@ model Colaborador {
   grupoHierarquicoId String?
   grupoHierarquico   GrupoHierarquico? @relation(fields: [grupoHierarquicoId], references: [id])
   
+  // Oportunidades como responsável
+  oportunidades  Oportunidade[]
+  
   @@map("colaboradores")
+}
+
+// Pipeline de Negócios
+model EtapaPipeline {
+  id          String   @id @default(cuid())
+  nome        String
+  descricao   String?
+  ordem       Int      // Ordem das etapas no pipeline
+  cor         String?  // Cor para visualização no kanban
+  ativo       Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relacionamentos
+  oportunidades Oportunidade[]
+  
+  @@map("etapas_pipeline")
+}
+
+model Oportunidade {
+  id             String   @id @default(cuid())
+  titulo         String
+  descricao      String?
+  valor          Float?
+  probabilidade  Int?     // Percentual de 0 a 100
+  dataFechamento DateTime?
+  observacoes    String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  
+  // Relacionamentos
+  clienteId      String
+  cliente        Cliente  @relation(fields: [clienteId], references: [id])
+  
+  responsavelId  String?
+  responsavel    Colaborador? @relation(fields: [responsavelId], references: [id])
+  
+  etapaId        String
+  etapa          EtapaPipeline @relation(fields: [etapaId], references: [id])
+  
+  // Histórico
+  historico      HistoricoOportunidade[]
+  
+  @@map("oportunidades")
+}
+
+model HistoricoOportunidade {
+  id            String   @id @default(cuid())
+  acao          String   // "criada", "etapa_alterada", "valor_alterado", etc.
+  valorAnterior String?  // JSON com valores anteriores
+  valorNovo     String?  // JSON com valores novos
+  observacao    String?
+  createdAt     DateTime @default(now())
+  
+  // Relacionamentos
+  oportunidadeId String
+  oportunidade   Oportunidade @relation(fields: [oportunidadeId], references: [id], onDelete: Cascade)
+  
+  usuarioId      String?
+  usuario        Usuario? @relation(fields: [usuarioId], references: [id])
+  
+  @@map("historico_oportunidades")
 }
 
 // Enums

@@ -1,5 +1,5 @@
 // server.ts - Next.js Standalone + Socket.IO
-import { setupSocket } from '@/lib/socket';
+import { setupSocket, setSocketIO } from '@/lib/socket';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import next from 'next';
@@ -23,13 +23,23 @@ async function createCustomServer() {
     const handle = nextApp.getRequestHandler();
 
     // Create HTTP server that will handle both Next.js and Socket.IO
-    const server = createServer((req, res) => {
+    const server = createServer({
+      // Increase limits to prevent 431 errors
+      maxHeaderSize: 32768, // 32KB instead of default 8KB
+      headersTimeout: 60000,
+      requestTimeout: 60000
+    }, (req, res) => {
       // Skip socket.io requests from Next.js handler
       if (req.url?.startsWith('/api/socketio')) {
         return;
       }
       handle(req, res);
     });
+
+    // Additional server configurations
+    server.maxHeadersCount = 0; // No limit on header count
+    server.keepAliveTimeout = 65000;
+    server.headersTimeout = 66000;
 
     // Setup Socket.IO
     const io = new Server(server, {
@@ -40,6 +50,7 @@ async function createCustomServer() {
       }
     });
 
+    setSocketIO(io);
     setupSocket(io);
 
     // Start the server

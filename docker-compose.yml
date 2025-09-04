@@ -1,0 +1,80 @@
+version: '3.8'
+
+services:
+  # Banco de dados PostgreSQL com inicialização automática
+  postgres:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.postgres
+    container_name: crm-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: crm_erp
+      POSTGRES_USER: crm_user
+      POSTGRES_PASSWORD: crm_password
+      DATABASE_URL: "postgresql://crm_user:crm_password@localhost:5432/crm_erp?schema=public"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/init-db.sql:/docker-entrypoint-initdb.d/02-init-db.sql:ro
+    networks:
+      - crm-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U crm_user -d crm_erp"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+
+  # Aplicação Next.js
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: crm-app
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: "postgresql://crm_user:crm_password@postgres:5432/crm_erp?schema=public"
+      NEXTAUTH_SECRET: "your-production-secret-key-here"
+      NEXTAUTH_URL: "http://localhost:3000"
+      PORT: 3000
+      HOSTNAME: "0.0.0.0"
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - crm-network
+    volumes:
+      - ./uploads:/app/uploads
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Adminer para gerenciamento do banco (opcional)
+  adminer:
+    image: adminer:latest
+    container_name: crm-adminer
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    networks:
+      - crm-network
+    depends_on:
+      - postgres
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  crm-network:
+    driver: bridge
