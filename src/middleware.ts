@@ -21,7 +21,7 @@ export default withAuth(
     }
 
     // Verificar permissões específicas baseadas na rota
-    const colaborador = token.colaborador
+    const colaborador = token?.colaborador
     
     // Se o usuário não tem colaborador associado, negar acesso a rotas administrativas
     if (!colaborador && pathname.startsWith('/admin')) {

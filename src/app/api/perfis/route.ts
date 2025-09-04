@@ -39,12 +39,12 @@ export async function GET(request: NextRequest) {
     ]);
 
     return NextResponse.json({
-      perfis,
-      pagination: {
+      data: perfis,
+      meta: {
         page,
         limit,
         total,
-        pages: Math.ceil(total / limit)
+        totalPages: Math.ceil(total / limit)
       }
     });
   } catch (error) {

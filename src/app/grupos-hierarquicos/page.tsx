@@ -66,10 +66,10 @@ export default function GruposHierarquicosPage() {
 
   const buildHierarchy = (grupos: any[], parentId: string | null = null): any[] => {
     return grupos
-      .filter(grupo => grupo.parent === parentId)
+      .filter(grupo => grupo.parentId === parentId)
       .map(grupo => ({
         ...grupo,
-        children: buildHierarchy(grupos, grupo.nome)
+        children: buildHierarchy(grupos, grupo.id)
       }));
   };
 
@@ -91,7 +91,7 @@ export default function GruposHierarquicosPage() {
               {grupo.ativo ? 'Ativo' : 'Inativo'}
             </Badge>
           </TableCell>
-          <TableCell>{grupo.parent || '-'}</TableCell>
+          <TableCell>{grupo.parent?.nome || '-'}</TableCell>
           <TableCell>{grupo.childrenCount}</TableCell>
           <TableCell>{grupo.clientesCount}</TableCell>
           <TableCell>{grupo.colaboradoresCount}</TableCell>

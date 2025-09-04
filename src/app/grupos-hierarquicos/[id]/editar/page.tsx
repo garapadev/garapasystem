@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { MainLayout } from '@/components/layout/MainLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -19,7 +18,7 @@ export default function EditarGrupoHierarquicoPage() {
   const params = useParams();
   const router = useRouter();
   const { toast } = useToast();
-  const { data: grupo, isLoading, error: grupoError } = useGrupoHierarquico(params.id as string);
+  const { grupo, loading, error: grupoError } = useGrupoHierarquico(params.id as string);
   const { data: grupos, isLoading: gruposLoading } = useAllGruposHierarquicos();
   
   const [formData, setFormData] = useState({
@@ -52,7 +51,7 @@ export default function EditarGrupoHierarquicoPage() {
         nome: formData.nome,
         descricao: formData.descricao || undefined,
         ativo: formData.ativo,
-        parentId: formData.parentId || undefined
+        parentId: formData.parentId === 'null' ? undefined : formData.parentId || undefined
       });
 
       toast({
@@ -81,38 +80,33 @@ export default function EditarGrupoHierarquicoPage() {
     }));
   };
 
-  if (isLoading) {
+  if (loading) {
     return (
-      <MainLayout>
-        <div className="flex items-center justify-center h-64">
-          <Loader2 className="h-8 w-8 animate-spin" />
-        </div>
-      </MainLayout>
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
     );
   }
 
   if (grupoError || !grupo) {
     return (
-      <MainLayout>
-        <div className="flex items-center justify-center h-64">
-          <div className="text-center">
-            <h2 className="text-lg font-semibold mb-2">Grupo não encontrado</h2>
-            <p className="text-muted-foreground mb-4">O grupo hierárquico solicitado não foi encontrado.</p>
-            <Link href="/grupos-hierarquicos">
-              <Button variant="outline">
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Voltar para Grupos
-              </Button>
-            </Link>
-          </div>
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <h2 className="text-lg font-semibold mb-2">Grupo não encontrado</h2>
+          <p className="text-muted-foreground mb-4">O grupo hierárquico solicitado não foi encontrado.</p>
+          <Link href="/grupos-hierarquicos">
+            <Button variant="outline">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Voltar para Grupos
+            </Button>
+          </Link>
         </div>
-      </MainLayout>
+      </div>
     );
   }
 
   return (
-    <MainLayout>
-      <div className="space-y-6">
+    <div className="space-y-6">
         <div className="flex items-center space-x-4">
           <Link href="/grupos-hierarquicos">
             <Button variant="ghost" size="sm">
@@ -200,7 +194,7 @@ export default function EditarGrupoHierarquicoPage() {
                       <SelectValue placeholder={gruposLoading ? "Carregando grupos..." : "Selecione o grupo superior (opcional)"} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Nenhum (Grupo Raiz)</SelectItem>
+                      <SelectItem value="null">Nenhum (Grupo Raiz)</SelectItem>
                       {grupos
                         ?.filter(g => g.id !== params.id) // Evitar auto-referência
                         .map((g) => (
@@ -240,7 +234,6 @@ export default function EditarGrupoHierarquicoPage() {
             </Button>
           </div>
         </form>
-      </div>
-    </MainLayout>
+    </div>
   );
 }

@@ -113,7 +113,7 @@ export async function POST(request: NextRequest) {
 
     // Verificar se documento já existe (se fornecido)
     if (body.documento) {
-      const documentoExists = await db.colaborador.findUnique({
+      const documentoExists = await db.colaborador.findFirst({
         where: { documento: body.documento }
       });
 

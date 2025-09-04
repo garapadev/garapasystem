@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
+import { useState } from 'react';
 import { 
   Users, 
   Building2, 
@@ -12,7 +13,9 @@ import {
   Home,
   Settings,
   BarChart3,
-  Key
+  Key,
+  Menu,
+  X
 } from 'lucide-react';
 
 interface NavigationItem {
@@ -81,6 +84,8 @@ const navigation: NavigationItem[] = [
 export function Sidebar() {
   const pathname = usePathname();
   const { hasPermission, isAdmin, isAuthenticated } = useAuth();
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   if (!isAuthenticated) {
     return null;
@@ -102,32 +107,79 @@ export function Sidebar() {
   });
 
   return (
-    <div className="flex h-full w-64 flex-col bg-gray-50 border-r">
-      <div className="flex h-16 items-center px-6 border-b">
-        <h1 className="text-xl font-semibold text-gray-900">CRM/ERP</h1>
+    <>
+      {/* Mobile menu button */}
+      <button
+        className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-md bg-white shadow-md border"
+        onClick={() => setIsMobileOpen(!isMobileOpen)}
+      >
+        {isMobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+      </button>
+
+      {/* Mobile overlay */}
+      {isMobileOpen && (
+        <div 
+          className="lg:hidden fixed inset-0 z-40 bg-black bg-opacity-50"
+          onClick={() => setIsMobileOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <div className={cn(
+        "flex h-full flex-col bg-gray-50 border-r transition-all duration-300 ease-in-out",
+        "lg:relative lg:translate-x-0",
+        isMobileOpen ? "fixed inset-y-0 left-0 z-50 w-64" : "lg:w-64",
+        !isMobileOpen && "lg:block hidden",
+        isCollapsed && "lg:w-16"
+      )}>
+        <div className="flex h-16 items-center justify-between px-4 lg:px-6 border-b">
+          <h1 className={cn(
+            "font-semibold text-gray-900 transition-all duration-300",
+            isCollapsed ? "lg:hidden" : "text-lg lg:text-xl"
+          )}>
+            {isCollapsed ? "C" : "CRM/ERP"}
+          </h1>
+          <button
+            className="hidden lg:block p-1 rounded hover:bg-gray-200 transition-colors"
+            onClick={() => setIsCollapsed(!isCollapsed)}
+          >
+            <Menu className="h-4 w-4" />
+          </button>
+        </div>
+        <nav className="flex-1 space-y-1 px-2 lg:px-3 py-4 overflow-y-auto">
+          {filteredNavigation.map((item) => {
+            const isActive = pathname === item.href || 
+              (item.href !== '/' && pathname.startsWith(item.href));
+            
+            return (
+              <Link
+                key={item.name}
+                href={item.href}
+                onClick={() => setIsMobileOpen(false)}
+                className={cn(
+                  'flex items-center rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200',
+                  'hover:scale-105 active:scale-95',
+                  isActive
+                    ? 'bg-primary text-primary-foreground shadow-sm'
+                    : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                )}
+                title={isCollapsed ? item.name : undefined}
+              >
+                <item.icon className={cn(
+                  "h-5 w-5 flex-shrink-0",
+                  isCollapsed ? "" : "mr-3"
+                )} />
+                <span className={cn(
+                  "transition-all duration-300 overflow-hidden",
+                  isCollapsed ? "lg:hidden" : "block"
+                )}>
+                  {item.name}
+                </span>
+              </Link>
+            );
+          })}
+        </nav>
       </div>
-      <nav className="flex-1 space-y-1 px-3 py-4">
-        {filteredNavigation.map((item) => {
-          const isActive = pathname === item.href || 
-            (item.href !== '/' && pathname.startsWith(item.href));
-          
-          return (
-            <Link
-              key={item.name}
-              href={item.href}
-              className={cn(
-                'flex items-center rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-                isActive
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
-              )}
-            >
-              <item.icon className="mr-3 h-5 w-5" />
-              {item.name}
-            </Link>
-          );
-        })}
-      </nav>
-    </div>
+    </>
   );
 }

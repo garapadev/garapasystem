@@ -35,10 +35,10 @@ export async function GET(request: NextRequest) {
         where,
         skip,
         take: limit,
-        orderBy: {
-          recurso: 'asc',
-          acao: 'asc'
-        }
+        orderBy: [
+          { recurso: 'asc' },
+          { acao: 'asc' }
+        ]
       }),
       db.permissao.count({ where })
     ]);

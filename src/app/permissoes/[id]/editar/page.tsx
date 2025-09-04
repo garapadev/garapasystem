@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { MainLayout } from '@/components/layout/MainLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -82,17 +81,14 @@ export default function EditarPermissaoPage() {
 
   if (loading) {
     return (
-      <MainLayout>
-        <div className="flex items-center justify-center h-64">
-          <div>Carregando...</div>
-        </div>
-      </MainLayout>
+      <div className="flex items-center justify-center h-64">
+        <div>Carregando...</div>
+      </div>
     );
   }
 
   return (
-    <MainLayout>
-      <div className="space-y-6">
+    <div className="space-y-6">
         <div className="flex items-center space-x-4">
           <Link href="/permissoes">
             <Button variant="ghost" size="sm">
@@ -206,7 +202,6 @@ export default function EditarPermissaoPage() {
             </Button>
           </div>
         </form>
-      </div>
-    </MainLayout>
+    </div>
   );
 }

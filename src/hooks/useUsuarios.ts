@@ -113,3 +113,75 @@ export function useUsuarios(params: UseUsuariosParams = {}): UseUsuariosReturn {
     deleteUsuario
   }
 }
+
+// Função para atualizar um usuário
+export async function updateUsuario(id: string, data: {
+  email: string;
+  nome?: string | null;
+  ativo: boolean;
+  colaboradorId?: string | null;
+}) {
+  const response = await fetch(`/api/usuarios/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || 'Erro ao atualizar usuário');
+  }
+
+  return response.json();
+}
+
+// Hook para buscar um usuário específico
+export function useUsuario(id: string) {
+  const [usuario, setUsuario] = useState<Usuario | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  const fetchUsuario = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+
+      const response = await fetch(`/api/usuarios/${id}`)
+      
+      if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error('Usuário não encontrado')
+        }
+        throw new Error('Erro ao buscar usuário')
+      }
+
+      const data: Usuario = await response.json()
+      setUsuario(data)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erro desconhecido')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    if (id) {
+      fetchUsuario()
+    }
+  }, [id])
+
+  const refetch = () => {
+    if (id) {
+      fetchUsuario()
+    }
+  }
+
+  return {
+    usuario,
+    loading,
+    error,
+    refetch
+  }
+}

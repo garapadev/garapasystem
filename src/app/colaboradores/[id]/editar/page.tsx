@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { MainLayout } from '@/components/layout/MainLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -104,48 +103,41 @@ export default function EditarColaboradorPage() {
 
   if (loading) {
     return (
-      <MainLayout>
-        <div className="flex items-center justify-center h-64">
-          <div className="text-center">
-            <Loader2 className="h-8 w-8 animate-spin mx-auto" />
-            <p className="mt-2 text-gray-600">Carregando colaborador...</p>
-          </div>
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto" />
+          <p className="mt-2 text-gray-600">Carregando colaborador...</p>
         </div>
-      </MainLayout>
+      </div>
     );
   }
 
   if (fetchError) {
     return (
-      <MainLayout>
-        <div className="flex items-center justify-center h-64">
-          <Alert variant="destructive" className="max-w-md">
-            <AlertDescription>
-              Erro ao carregar colaborador: {fetchError}
-            </AlertDescription>
-          </Alert>
-        </div>
-      </MainLayout>
+      <div className="flex items-center justify-center h-64">
+        <Alert variant="destructive" className="max-w-md">
+          <AlertDescription>
+            Erro ao carregar colaborador: {fetchError}
+          </AlertDescription>
+        </Alert>
+      </div>
     );
   }
 
   if (!colaborador) {
     return (
-      <MainLayout>
-        <div className="flex items-center justify-center h-64">
-          <Alert className="max-w-md">
-            <AlertDescription>
-              Colaborador não encontrado.
-            </AlertDescription>
-          </Alert>
-        </div>
-      </MainLayout>
+      <div className="flex items-center justify-center h-64">
+        <Alert className="max-w-md">
+          <AlertDescription>
+            Colaborador não encontrado.
+          </AlertDescription>
+        </Alert>
+      </div>
     );
   }
 
   return (
-    <MainLayout>
-      <div className="space-y-6">
+    <div className="space-y-6">
         <div className="flex items-center space-x-4">
           <Link href="/colaboradores">
             <Button variant="ghost" size="sm">
@@ -365,7 +357,6 @@ export default function EditarColaboradorPage() {
             </Button>
           </div>
         </form>
-      </div>
-    </MainLayout>
+    </div>
   );
 }

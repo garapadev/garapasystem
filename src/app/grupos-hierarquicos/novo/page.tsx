@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { MainLayout } from '@/components/layout/MainLayout';
+
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -18,13 +18,13 @@ import { useToast } from '@/hooks/use-toast';
 export default function NovoGrupoHierarquicoPage() {
   const router = useRouter();
   const { toast } = useToast();
-  const { data: grupos, isLoading: gruposLoading } = useAllGruposHierarquicos();
+  const { grupos, loading: gruposLoading } = useAllGruposHierarquicos();
   
   const [formData, setFormData] = useState({
     nome: '',
     descricao: '',
     ativo: true,
-    parentId: ''
+    parentId: 'null'
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -39,7 +39,7 @@ export default function NovoGrupoHierarquicoPage() {
         nome: formData.nome,
         descricao: formData.descricao || undefined,
         ativo: formData.ativo,
-        parentId: formData.parentId || undefined
+        parentId: formData.parentId === 'null' ? undefined : formData.parentId
       });
 
       toast({
@@ -69,7 +69,7 @@ export default function NovoGrupoHierarquicoPage() {
   };
 
   return (
-    <MainLayout>
+    <div className="container mx-auto px-4 py-8 max-w-4xl">
       <div className="space-y-6">
         <div className="flex items-center space-x-4">
           <Link href="/grupos-hierarquicos">
@@ -158,7 +158,7 @@ export default function NovoGrupoHierarquicoPage() {
                       <SelectValue placeholder={gruposLoading ? "Carregando grupos..." : "Selecione o grupo superior (opcional)"} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Nenhum (Grupo Raiz)</SelectItem>
+                      <SelectItem value="null">Nenhum (Grupo Raiz)</SelectItem>
                       {grupos?.map((grupo) => (
                         <SelectItem key={grupo.id} value={grupo.id}>
                           {grupo.nome}
@@ -196,6 +196,6 @@ export default function NovoGrupoHierarquicoPage() {
           </div>
         </form>
       </div>
-    </MainLayout>
+    </div>
   );
 }

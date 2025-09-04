@@ -29,14 +29,6 @@ export async function GET(
             email: true,
             ativo: true
           }
-        },
-        clientes: {
-          select: {
-            id: true,
-            nome: true,
-            email: true,
-            status: true
-          }
         }
       }
     });
@@ -101,7 +93,7 @@ export async function PUT(
 
     // Verificar se documento já existe (se fornecido e for diferente do atual)
     if (body.documento && body.documento !== existingColaborador.documento) {
-      const documentoExists = await db.colaborador.findUnique({
+      const documentoExists = await db.colaborador.findFirst({
         where: { documento: body.documento }
       });
 
@@ -193,8 +185,7 @@ export async function DELETE(
       include: {
         _count: {
           select: {
-            usuarios: true,
-            clientes: true
+            usuarios: true
           }
         }
       }
@@ -207,13 +198,10 @@ export async function DELETE(
       );
     }
 
-    // Verificar se tem usuários ou clientes associados
-    if (
-      existingColaborador._count.usuarios > 0 ||
-      existingColaborador._count.clientes > 0
-    ) {
+    // Verificar se tem usuários associados
+    if (existingColaborador._count.usuarios > 0) {
       return NextResponse.json(
-        { error: 'Não é possível excluir colaborador com usuários ou clientes associados' },
+        { error: 'Não é possível excluir colaborador com usuários associados' },
         { status: 400 }
       );
     }

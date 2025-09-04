@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { MainLayout } from '@/components/layout/MainLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -67,8 +66,7 @@ export default function NovaPermissaoPage() {
   };
 
   return (
-    <MainLayout>
-      <div className="space-y-6">
+    <div className="space-y-6">
         <div className="flex items-center space-x-4">
           <Link href="/permissoes">
             <Button variant="ghost" size="sm">
@@ -189,7 +187,6 @@ export default function NovaPermissaoPage() {
             </Button>
           </div>
         </form>
-      </div>
-    </MainLayout>
+    </div>
   );
 }

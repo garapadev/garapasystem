@@ -92,12 +92,18 @@ export function usePerfis(params: UsePerfisParams = {}) {
     fetchPerfis();
   };
 
+  const handleDeletePerfil = async (id: string) => {
+    await deletePerfil(id);
+    refetch();
+  };
+
   return {
     perfis,
     loading,
     error,
     meta,
-    refetch
+    refetch,
+    deletePerfil: handleDeletePerfil
   };
 }
 
