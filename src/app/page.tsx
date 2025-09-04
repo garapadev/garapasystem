@@ -1,46 +1,62 @@
 'use client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Users, Building2, Shield, UserCircle, TrendingUp } from 'lucide-react';
+import { Users, Building2, Shield, UserCircle, TrendingUp, Loader2 } from 'lucide-react';
+import { useDashboard } from '@/hooks/useDashboard';
 
 export default function Home() {
-  // Dados mockados para o dashboard
-  const stats = [
+  const { stats, recentActivities, loading, error } = useDashboard();
+
+  // Configuração dos cards de estatísticas
+  const statsConfig = [
     {
       title: 'Total de Clientes',
-      value: '1,234',
-      description: '+12% em relação ao mês anterior',
+      value: stats?.totalClientes || 0,
+      description: 'Clientes cadastrados no sistema',
       icon: Users,
-      trend: 'up'
+      trend: 'stable'
     },
     {
       title: 'Grupos Hierárquicos',
-      value: '15',
-      description: '+2 novos grupos este mês',
+      value: stats?.totalGruposHierarquicos || 0,
+      description: 'Grupos organizacionais',
       icon: Building2,
-      trend: 'up'
+      trend: 'stable'
     },
     {
       title: 'Colaboradores',
-      value: '89',
-      description: '+5 novos colaboradores',
+      value: stats?.totalColaboradores || 0,
+      description: 'Colaboradores ativos',
       icon: UserCircle,
-      trend: 'up'
+      trend: 'stable'
     },
     {
       title: 'Permissões Ativas',
-      value: '45',
+      value: stats?.totalPermissoes || 0,
       description: 'Sistema de segurança',
       icon: Shield,
       trend: 'stable'
     }
   ];
 
-  const recentActivities = [
-    { id: 1, action: 'Novo cliente cadastrado', user: 'João Silva', time: '2 horas atrás' },
-    { id: 2, action: 'Grupo atualizado', user: 'Maria Santos', time: '4 horas atrás' },
-    { id: 3, action: 'Permissão concedida', user: 'Carlos Oliveira', time: '6 horas atrás' },
-    { id: 4, action: 'Colaborador desativado', user: 'Ana Costa', time: '1 dia atrás' },
-  ];
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="h-8 w-8 animate-spin" />
+        <span className="ml-2">Carregando dashboard...</span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <p className="text-red-500 mb-2">Erro ao carregar dashboard</p>
+          <p className="text-sm text-muted-foreground">{error}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -53,7 +69,7 @@ export default function Home() {
 
         {/* Cards de estatísticas */}
         <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-          {stats.map((stat) => (
+          {statsConfig.map((stat) => (
             <Card key={stat.title} className="hover:shadow-md transition-shadow">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
@@ -82,19 +98,25 @@ export default function Home() {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {recentActivities.map((activity) => (
-                  <div key={activity.id} className="flex items-start space-x-3 p-2 rounded-lg hover:bg-gray-50 transition-colors">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
-                    <div className="space-y-1 min-w-0 flex-1">
-                      <p className="text-sm font-medium leading-none">
-                        {activity.action}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {activity.user} • {activity.time}
-                      </p>
+                {recentActivities && recentActivities.length > 0 ? (
+                  recentActivities.map((activity) => (
+                    <div key={activity.id} className="flex items-start space-x-3 p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                      <div className="space-y-1 min-w-0 flex-1">
+                        <p className="text-sm font-medium leading-none">
+                          {activity.action}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {activity.user} • {activity.time}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))
+                ) : (
+                  <p className="text-sm text-muted-foreground text-center py-4">
+                    Nenhuma atividade recente encontrada
+                  </p>
+                )}
               </div>
             </CardContent>
           </Card>
