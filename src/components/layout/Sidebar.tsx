@@ -133,12 +133,17 @@ export function Sidebar() {
         isCollapsed && "lg:w-16"
       )}>
         <div className="flex h-16 items-center justify-between px-4 lg:px-6 border-b">
-          <h1 className={cn(
-            "font-semibold text-gray-900 transition-all duration-300",
-            isCollapsed ? "lg:hidden" : "text-lg lg:text-xl"
-          )}>
-            {isCollapsed ? "C" : "CRM/ERP"}
-          </h1>
+          <Link 
+            href="https://community.garapasystem.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={cn(
+              "font-semibold text-gray-900 transition-all duration-300 hover:text-blue-600",
+              isCollapsed ? "lg:hidden" : "text-lg lg:text-xl"
+            )}
+          >
+            {isCollapsed ? "G" : "GarapaSystem"}
+          </Link>
           <button
             className="hidden lg:block p-1 rounded hover:bg-gray-200 transition-colors"
             onClick={() => setIsCollapsed(!isCollapsed)}

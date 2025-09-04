@@ -1,6 +1,7 @@
 'use client'
 
 import { useAuth } from '@/hooks/useAuth'
+import { useConfiguracoes } from '@/hooks/useConfiguracoes'
 import { signOut } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import {
@@ -18,6 +19,7 @@ import { useRouter } from 'next/navigation'
 
 export function Header() {
   const { user, colaborador, isAuthenticated } = useAuth()
+  const { getConfiguracao } = useConfiguracoes()
   const router = useRouter()
 
   if (!isAuthenticated || !user) {
@@ -59,7 +61,7 @@ export function Header() {
       <div className="flex items-center justify-between">
         <div className="flex-1">
           <h1 className="text-xl font-semibold text-gray-900">
-            Sistema de Gestão
+            {getConfiguracao('sistema_nome')?.valor || 'Sistema de Gestão'}
           </h1>
         </div>
         
@@ -108,7 +110,7 @@ export function Header() {
                 <User className="mr-2 h-4 w-4" />
                 <span>Perfil</span>
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push('/configuracoes')}>
                 <Settings className="mr-2 h-4 w-4" />
                 <span>Configurações</span>
               </DropdownMenuItem>

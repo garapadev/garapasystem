@@ -216,6 +216,18 @@ model HistoricoOportunidade {
   @@map("historico_oportunidades")
 }
 
+// Configurações do Sistema
+model Configuracao {
+  id        String   @id @default(cuid())
+  chave     String   @unique // ex: "sistema_nome", "projeto_titulo"
+  valor     String   // Valor da configuração
+  descricao String?  // Descrição da configuração
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("configuracoes")
+}
+
 // Enums
 enum TipoCliente {
   PESSOA_FISICA
