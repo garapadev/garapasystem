@@ -228,6 +228,83 @@ model Configuracao {
   @@map("configuracoes")
 }
 
+// Chaves de API
+model ApiKey {
+  id          String   @id @default(cuid())
+  nome        String   // Nome descritivo da chave
+  chave       String   @unique // Chave de API gerada
+  ativo       Boolean  @default(true)
+  ultimoUso   DateTime?
+  expiresAt   DateTime? // Data de expiração (opcional)
+  permissoes  String?  // JSON com permissões específicas
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relacionamentos
+  logs        ApiLog[]
+  
+  @@map("api_keys")
+}
+
+// Configurações de Webhook
+model WebhookConfig {
+  id          String   @id @default(cuid())
+  nome        String   // Nome descritivo do webhook
+  url         String   // URL de destino
+  eventos     String   // JSON array com eventos que disparam o webhook
+  ativo       Boolean  @default(true)
+  secret      String?  // Secret para validação de assinatura
+  headers     String?  // JSON com headers customizados
+  timeout     Int      @default(30) // Timeout em segundos
+  retries     Int      @default(3)  // Número de tentativas
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relacionamentos
+  logs        WebhookLog[]
+  
+  @@map("webhook_configs")
+}
+
+// Logs de API
+model ApiLog {
+  id          String   @id @default(cuid())
+  method      String   // GET, POST, PUT, DELETE
+  endpoint    String   // Endpoint acessado
+  statusCode  Int      // Código de resposta HTTP
+  responseTime Int     // Tempo de resposta em ms
+  userAgent   String?  // User agent da requisição
+  ipAddress   String?  // IP de origem
+  payload     String?  // Payload da requisição (limitado)
+  response    String?  // Resposta da API (limitado)
+  createdAt   DateTime @default(now())
+  
+  // Relacionamentos
+  apiKeyId    String?
+  apiKey      ApiKey?  @relation(fields: [apiKeyId], references: [id])
+  
+  @@map("api_logs")
+}
+
+// Logs de Webhook
+model WebhookLog {
+  id            String   @id @default(cuid())
+  evento        String   // Tipo de evento que disparou
+  payload       String   // Payload enviado
+  statusCode    Int?     // Código de resposta HTTP
+  responseTime  Int?     // Tempo de resposta em ms
+  tentativa     Int      @default(1) // Número da tentativa
+  sucesso       Boolean  @default(false)
+  errorMessage  String?  // Mensagem de erro se houver
+  createdAt     DateTime @default(now())
+  
+  // Relacionamentos
+  webhookConfigId String
+  webhookConfig   WebhookConfig @relation(fields: [webhookConfigId], references: [id], onDelete: Cascade)
+  
+  @@map("webhook_logs")
+}
+
 // Enums
 enum TipoCliente {
   PESSOA_FISICA

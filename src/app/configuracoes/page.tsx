@@ -6,12 +6,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Settings, Save, Loader2 } from 'lucide-react';
+import { Settings, Save, Loader2, Key, Webhook } from 'lucide-react';
 import { useConfiguracoes } from '@/hooks/useConfiguracoes';
 import { useAuth } from '@/hooks/useAuth';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { toast } from 'sonner';
+import { ApiWebhookTab } from '@/components/configuracoes/ApiWebhookTab';
 
 export default function ConfiguracoesPage() {
   const { canAccess } = useAuth();
@@ -92,8 +93,12 @@ export default function ConfiguracoesPage() {
         )}
 
         <Tabs defaultValue="geral" className="w-full">
-          <TabsList className="grid w-full grid-cols-1 lg:w-[400px]">
+          <TabsList className="grid w-full grid-cols-2 lg:w-[400px]">
             <TabsTrigger value="geral">Geral</TabsTrigger>
+            <TabsTrigger value="api-webhook">
+              <Key className="mr-2 h-4 w-4" />
+              API/Webhook
+            </TabsTrigger>
           </TabsList>
           
           <TabsContent value="geral" className="space-y-6">
@@ -154,6 +159,10 @@ export default function ConfiguracoesPage() {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+          
+          <TabsContent value="api-webhook">
+            <ApiWebhookTab />
           </TabsContent>
         </Tabs>
       </div>

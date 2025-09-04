@@ -1,141 +1,621 @@
-# 🚀 Welcome to Z.ai Code Scaffold
+# 🚀 GarapaSystem
 
-A modern, production-ready web application scaffold powered by cutting-edge technologies, designed to accelerate your development with [Z.ai](https://chat.z.ai)'s AI-powered coding assistance.
+**Sistema de Gestão Empresarial Completo**
 
-## ✨ Technology Stack
+O GarapaSystem é uma plataforma moderna e robusta de gestão empresarial desenvolvida com Next.js 15, oferecendo funcionalidades abrangentes para administração de usuários, clientes, colaboradores, negócios e integrações via API/Webhook. Projetado para empresas que buscam uma solução completa e escalável para gerenciar seus processos de negócio.
 
-This scaffold provides a robust foundation built with:
+## ✨ Principais Funcionalidades
 
-### 🎯 Core Framework
-- **⚡ Next.js 15** - The React framework for production with App Router
-- **📘 TypeScript 5** - Type-safe JavaScript for better developer experience
-- **🎨 Tailwind CSS 4** - Utility-first CSS framework for rapid UI development
+### 👥 **Gestão de Pessoas**
+- **Usuários**: Sistema completo de autenticação e autorização
+- **Clientes**: Cadastro e gerenciamento de base de clientes
+- **Colaboradores**: Controle de funcionários e suas informações
+- **Perfis e Permissões**: Controle granular de acesso
 
-### 🧩 UI Components & Styling
-- **🧩 shadcn/ui** - High-quality, accessible components built on Radix UI
-- **🎯 Lucide React** - Beautiful & consistent icon library
-- **🌈 Framer Motion** - Production-ready motion library for React
-- **🎨 Next Themes** - Perfect dark mode in 2 lines of code
+### 🏢 **Gestão de Negócios**
+- **Pipeline de Vendas**: Gestão completa de oportunidades
+- **Grupos Hierárquicos**: Organização estrutural da empresa
+- **Dashboard Interativo**: Métricas e KPIs em tempo real
+- **Relatórios**: Análises detalhadas do negócio
 
-### 📋 Forms & Validation
-- **🎣 React Hook Form** - Performant forms with easy validation
-- **✅ Zod** - TypeScript-first schema validation
+### ⚙️ **Integrações e Automação**
+- **Sistema de Webhooks**: Configuração flexível de integrações
+- **API RESTful**: Endpoints completos com documentação Swagger
+- **Chaves API**: Geração e gerenciamento seguro de acesso
+- **Logs Detalhados**: Monitoramento completo de atividades
 
-### 🔄 State Management & Data Fetching
-- **🐻 Zustand** - Simple, scalable state management
-- **🔄 TanStack Query** - Powerful data synchronization for React
-- **🌐 Axios** - Promise-based HTTP client
+### 🔄 **Comunicação em Tempo Real**
+- **WebSocket**: Atualizações instantâneas
+- **Notificações**: Sistema de alertas em tempo real
+- **Sincronização**: Dados sempre atualizados
 
-### 🗄️ Database & Backend
-- **🗄️ Prisma** - Next-generation Node.js and TypeScript ORM
-- **🔐 NextAuth.js** - Complete open-source authentication solution
+## 🛠️ Stack Tecnológico
 
-### 🎨 Advanced UI Features
-- **📊 TanStack Table** - Headless UI for building tables and datagrids
-- **🖱️ DND Kit** - Modern drag and drop toolkit for React
-- **📊 Recharts** - Redefined chart library built with React and D3
-- **🖼️ Sharp** - High performance image processing
+### **Frontend**
+- **Next.js 15** - Framework React com App Router
+- **TypeScript** - Tipagem estática para maior segurança
+- **Tailwind CSS** - Framework CSS utilitário moderno
+- **shadcn/ui** - Componentes UI acessíveis e customizáveis
+- **Framer Motion** - Animações fluidas e interativas
+- **React Hook Form + Zod** - Formulários com validação robusta
 
-### 🌍 Internationalization & Utilities
-- **🌍 Next Intl** - Internationalization library for Next.js
-- **📅 Date-fns** - Modern JavaScript date utility library
-- **🪝 ReactUse** - Collection of essential React hooks for modern development
+### **Backend**
+- **Prisma ORM** - Gerenciamento type-safe do banco de dados
+- **PostgreSQL** - Banco de dados relacional robusto
+- **NextAuth.js** - Autenticação e autorização segura
+- **Socket.IO** - Comunicação bidirecional em tempo real
 
-## 🎯 Why This Scaffold?
+### **Infraestrutura**
+- **Docker** - Containerização para deploy consistente
+- **Rate Limiting** - Proteção contra abuso de API
+- **Middleware de Segurança** - Proteção de rotas e endpoints
 
-- **🏎️ Fast Development** - Pre-configured tooling and best practices
-- **🎨 Beautiful UI** - Complete shadcn/ui component library with advanced interactions
-- **🔒 Type Safety** - Full TypeScript configuration with Zod validation
-- **📱 Responsive** - Mobile-first design principles with smooth animations
-- **🗄️ Database Ready** - Prisma ORM configured for rapid backend development
-- **🔐 Auth Included** - NextAuth.js for secure authentication flows
-- **📊 Data Visualization** - Charts, tables, and drag-and-drop functionality
-- **🌍 i18n Ready** - Multi-language support with Next Intl
-- **🚀 Production Ready** - Optimized build and deployment settings
-- **🤖 AI-Friendly** - Structured codebase perfect for AI assistance
+## 📋 Pré-requisitos
 
-## 🚀 Quick Start
+Antes de iniciar, certifique-se de ter instalado:
+
+- **Node.js** 18.0 ou superior
+- **PostgreSQL** 13.0 ou superior
+- **npm** ou **yarn**
+- **Docker** (opcional, para containerização)
+
+## 🚀 Instalação e Configuração
+
+### **1. Clone o Repositório**
+```bash
+git clone <repository-url>
+cd GarapaSystem
+```
+
+### **2. Instale as Dependências**
+```bash
+npm install
+# ou
+yarn install
+```
+
+### **3. Configuração do Ambiente**
+
+Crie um arquivo `.env.local` na raiz do projeto:
+
+```env
+# Banco de Dados
+DATABASE_URL="postgresql://usuario:senha@localhost:5432/garapasystem"
+
+# Autenticação NextAuth
+NEXTAUTH_SECRET="sua-chave-secreta-super-segura"
+NEXTAUTH_URL="http://localhost:3000"
+
+# Configurações da Aplicação
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
+NEXT_PUBLIC_APP_NAME="GarapaSystem"
+
+# Configurações de Email (opcional)
+EMAIL_SERVER_HOST="smtp.gmail.com"
+EMAIL_SERVER_PORT=587
+EMAIL_SERVER_USER="seu-email@gmail.com"
+EMAIL_SERVER_PASSWORD="sua-senha-app"
+EMAIL_FROM="noreply@garapasystem.com"
+```
+
+### **4. Configuração do Banco de Dados**
 
 ```bash
-# Install dependencies
-npm install
+# Gerar cliente Prisma
+npm run db:generate
 
-# Start development server
+# Executar migrações
+npm run db:migrate
+
+# Popular banco com dados iniciais
+npm run db:seed
+```
+
+### **5. Iniciar o Servidor de Desenvolvimento**
+
+```bash
 npm run dev
+```
 
-# Build for production
-npm run build
+Acesse [http://localhost:3000](http://localhost:3000) para ver a aplicação.
 
-# Start production server
+## 🐳 Instalação com Docker
+
+### **Docker Compose (Recomendado)**
+
+```bash
+# Construir e iniciar todos os serviços
+docker-compose up -d
+
+# Executar migrações no container
+docker-compose exec app npm run db:migrate
+
+# Popular banco de dados
+docker-compose exec app npm run db:seed
+```
+
+### **Docker Manual**
+
+```bash
+# Construir imagem
+docker build -t garapasystem .
+
+# Executar container
+docker run -p 3000:3000 --env-file .env.local garapasystem
+```
+
+## 📖 Guia de Uso
+
+### **Primeiro Acesso**
+
+1. **Acesse a aplicação** em `http://localhost:3000`
+2. **Faça login** com as credenciais padrão:
+   - Email: `admin@garapasystem.com`
+   - Senha: `admin123`
+3. **Altere a senha** imediatamente após o primeiro login
+
+### **Configuração Inicial**
+
+1. **Configurações Gerais**
+   - Acesse `Configurações > Geral`
+   - Configure informações da empresa
+   - Defina preferências do sistema
+
+2. **Configuração de API/Webhook**
+   - Acesse `Configurações > API/Webhook`
+   - Gere chaves API para integrações
+   - Configure webhooks para sistemas externos
+
+3. **Gestão de Usuários**
+   - Acesse `Usuários`
+   - Crie perfis de acesso
+   - Defina permissões granulares
+
+### **Funcionalidades Principais**
+
+#### **Dashboard**
+- Visão geral de métricas importantes
+- Gráficos interativos em tempo real
+- Widgets customizáveis
+
+#### **Gestão de Clientes**
+```typescript
+// Exemplo de uso da API de clientes
+const cliente = {
+  nome: "Empresa XYZ Ltda",
+  email: "contato@empresaxyz.com",
+  telefone: "+55 11 99999-9999",
+  endereco: {
+    rua: "Rua das Flores, 123",
+    cidade: "São Paulo",
+    estado: "SP",
+    cep: "01234-567"
+  }
+};
+
+// POST /api/clientes
+const response = await fetch('/api/clientes', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer sua-api-key'
+  },
+  body: JSON.stringify(cliente)
+});
+```
+
+#### **Pipeline de Vendas**
+```typescript
+// Exemplo de criação de negócio
+const negocio = {
+  titulo: "Venda Software ERP",
+  valor: 50000.00,
+  clienteId: "cliente-uuid",
+  responsavelId: "usuario-uuid",
+  etapa: "PROPOSTA",
+  dataFechamento: "2024-12-31"
+};
+
+// POST /api/negocios
+const response = await fetch('/api/negocios', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer sua-api-key'
+  },
+  body: JSON.stringify(negocio)
+});
+```
+
+## 📁 Estrutura do Projeto
+
+```
+GarapaSystem/
+├── 📁 prisma/                 # Configuração do banco de dados
+│   ├── schema.prisma          # Schema do Prisma
+│   ├── migrations/            # Migrações do banco
+│   └── seed.ts               # Dados iniciais
+├── 📁 public/                 # Arquivos estáticos
+├── 📁 src/
+│   ├── 📁 app/               # Páginas e rotas (App Router)
+│   │   ├── 📁 api/           # Endpoints da API
+│   │   │   ├── auth/         # Autenticação
+│   │   │   ├── clientes/     # CRUD de clientes
+│   │   │   ├── colaboradores/ # CRUD de colaboradores
+│   │   │   ├── negocios/     # Pipeline de vendas
+│   │   │   ├── usuarios/     # Gestão de usuários
+│   │   │   ├── webhooks/     # Sistema de webhooks
+│   │   │   └── logs/         # Logs do sistema
+│   │   ├── 📁 auth/          # Páginas de autenticação
+│   │   ├── 📁 clientes/      # Interface de clientes
+│   │   ├── 📁 colaboradores/ # Interface de colaboradores
+│   │   ├── 📁 configuracoes/ # Configurações do sistema
+│   │   ├── 📁 negocios/      # Interface de negócios
+│   │   ├── 📁 usuarios/      # Interface de usuários
+│   │   └── layout.tsx        # Layout principal
+│   ├── 📁 components/        # Componentes reutilizáveis
+│   │   ├── 📁 auth/          # Componentes de autenticação
+│   │   ├── 📁 configuracoes/ # Componentes de configuração
+│   │   ├── 📁 layout/        # Componentes de layout
+│   │   ├── 📁 providers/     # Provedores de contexto
+│   │   ├── 📁 realtime/      # Componentes WebSocket
+│   │   └── 📁 ui/            # Componentes UI base
+│   ├── 📁 hooks/             # Hooks customizados
+│   │   ├── useAuth.ts        # Hook de autenticação
+│   │   ├── useClientes.ts    # Hook de clientes
+│   │   ├── useNegocios.ts    # Hook de negócios
+│   │   ├── useWebhooks.ts    # Hook de webhooks
+│   │   └── useLogs.ts        # Hook de logs
+│   ├── 📁 lib/               # Utilitários e configurações
+│   │   ├── auth.ts           # Configuração NextAuth
+│   │   ├── db.ts             # Cliente Prisma
+│   │   ├── webhook.ts        # Sistema de webhooks
+│   │   ├── api-middleware.ts # Middleware da API
+│   │   └── utils.ts          # Funções utilitárias
+│   └── 📁 types/             # Definições de tipos
+├── 📁 docker/                # Configurações Docker
+├── 📁 scripts/               # Scripts utilitários
+├── docker-compose.yml        # Orquestração Docker
+├── package.json              # Dependências e scripts
+└── README.md                 # Este arquivo
+```
+
+## 🔌 API e Integrações
+
+### **Documentação da API**
+
+A documentação completa da API está disponível via Swagger:
+- **Desenvolvimento**: [http://localhost:3000/api/docs](http://localhost:3000/api/docs)
+- **Produção**: `https://seu-dominio.com/api/docs`
+
+### **Principais Endpoints**
+
+| Método | Endpoint | Descrição |
+|--------|----------|----------|
+| `GET` | `/api/clientes` | Listar clientes |
+| `POST` | `/api/clientes` | Criar cliente |
+| `GET` | `/api/clientes/[id]` | Obter cliente |
+| `PUT` | `/api/clientes/[id]` | Atualizar cliente |
+| `DELETE` | `/api/clientes/[id]` | Excluir cliente |
+| `GET` | `/api/negocios` | Listar negócios |
+| `POST` | `/api/negocios` | Criar negócio |
+| `GET` | `/api/webhooks` | Listar webhooks |
+| `POST` | `/api/webhooks` | Criar webhook |
+| `GET` | `/api/logs` | Obter logs do sistema |
+
+### **Autenticação da API**
+
+```bash
+# Obter token de acesso
+curl -X POST http://localhost:3000/api/auth/token \
+  -H "Content-Type: application/json" \
+  -d '{"email":"seu-email@exemplo.com","password":"sua-senha"}'
+
+# Usar token nas requisições
+curl -X GET http://localhost:3000/api/clientes \
+  -H "Authorization: Bearer seu-token-jwt"
+```
+
+### **Webhooks**
+
+```javascript
+// Exemplo de configuração de webhook
+const webhook = {
+  url: "https://seu-sistema.com/webhook",
+  eventos: ["cliente.criado", "negocio.atualizado"],
+  ativo: true,
+  headers: {
+    "Authorization": "Bearer token-do-sistema-externo",
+    "Content-Type": "application/json"
+  }
+};
+
+// Payload enviado pelo webhook
+{
+  "evento": "cliente.criado",
+  "timestamp": "2024-01-15T10:30:00Z",
+  "dados": {
+    "id": "cliente-uuid",
+    "nome": "Empresa XYZ",
+    "email": "contato@empresaxyz.com"
+  }
+}
+```
+
+## 🧪 Scripts Disponíveis
+
+```bash
+# Desenvolvimento
+npm run dev          # Inicia servidor de desenvolvimento
+npm run build        # Constrói aplicação para produção
+npm run start        # Inicia servidor de produção
+npm run lint         # Executa linting do código
+
+# Banco de Dados
+npm run db:generate  # Gera cliente Prisma
+npm run db:migrate   # Executa migrações
+npm run db:push      # Sincroniza schema com banco
+npm run db:reset     # Reseta banco de dados
+npm run db:seed      # Popula banco com dados iniciais
+
+# Docker
+docker-compose up -d    # Inicia todos os serviços
+docker-compose down     # Para todos os serviços
+docker-compose logs app # Visualiza logs da aplicação
+```
+
+## 🔧 Configurações Avançadas
+
+### **Variáveis de Ambiente**
+
+```env
+# Banco de Dados
+DATABASE_URL="postgresql://user:pass@localhost:5432/db"
+
+# Autenticação
+NEXTAUTH_SECRET="chave-super-secreta"
+NEXTAUTH_URL="http://localhost:3000"
+
+# Rate Limiting
+RATE_LIMIT_MAX=100
+RATE_LIMIT_WINDOW=900000
+
+# Webhooks
+WEBHOOK_TIMEOUT=30000
+WEBHOOK_RETRY_ATTEMPTS=3
+
+# Logs
+LOG_LEVEL="info"
+LOG_RETENTION_DAYS=30
+
+# Upload de Arquivos
+UPLOAD_MAX_SIZE=10485760
+UPLOAD_ALLOWED_TYPES="image/jpeg,image/png,application/pdf"
+```
+
+### **Configuração de Produção**
+
+```bash
+# Build otimizado
+NODE_ENV=production npm run build
+
+# Variáveis de produção
+export DATABASE_URL="postgresql://prod-user:prod-pass@prod-host:5432/prod-db"
+export NEXTAUTH_SECRET="chave-producao-super-segura"
+export NEXTAUTH_URL="https://seu-dominio.com"
+
+# Iniciar em produção
 npm start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to see your application running.
+## 🧪 Testes
 
-## 🤖 Powered by Z.ai
+```bash
+# Executar todos os testes
+npm test
 
-This scaffold is optimized for use with [Z.ai](https://chat.z.ai) - your AI assistant for:
+# Testes com coverage
+npm run test:coverage
 
-- **💻 Code Generation** - Generate components, pages, and features instantly
-- **🎨 UI Development** - Create beautiful interfaces with AI assistance  
-- **🔧 Bug Fixing** - Identify and resolve issues with intelligent suggestions
-- **📝 Documentation** - Auto-generate comprehensive documentation
-- **🚀 Optimization** - Performance improvements and best practices
+# Testes de integração
+npm run test:integration
 
-Ready to build something amazing? Start chatting with Z.ai at [chat.z.ai](https://chat.z.ai) and experience the future of AI-powered development!
-
-## 📁 Project Structure
-
-```
-src/
-├── app/                 # Next.js App Router pages
-├── components/          # Reusable React components
-│   └── ui/             # shadcn/ui components
-├── hooks/              # Custom React hooks
-└── lib/                # Utility functions and configurations
+# Testes E2E
+npm run test:e2e
 ```
 
-## 🎨 Available Features & Components
+## 📊 Monitoramento e Logs
 
-This scaffold includes a comprehensive set of modern web development tools:
+### **Logs do Sistema**
+- **Logs de API**: Todas as requisições são registradas
+- **Logs de Webhook**: Histórico completo de envios
+- **Logs de Erro**: Rastreamento detalhado de problemas
+- **Métricas de Performance**: Análise de desempenho
 
-### 🧩 UI Components (shadcn/ui)
-- **Layout**: Card, Separator, Aspect Ratio, Resizable Panels
-- **Forms**: Input, Textarea, Select, Checkbox, Radio Group, Switch
-- **Feedback**: Alert, Toast (Sonner), Progress, Skeleton
-- **Navigation**: Breadcrumb, Menubar, Navigation Menu, Pagination
-- **Overlay**: Dialog, Sheet, Popover, Tooltip, Hover Card
-- **Data Display**: Badge, Avatar, Calendar
+### **Acesso aos Logs**
+```bash
+# Logs de desenvolvimento
+tail -f dev.log
 
-### 📊 Advanced Data Features
-- **Tables**: Powerful data tables with sorting, filtering, pagination (TanStack Table)
-- **Charts**: Beautiful visualizations with Recharts
-- **Forms**: Type-safe forms with React Hook Form + Zod validation
+# Logs de produção
+tail -f server.log
 
-### 🎨 Interactive Features
-- **Animations**: Smooth micro-interactions with Framer Motion
-- **Drag & Drop**: Modern drag-and-drop functionality with DND Kit
-- **Theme Switching**: Built-in dark/light mode support
+# Logs via interface
+# Acesse: Configurações > API/Webhook > Logs
+```
 
-### 🔐 Backend Integration
-- **Authentication**: Ready-to-use auth flows with NextAuth.js
-- **Database**: Type-safe database operations with Prisma
-- **API Client**: HTTP requests with Axios + TanStack Query
-- **State Management**: Simple and scalable with Zustand
+## 🚀 Deploy
 
-### 🌍 Production Features
-- **Internationalization**: Multi-language support with Next Intl
-- **Image Optimization**: Automatic image processing with Sharp
-- **Type Safety**: End-to-end TypeScript with Zod validation
-- **Essential Hooks**: 100+ useful React hooks with ReactUse for common patterns
+### **Deploy Manual**
 
-## 🤝 Get Started with Z.ai
+```bash
+# 1. Build da aplicação
+npm run build
 
-1. **Clone this scaffold** to jumpstart your project
-2. **Visit [chat.z.ai](https://chat.z.ai)** to access your AI coding assistant
-3. **Start building** with intelligent code generation and assistance
-4. **Deploy with confidence** using the production-ready setup
+# 2. Configurar variáveis de produção
+export NODE_ENV=production
+export DATABASE_URL="sua-url-de-producao"
+
+# 3. Executar migrações
+npm run db:migrate
+
+# 4. Iniciar servidor
+npm start
+```
+
+### **Deploy com Docker**
+
+```bash
+# 1. Build da imagem
+docker build -t garapasystem:latest .
+
+# 2. Executar container
+docker run -d \
+  --name garapasystem \
+  -p 3000:3000 \
+  --env-file .env.production \
+  garapasystem:latest
+```
+
+### **Deploy com Docker Compose**
+
+```yaml
+# docker-compose.prod.yml
+version: '3.8'
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://user:pass@db:5432/garapasystem
+    depends_on:
+      - db
+  
+  db:
+    image: postgres:15
+    environment:
+      - POSTGRES_DB=garapasystem
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=pass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
+```
+
+## 🤝 Contribuição
+
+Contribuições são bem-vindas! Siga estas etapas:
+
+### **1. Fork e Clone**
+```bash
+git clone https://github.com/seu-usuario/GarapaSystem.git
+cd GarapaSystem
+```
+
+### **2. Crie uma Branch**
+```bash
+git checkout -b feature/nova-funcionalidade
+```
+
+### **3. Desenvolva e Teste**
+```bash
+# Instale dependências
+npm install
+
+# Execute testes
+npm test
+
+# Verifique linting
+npm run lint
+```
+
+### **4. Commit e Push**
+```bash
+git add .
+git commit -m "feat: adiciona nova funcionalidade"
+git push origin feature/nova-funcionalidade
+```
+
+### **5. Abra um Pull Request**
+- Descreva claramente as mudanças
+- Inclua testes para novas funcionalidades
+- Mantenha o código documentado
+
+### **Padrões de Commit**
+
+Utilizamos [Conventional Commits](https://www.conventionalcommits.org/):
+
+```
+feat: nova funcionalidade
+fix: correção de bug
+docs: atualização de documentação
+style: formatação de código
+refactor: refatoração de código
+test: adição de testes
+chore: tarefas de manutenção
+```
+
+## 📄 Licença
+
+Este projeto está licenciado sob a **Licença MIT**. Veja o arquivo [LICENSE](LICENSE) para detalhes.
+
+```
+MIT License
+
+Copyright (c) 2024 GarapaSystem
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
+## 📞 Suporte
+
+- **Documentação**: [Wiki do Projeto](https://github.com/seu-usuario/GarapaSystem/wiki)
+- **Issues**: [GitHub Issues](https://github.com/seu-usuario/GarapaSystem/issues)
+- **Discussões**: [GitHub Discussions](https://github.com/seu-usuario/GarapaSystem/discussions)
+- **Email**: suporte@garapasystem.com
+
+## 🎯 Roadmap
+
+### **Versão 1.1.0**
+- [ ] Integração com sistemas de pagamento
+- [ ] Relatórios avançados com exportação
+- [ ] Aplicativo mobile (React Native)
+- [ ] Sistema de notificações por email
+
+### **Versão 1.2.0**
+- [ ] Inteligência artificial para análise de dados
+- [ ] Integração com CRM externos
+- [ ] Sistema de backup automático
+- [ ] Multi-tenancy
+
+### **Versão 2.0.0**
+- [ ] Microserviços
+- [ ] Kubernetes deployment
+- [ ] GraphQL API
+- [ ] PWA (Progressive Web App)
 
 ---
 
-Built with ❤️ for the developer community. Supercharged by [Z.ai](https://chat.z.ai) 🚀
+**GarapaSystem** - Transformando a gestão empresarial com tecnologia moderna 🚀
+
+*Desenvolvido com ❤️ pela equipe GarapaSystem*
