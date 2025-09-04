@@ -19,7 +19,7 @@ export default function EditarGrupoHierarquicoPage() {
   const router = useRouter();
   const { toast } = useToast();
   const { grupo, loading, error: grupoError } = useGrupoHierarquico(params.id as string);
-  const { data: grupos, isLoading: gruposLoading } = useAllGruposHierarquicos();
+  const { grupos, loading: gruposLoading } = useAllGruposHierarquicos();
   
   const [formData, setFormData] = useState({
     nome: '',
@@ -36,7 +36,7 @@ export default function EditarGrupoHierarquicoPage() {
         nome: grupo.nome,
         descricao: grupo.descricao || '',
         ativo: grupo.ativo,
-        parentId: grupo.parentId || ''
+        parentId: grupo.parentId || 'none'
       });
     }
   }, [grupo]);
@@ -51,7 +51,7 @@ export default function EditarGrupoHierarquicoPage() {
         nome: formData.nome,
         descricao: formData.descricao || undefined,
         ativo: formData.ativo,
-        parentId: formData.parentId === 'null' ? undefined : formData.parentId || undefined
+        parentId: formData.parentId === 'none' ? undefined : formData.parentId || undefined
       });
 
       toast({
@@ -194,7 +194,7 @@ export default function EditarGrupoHierarquicoPage() {
                       <SelectValue placeholder={gruposLoading ? "Carregando grupos..." : "Selecione o grupo superior (opcional)"} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="null">Nenhum (Grupo Raiz)</SelectItem>
+                      <SelectItem value="none">Nenhum (Grupo Raiz)</SelectItem>
                       {grupos
                         ?.filter(g => g.id !== params.id) // Evitar auto-referência
                         .map((g) => (

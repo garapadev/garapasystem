@@ -24,7 +24,7 @@ export default function NovoGrupoHierarquicoPage() {
     nome: '',
     descricao: '',
     ativo: true,
-    parentId: 'null'
+    parentId: 'none'
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -39,7 +39,7 @@ export default function NovoGrupoHierarquicoPage() {
         nome: formData.nome,
         descricao: formData.descricao || undefined,
         ativo: formData.ativo,
-        parentId: formData.parentId === 'null' ? undefined : formData.parentId
+        parentId: formData.parentId === 'none' ? undefined : formData.parentId
       });
 
       toast({
@@ -158,7 +158,7 @@ export default function NovoGrupoHierarquicoPage() {
                       <SelectValue placeholder={gruposLoading ? "Carregando grupos..." : "Selecione o grupo superior (opcional)"} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="null">Nenhum (Grupo Raiz)</SelectItem>
+                      <SelectItem value="none">Nenhum (Grupo Raiz)</SelectItem>
                       {grupos?.map((grupo) => (
                         <SelectItem key={grupo.id} value={grupo.id}>
                           {grupo.nome}

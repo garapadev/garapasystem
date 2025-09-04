@@ -12,7 +12,6 @@ import {
   UserCircle, 
   Home,
   Settings,
-  BarChart3,
   Key,
   Menu,
   X
@@ -66,12 +65,6 @@ const navigation: NavigationItem[] = [
     href: '/usuarios', 
     icon: UserCircle,
     requiredPermission: { recurso: 'usuarios', acao: 'ler' }
-  },
-  { 
-    name: 'Relatórios', 
-    href: '/relatorios', 
-    icon: BarChart3,
-    requireAdmin: true
   },
   { 
     name: 'Configurações', 

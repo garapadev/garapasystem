@@ -197,17 +197,17 @@ export default function EditarUsuarioPage() {
                   <div className="space-y-2">
                     <Label htmlFor="colaborador">Colaborador Associado</Label>
                     <Select
-                      value={formData.colaboradorId || ''}
+                      value={formData.colaboradorId || 'none'}
                       onValueChange={(value) => setFormData(prev => ({ 
                         ...prev, 
-                        colaboradorId: value || null 
+                        colaboradorId: value === 'none' ? null : value 
                       }))}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Selecione um colaborador (opcional)" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">Nenhum colaborador</SelectItem>
+                        <SelectItem value="none">Nenhum colaborador</SelectItem>
                         {colaboradores?.map((colaborador) => (
                           <SelectItem key={colaborador.id} value={colaborador.id}>
                             {colaborador.nome} - {colaborador.email}

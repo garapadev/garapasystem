@@ -88,7 +88,7 @@ export default function NovoUsuarioPage() {
         senha: formData.senha,
         nome: formData.nome.trim(),
         ativo: formData.ativo,
-        colaboradorId: formData.colaboradorId || null
+        colaboradorId: formData.colaboradorId === 'none' || !formData.colaboradorId ? null : formData.colaboradorId
       };
 
       const response = await fetch('/api/usuarios', {
@@ -239,7 +239,7 @@ export default function NovoUsuarioPage() {
                       <SelectValue placeholder="Selecione um colaborador" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Nenhum colaborador</SelectItem>
+                      <SelectItem value="none">Nenhum colaborador</SelectItem>
                       {colaboradores.map((colaborador) => (
                         <SelectItem key={colaborador.id} value={colaborador.id}>
                           {colaborador.nome} - {colaborador.email}
