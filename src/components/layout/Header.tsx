@@ -14,9 +14,11 @@ import {
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { LogOut, Settings, User } from 'lucide-react'
 import { NotificationCenter } from '@/components/realtime/NotificationCenter'
+import { useRouter } from 'next/navigation'
 
 export function Header() {
   const { user, colaborador, isAuthenticated } = useAuth()
+  const router = useRouter()
 
   if (!isAuthenticated || !user) {
     return null
@@ -24,6 +26,12 @@ export function Header() {
 
   const handleSignOut = async () => {
     await signOut({ callbackUrl: '/auth/login' })
+  }
+
+  const handleProfileClick = () => {
+    if (colaborador?.id) {
+      router.push(`/colaboradores/${colaborador.id}`)
+    }
   }
 
   const getUserInitials = () => {
@@ -96,7 +104,7 @@ export function Header() {
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={handleProfileClick}>
                 <User className="mr-2 h-4 w-4" />
                 <span>Perfil</span>
               </DropdownMenuItem>
