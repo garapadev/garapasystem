@@ -1,8 +1,8 @@
-# 🚀 GarapaSystem
+# 🚀 GSMVP30 - Sistema de Gestão Empresarial
 
-**Sistema de Gestão Empresarial Completo**
+**Plataforma Moderna de Gestão Empresarial**
 
-O GarapaSystem é uma plataforma moderna e robusta de gestão empresarial desenvolvida com Next.js 15, oferecendo funcionalidades abrangentes para administração de usuários, clientes, colaboradores, negócios e integrações via API/Webhook. Projetado para empresas que buscam uma solução completa e escalável para gerenciar seus processos de negócio.
+O GSMVP30 é um sistema de gestão empresarial desenvolvido com Next.js 15 e TypeScript, implementando arquitetura Domain-Driven Design (DDD). A plataforma oferece funcionalidades completas para administração de usuários, clientes, colaboradores e processos de negócio, com interface moderna e comunicação em tempo real.
 
 ## ✨ Principais Funcionalidades
 
@@ -230,11 +230,12 @@ const response = await fetch('/api/negocios', {
 ## 📁 Estrutura do Projeto
 
 ```
-GarapaSystem/
+GSMVP30/
+├── 📁 backup/                 # Backups de sanitização
+├── 📁 docs/                   # Documentação do projeto
 ├── 📁 prisma/                 # Configuração do banco de dados
 │   ├── schema.prisma          # Schema do Prisma
-│   ├── migrations/            # Migrações do banco
-│   └── seed.ts               # Dados iniciais
+│   └── migrations/            # Migrações do banco
 ├── 📁 public/                 # Arquivos estáticos
 ├── 📁 src/
 │   ├── 📁 app/               # Páginas e rotas (App Router)
@@ -512,8 +513,8 @@ Contribuições são bem-vindas! Siga estas etapas:
 
 ### **1. Fork e Clone**
 ```bash
-git clone https://github.com/seu-usuario/GarapaSystem.git
-cd GarapaSystem
+git clone https://github.com/garapadev/gsmvp30.git
+cd gsmvp30
 ```
 
 ### **2. Crie uma Branch**
@@ -589,33 +590,42 @@ SOFTWARE.
 
 ## 📞 Suporte
 
-- **Documentação**: [Wiki do Projeto](https://github.com/seu-usuario/GarapaSystem/wiki)
-- **Issues**: [GitHub Issues](https://github.com/seu-usuario/GarapaSystem/issues)
-- **Discussões**: [GitHub Discussions](https://github.com/seu-usuario/GarapaSystem/discussions)
-- **Email**: suporte@garapasystem.com
+- **Documentação**: [Wiki do Projeto](https://github.com/garapadev/gsmvp30/wiki)
+- **Issues**: [GitHub Issues](https://github.com/garapadev/gsmvp30/issues)
+- **Discussões**: [GitHub Discussions](https://github.com/garapadev/gsmvp30/discussions)
+- **Email**: suporte@garapadev.com
 
-## 🎯 Roadmap
+## 📈 Status do Projeto
 
-### **Versão 1.1.0**
-- [ ] Integração com sistemas de pagamento
-- [ ] Relatórios avançados com exportação
-- [ ] Aplicativo mobile (React Native)
-- [ ] Sistema de notificações por email
+### **Estado Atual**
+- ✅ **Arquitetura DDD**: Implementada com entidades, repositórios e serviços
+- ✅ **Sistema de Autenticação**: NextAuth.js configurado e funcional
+- ✅ **Banco de Dados**: PostgreSQL com Prisma ORM
+- ✅ **Interface Moderna**: Tailwind CSS + shadcn/ui
+- ✅ **WebSocket**: Comunicação em tempo real implementada
+- ✅ **Sanitização**: Projeto limpo e otimizado (ver SANITIZATION_REPORT.md)
 
-### **Versão 1.2.0**
-- [ ] Inteligência artificial para análise de dados
-- [ ] Integração com CRM externos
-- [ ] Sistema de backup automático
-- [ ] Multi-tenancy
+### **Funcionalidades Implementadas**
+- ✅ Gestão de usuários com perfis e permissões
+- ✅ CRUD completo de clientes e colaboradores
+- ✅ Sistema de grupos hierárquicos
+- ✅ Dashboard com métricas em tempo real
+- ✅ API RESTful com documentação
+- ✅ Sistema de logs e auditoria
+- ✅ Containerização com Docker
 
-### **Versão 2.0.0**
-- [ ] Microserviços
-- [ ] Kubernetes deployment
-- [ ] GraphQL API
-- [ ] PWA (Progressive Web App)
+### **Processo de Sanitização**
+O projeto passou por um processo completo de sanitização que removeu:
+- Arquivos de teste e debug não utilizados
+- Bancos de dados SQLite obsoletos
+- Metadados do Windows (Zone.Identifier)
+- Diretórios de exemplo não referenciados
+- Scripts utilitários não utilizados
+
+Todos os arquivos removidos foram preservados em backup. Consulte o arquivo `SANITIZATION_REPORT.md` para detalhes completos.
 
 ---
 
-**GarapaSystem** - Transformando a gestão empresarial com tecnologia moderna 🚀
+**GSMVP30** - Sistema de gestão empresarial moderno e eficiente 🚀
 
-*Desenvolvido com ❤️ pela equipe GarapaSystem*
+*Desenvolvido com ❤️ pela equipe GarapaDev*
