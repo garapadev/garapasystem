@@ -12,7 +12,7 @@ interface ApiKeyValidationResult {
     id: string;
     nome: string;
     permissoes: string[];
-    limiteTaxa?: number;
+  
   };
   error?: string;
 }
@@ -24,7 +24,7 @@ interface AuthValidationResult {
     id: string;
     nome: string;
     permissoes: string[];
-    limiteTaxa?: number;
+
   };
   error?: string;
   authType?: 'session' | 'apikey';
@@ -76,7 +76,10 @@ export class ApiMiddleware {
     try {
       // Extrai a chave da API do header Authorization
       const authHeader = request.headers.get('Authorization');
+      console.log('🔑 Auth header:', authHeader);
+      
       if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        console.log('❌ Header inválido ou ausente');
         return {
           valid: false,
           error: 'Token de autorização não fornecido ou formato inválido'
@@ -84,9 +87,11 @@ export class ApiMiddleware {
       }
 
       const token = authHeader.substring(7); // Remove 'Bearer '
+      console.log('🔑 Token extraído:', token);
       
       // Hash da chave para comparação
       const hashedKey = crypto.createHash('sha256').update(token).digest('hex');
+      console.log('🔑 Hash gerado:', hashedKey);
       
       // Busca a chave no banco de dados
       const apiKey = await db.apiKey.findFirst({
@@ -100,6 +105,11 @@ export class ApiMiddleware {
         }
       });
 
+      console.log('🔑 API Key encontrada:', apiKey ? 'SIM' : 'NÃO');
+      if (apiKey) {
+        console.log('🔑 Permissões:', apiKey.permissoes);
+      }
+
       if (!apiKey) {
         return {
           valid: false,
@@ -107,24 +117,12 @@ export class ApiMiddleware {
         };
       }
 
-      // Verifica rate limiting se configurado
-      if (apiKey.limiteTaxa) {
-        const isRateLimited = await this.checkRateLimit(apiKey.id, apiKey.limiteTaxa);
-        if (isRateLimited) {
-          return {
-            valid: false,
-            error: 'Limite de taxa excedido'
-          };
-        }
-      }
-
       return {
         valid: true,
         apiKey: {
           id: apiKey.id,
           nome: apiKey.nome,
-          permissoes: apiKey.permissoes ? JSON.parse(apiKey.permissoes) : [],
-          limiteTaxa: apiKey.limiteTaxa || undefined
+          permissoes: apiKey.permissoes ? JSON.parse(apiKey.permissoes) : []
         }
       };
     } catch (error) {
@@ -136,19 +134,7 @@ export class ApiMiddleware {
     }
   }
 
-  /**
-   * Verifica se a chave de API excedeu o limite de taxa
-   */
-  private static async checkRateLimit(apiKeyId: string, limiteTaxa: number): Promise<boolean> {
-    try {
-      // Usa o rate limiter para verificar limites
-      const result = await checkApiKeyRateLimit(apiKeyId, limiteTaxa);
-      return !result.allowed;
-    } catch (error) {
-      console.error('Erro ao verificar rate limit:', error);
-      return false; // Em caso de erro, permite a requisição
-    }
-  }
+
 
   /**
    * Verifica se o usuário/API Key tem permissão para acessar um endpoint
@@ -297,10 +283,10 @@ export class ApiMiddleware {
           apiKeyId,
           endpoint,
           method,
-          status,
+          statusCode: status,
           responseTime,
           userAgent,
-          ip
+          ipAddress: ip
         }
       });
     } catch (error) {
@@ -399,7 +385,7 @@ export interface ApiKeyInfo {
   id: string;
   nome: string;
   permissoes: string[];
-  limiteTaxa?: number;
+
 }
 
 export interface ApiRequest extends NextRequest {

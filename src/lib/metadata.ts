@@ -9,19 +9,16 @@ type SystemConfig = {
 // Função para buscar configurações do sistema diretamente do banco
 export async function getSystemConfig(): Promise<SystemConfig | null> {
   try {
-    // Importação dinâmica do Prisma para evitar problemas de bundling
-    const { PrismaClient } = await import('@prisma/client');
-    const prisma = new PrismaClient();
+    // Usar a instância singleton do Prisma Client
+    const { db } = await import('./db');
     
-    const configuracoes = await prisma.configuracao.findMany({
+    const configuracoes = await db.configuracao.findMany({
       where: {
         chave: {
           in: ['sistema_nome', 'projeto_titulo']
         }
       }
     });
-    
-    await prisma.$disconnect();
     
     // Converter array de configurações em objeto
     const config: SystemConfig = {};

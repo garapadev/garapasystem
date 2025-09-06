@@ -3,7 +3,7 @@
 
 # Stage 1: Dependencies
 FROM node:18-alpine AS deps
-RUN apk add --no-cache libc6-compat
+RUN apk add --no-cache libc6-compat python3 make g++
 WORKDIR /app
 
 # Copiar arquivos de dependências
@@ -37,10 +37,13 @@ RUN adduser --system --uid 1001 nextjs
 
 # Copiar arquivos necessários
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/server.ts ./server.ts
+COPY --from=builder /app/src ./src
 COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/tsconfig.json ./tsconfig.json
 
 # Definir permissões
 RUN chown -R nextjs:nodejs /app
@@ -54,5 +57,5 @@ ENV NODE_ENV=production
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-# Comando de inicialização usando o servidor standalone do Next.js
-CMD ["dumb-init", "node", "server.js"]
+# Comando de inicialização usando o servidor customizado
+CMD ["dumb-init", "npx", "tsx", "server.ts"]

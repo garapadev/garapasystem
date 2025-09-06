@@ -8,10 +8,10 @@ export default withAuth(
     const pathname = req.nextUrl.pathname
 
     // Rotas públicas que não precisam de autenticação
-    const publicRoutes = ['/auth/login', '/auth/error', '/api/auth']
+    const publicRoutes = ['/auth/login', '/auth/error', '/api/auth', '/swagger', '/api/docs']
     
     // Rotas de API que não precisam de autenticação (não usam ApiMiddleware)
-    const publicApiRoutes = ['/api/clientes', '/api/negocios', '/api/api-keys', '/api/webhooks']
+    const publicApiRoutes = ['/api/clientes', '/api/negocios', '/api/webhooks']
     
     // Se é uma rota pública, permitir acesso
     if (publicRoutes.some(route => pathname.startsWith(route))) {
@@ -23,9 +23,14 @@ export default withAuth(
       return NextResponse.next()
     }
 
-    // Se não há token e não é rota pública, redirecionar para login
-    if (!token) {
+    // Se não há token e não é rota pública ou de API, redirecionar para login
+    if (!token && !pathname.startsWith('/api/')) {
       return NextResponse.redirect(new URL('/auth/login', req.url))
+    }
+    
+    // Se é uma rota de API sem token, permitir acesso (será validado pelo ApiMiddleware)
+    if (!token && pathname.startsWith('/api/')) {
+      return NextResponse.next()
     }
 
     // Se há token e é uma rota da API (exceto /api/auth), permitir acesso
@@ -77,6 +82,6 @@ export const config = {
      * - favicon.ico (favicon file)
      * - public folder
      */
-    '/((?!api/auth|_next/static|_next/image|favicon.ico|public).*)',
+    '/((?!api/auth|api/docs|swagger|_next/static|_next/image|favicon.ico|public).*)',
   ],
 }

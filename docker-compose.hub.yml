@@ -22,10 +22,7 @@ services:
       retries: 5
 
   gaparasystem-app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: gaparasystem-app:0.1.31
+    image: garapadev/garapasystem-app:0.1.31
     container_name: gaparasystem-app
     environment:
       DB_HOST: gaparasystem-postgres
@@ -46,8 +43,21 @@ services:
       - gaparasystem-network
     restart: unless-stopped
 
+  redis:
+    image: redis:7-alpine
+    container_name: gaparasystem-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - gaparasystem-network
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+
 volumes:
   postgres_data:
+  redis_data:
 
 networks:
   gaparasystem-network:
