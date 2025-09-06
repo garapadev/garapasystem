@@ -257,4 +257,4 @@ Este projeto está licenciado sob a **Licença MIT**. Veja o arquivo [LICENSE](L
 
 **GarapaSystem** - Sistema de gestão empresarial moderno e eficiente 🚀
 
-*Desenvolvido com ❤️ pela equipe GarapaDev*
+*Desenvolvido com ❤️ pela equipe GarapaDev* do ceara para o Mundo!
