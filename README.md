@@ -112,7 +112,7 @@ Acesse [http://localhost:3000](http://localhost:3000) para ver a aplicação.
 
 **Credenciais padrão:**
 - Email: `admin@garapasystem.com`
-- Senha: `admin123`
+- Senha: `password`
 
 > ⚠️ **Importante**: Altere a senha imediatamente após o primeiro login!
 
