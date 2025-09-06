@@ -22,7 +22,7 @@ Plataforma completa de gestão empresarial desenvolvida com Next.js 15, TypeScri
 - **Dashboard Interativo**: Métricas e KPIs em tempo real
 - **Relatórios**: Análises detalhadas do negócio
 
-![Pipeline de Vendas](./screenshots/pipeline-vendas-2025-09-06T14-12-25-026Z.png)
+![Pipeline de Vendas](./screenshots/pipeline-vendas-completo-2025-09-06T14-18-23-046Z.png)
 
 ### ⚙️ Integrações e Automação
 - **Sistema de Webhooks**: Configuração flexível de integrações
@@ -30,7 +30,7 @@ Plataforma completa de gestão empresarial desenvolvida com Next.js 15, TypeScri
 - **Chaves API**: Geração e gerenciamento seguro de acesso
 - **Logs Detalhados**: Monitoramento completo de atividades
 
-![Configurações de API](./screenshots/api-config-2025-09-06T14-12-33-524Z.png)
+![Configurações de API](./screenshots/api-config-completo-2025-09-06T14-18-41-758Z.png)
 
 ### 🔄 Comunicação em Tempo Real
 - **WebSocket**: Atualizações instantâneas
