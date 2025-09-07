@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  gaparasystem-postgres:
+    image: garapadev/postgres-postgis-pgvector:15-optimized
+    environment:
+      POSTGRES_DB: garapasys_db
+      POSTGRES_USER: garapasys_user
+      POSTGRES_PASSWORD: garapasys_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./prisma/init-complete.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    networks:
+      - proxy
+      - gaparasystem-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U garapasys_user -d garapasys_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+
+  gaparasystem-app:
+    image: garapadev/garapasystem:latest
+    environment:
+      DB_HOST: gaparasystem-postgres
+      DB_PORT: 5432
+      DB_NAME: garapasys_db
+      DB_USER: garapasys_user
+      DB_PASSWORD: garapasys_password
+      DATABASE_URL: "postgresql://garapasys_user:garapasys_password@gaparasystem-postgres:5432/garapasys_db?schema=public"
+      NEXTAUTH_SECRET: "KmYl85qqhLFfe0VMH+k+bAelK+r1fWcGem+F+beJj+M="
+      NEXTAUTH_URL: "https://demo.garapasystem.com"
+      NODE_ENV: "production"
+      PORT: "8080"
+    ports:
+      - "8080:8080"
+    depends_on:
+      - gaparasystem-postgres
+    networks:
+      - proxy
+      - gaparasystem-network
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      labels:
+        - traefik.enable=true
+        - traefik.http.routers.gaparasystem-app.rule=Host(`demo.garapasystem.com`)
+        - traefik.http.routers.gaparasystem-app.entrypoints=websecure
+        - traefik.http.routers.gaparasystem-app.priority=1
+        - traefik.http.routers.gaparasystem-app.tls.certresolver=letsencryptresolver
+        - traefik.http.routers.gaparasystem-app.service=gaparasystem-app
+        - traefik.http.services.gaparasystem-app.loadbalancer.server.port=8080
+        - traefik.http.services.gaparasystem-app.loadbalancer.passHostHeader=true
+        - traefik.docker.network=proxy
+
+volumes:
+  postgres_data:
+
+networks:
+  proxy:
+    external: true
+  gaparasystem-network:
+    driver: overlay
+    attachable: true
