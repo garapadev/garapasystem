@@ -208,11 +208,11 @@ async function main() {
   // Criar colaborador administrador
   console.log('👨‍💼 Criando colaborador administrador...')
   const colaboradorAdmin = await prisma.colaborador.upsert({
-    where: { email: 'admin@sistema.com' },
+    where: { email: 'admin@garapasystem.com' },
     update: {},
     create: {
       nome: 'Administrador do Sistema',
-      email: 'admin@sistema.com',
+      email: 'admin@garapasystem.com',
       telefone: '(11) 99999-9999',
       documento: '000.000.000-00',
       cargo: 'Administrador',
@@ -225,12 +225,12 @@ async function main() {
 
   // Criar usuário administrador
   console.log('🔐 Criando usuário administrador...')
-  const senhaHash = await bcrypt.hash('admin123', 10)
+  const senhaHash = await bcrypt.hash('password', 10)
   const usuarioAdmin = await prisma.usuario.upsert({
-    where: { email: 'admin@sistema.com' },
+    where: { email: 'admin@garapasystem.com' },
     update: {},
     create: {
-      email: 'admin@sistema.com',
+      email: 'admin@garapasystem.com',
       senha: senhaHash,
       nome: 'Administrador do Sistema',
       ativo: true,
@@ -250,12 +250,20 @@ async function main() {
       documento: '123.456.789-00',
       tipo: 'PESSOA_FISICA',
       status: 'CLIENTE',
-      endereco: 'Rua das Flores, 123',
-      cidade: 'São Paulo',
-      estado: 'SP',
-      cep: '01234-567',
       valorPotencial: 50000,
-      grupoHierarquicoId: grupoAdmin.id
+      grupoHierarquicoId: grupoAdmin.id,
+      enderecos: {
+        create: {
+          logradouro: 'Rua das Flores',
+          numero: '123',
+          bairro: 'Centro',
+          cidade: 'São Paulo',
+          estado: 'SP',
+          cep: '01234-567',
+          tipo: 'RESIDENCIAL',
+          principal: true
+        }
+      }
     }
   })
 
@@ -269,18 +277,38 @@ async function main() {
       documento: '12.345.678/0001-90',
       tipo: 'PESSOA_JURIDICA',
       status: 'PROSPECT',
-      endereco: 'Av. Paulista, 1000',
-      cidade: 'São Paulo',
-      estado: 'SP',
-      cep: '01310-100',
       valorPotencial: 200000,
-      grupoHierarquicoId: grupoAdmin.id
+      grupoHierarquicoId: grupoAdmin.id,
+      enderecos: {
+        create: [
+          {
+            logradouro: 'Av. Paulista',
+            numero: '1000',
+            bairro: 'Bela Vista',
+            cidade: 'São Paulo',
+            estado: 'SP',
+            cep: '01310-100',
+            tipo: 'COMERCIAL',
+            principal: true
+          },
+          {
+            logradouro: 'Rua das Entregas',
+            numero: '500',
+            bairro: 'Vila Madalena',
+            cidade: 'São Paulo',
+            estado: 'SP',
+            cep: '05433-000',
+            tipo: 'ENTREGA',
+            principal: false
+          }
+        ]
+      }
     }
   })
 
   console.log('✅ Seed concluído com sucesso!')
-  console.log('📧 Email: admin@sistema.com')
-  console.log('🔑 Senha: admin123')
+  console.log('📧 Email: admin@garapasystem.com')
+  console.log('🔑 Senha: password')
 }
 
 main()

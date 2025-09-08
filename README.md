@@ -10,7 +10,7 @@ Plataforma completa de gestão empresarial desenvolvida com Next.js 15, TypeScri
 
 ### 👥 Gestão de Pessoas
 - **Usuários**: Sistema completo de autenticação e autorização
-- **Clientes**: Cadastro e gerenciamento de base de clientes
+- **Clientes**: Cadastro e gerenciamento de base de clientes com múltiplos endereços
 - **Colaboradores**: Controle de funcionários e suas informações
 - **Perfis e Permissões**: Controle granular de acesso
 
@@ -29,6 +29,7 @@ Plataforma completa de gestão empresarial desenvolvida com Next.js 15, TypeScri
 - **API RESTful**: Endpoints completos com documentação Swagger
 - **Chaves API**: Geração e gerenciamento seguro de acesso
 - **Logs Detalhados**: Monitoramento completo de atividades
+- **Sistema de Versioning**: Controle de versões da aplicação e API
 
 ![Configurações de API](./screenshots/api-config-completo-2025-09-06T14-18-41-758Z.png)
 
@@ -36,6 +37,11 @@ Plataforma completa de gestão empresarial desenvolvida com Next.js 15, TypeScri
 - **WebSocket**: Atualizações instantâneas
 - **Notificações**: Sistema de alertas em tempo real
 - **Sincronização**: Dados sempre atualizados
+
+### ⚙️ Configurações Avançadas
+- **Aba Sobre**: Informações detalhadas da aplicação, API e verificação de atualizações
+- **Configurações de Sistema**: Painel completo de configurações
+- **Monitoramento**: Status em tempo real do sistema
 
 ## 🛠️ Stack Tecnológico
 
@@ -107,6 +113,17 @@ npm run dev
 ```
 
 Acesse [http://localhost:3000](http://localhost:3000) para ver a aplicação.
+
+## 🆕 Atualizações Recentes
+
+### Versão 0.1.0 - Janeiro 2025
+- ✨ **Nova Aba Sobre**: Informações detalhadas da aplicação, API e verificação de atualizações
+- 🏠 **Múltiplos Endereços**: Clientes agora podem ter vários endereços cadastrados
+- 📊 **Sistema de Versioning**: API para controle de versões e verificação de atualizações
+- 🔧 **Melhorias na Interface**: Componentes otimizados e experiência do usuário aprimorada
+- 🐛 **Correções de Bugs**: Diversos ajustes e melhorias de estabilidade
+- 📱 **Responsividade**: Interface totalmente responsiva para dispositivos móveis
+- 🔒 **Segurança**: Implementação de rate limiting e middleware de segurança
 
 ## 📖 Primeiro Acesso
 
@@ -246,12 +263,30 @@ Este projeto está licenciado sob a **Licença MIT**. Veja o arquivo [LICENSE](L
 
 ## 📈 Status do Projeto
 
-- ✅ **Arquitetura DDD**: Implementada
-- ✅ **Sistema de Autenticação**: NextAuth.js configurado
-- ✅ **Banco de Dados**: PostgreSQL com Prisma ORM
-- ✅ **Interface Moderna**: Tailwind CSS + shadcn/ui
-- ✅ **WebSocket**: Comunicação em tempo real
-- ✅ **Containerização**: Docker configurado
+### ✅ Funcionalidades Implementadas
+- **Arquitetura DDD**: Implementada com padrões modernos
+- **Sistema de Autenticação**: NextAuth.js configurado e funcional
+- **Banco de Dados**: PostgreSQL com Prisma ORM e migrações
+- **Interface Moderna**: Tailwind CSS + shadcn/ui responsiva
+- **WebSocket**: Comunicação em tempo real implementada
+- **Containerização**: Docker e Docker Compose configurados
+- **Sistema de Versioning**: API de versões e verificação de atualizações
+- **Múltiplos Endereços**: Suporte completo para clientes com vários endereços
+- **Configurações Avançadas**: Painel de configurações com aba Sobre
+- **API RESTful**: Endpoints completos com documentação Swagger
+- **Sistema de Logs**: Monitoramento detalhado de atividades
+
+### 🚧 Em Desenvolvimento
+- **Relatórios Avançados**: Dashboards com métricas detalhadas
+- **Integração ViaCEP**: Preenchimento automático de endereços
+- **Sistema de Backup**: Backup automático do banco de dados
+- **Notificações Push**: Sistema de notificações em tempo real
+
+### 📋 Roadmap
+- **Mobile App**: Aplicativo móvel React Native
+- **BI Dashboard**: Business Intelligence integrado
+- **API Gateway**: Gerenciamento avançado de APIs
+- **Multi-tenancy**: Suporte para múltiplas empresas
 
 ---
 

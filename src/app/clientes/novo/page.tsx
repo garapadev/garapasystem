@@ -10,15 +10,45 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { ArrowLeft, Save, Loader2 } from 'lucide-react';
+import { ArrowLeft, Save, Loader2, Plus } from 'lucide-react';
 import Link from 'next/link';
 import { createCliente } from '@/hooks/useClientes';
 import { useToast } from '@/hooks/use-toast';
 import { clienteSchema, type ClienteFormData } from '@/lib/validations/cliente';
+import { useViaCep } from '@/hooks/useViaCep';
+import { EnderecoForm } from '@/components/clientes/EnderecoForm';
 
 export default function NovoClientePage() {
   const router = useRouter();
   const { toast } = useToast();
+  const { buscarCep, formatarCep, validarCep, loading: cepLoading, error: cepError } = useViaCep();
+
+  const adicionarEndereco = () => {
+    const enderecosAtuais = form.getValues('enderecos') || [];
+    const novoEndereco = {
+      cep: '',
+      logradouro: '',
+      numero: '',
+      bairro: '',
+      complemento: '',
+      cidade: '',
+      estado: '',
+      pais: 'Brasil',
+      tipo: 'RESIDENCIAL' as const,
+      informacoesAdicionais: '',
+      principal: false,
+      ativo: true
+    };
+    form.setValue('enderecos', [...enderecosAtuais, novoEndereco]);
+  };
+
+  const removerEndereco = (index: number) => {
+    const enderecosAtuais = form.getValues('enderecos') || [];
+    if (enderecosAtuais.length > 1) {
+      const novosEnderecos = enderecosAtuais.filter((_, i) => i !== index);
+      form.setValue('enderecos', novosEnderecos);
+    }
+  };
   
   const form = useForm<ClienteFormData>({
     resolver: zodResolver(clienteSchema),
@@ -29,10 +59,20 @@ export default function NovoClientePage() {
       documento: '',
       tipo: 'PESSOA_FISICA',
       status: 'LEAD',
-      endereco: '',
-      cidade: '',
-      estado: '',
-      cep: '',
+      enderecos: [{
+        cep: '',
+        logradouro: '',
+        numero: '',
+        bairro: '',
+        complemento: '',
+        cidade: '',
+        estado: '',
+        pais: 'Brasil',
+        tipo: 'RESIDENCIAL',
+        informacoesAdicionais: '',
+        principal: true,
+        ativo: true
+      }],
       observacoes: '',
       valorPotencial: '0'
     }
@@ -47,12 +87,9 @@ export default function NovoClientePage() {
         documento: data.documento,
         tipo: data.tipo,
         status: data.status as 'LEAD' | 'PROSPECT' | 'CLIENTE',
-        ...(data.endereco && { endereco: data.endereco }),
-        ...(data.cidade && { cidade: data.cidade }),
-        ...(data.estado && { estado: data.estado }),
-        ...(data.cep && { cep: data.cep }),
         ...(data.observacoes && { observacoes: data.observacoes }),
-        ...(data.valorPotencial && { valorPotencial: parseFloat(data.valorPotencial) })
+        ...(data.valorPotencial && { valorPotencial: parseFloat(data.valorPotencial) }),
+        ...(data.enderecos && { enderecos: data.enderecos })
       };
 
       await createCliente(clienteData);
@@ -231,71 +268,36 @@ export default function NovoClientePage() {
               </CardContent>
             </Card>
 
-            {/* Endereço */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Endereço</CardTitle>
-                <CardDescription>
-                  Informações de endereço
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="endereco"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Endereço</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Digite o endereço" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="cidade"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Cidade</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Digite a cidade" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="estado"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Estado</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Digite o estado" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+            {/* Endereços */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-medium">Endereços</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Gerencie os endereços do cliente
+                  </p>
                 </div>
-                <FormField
-                  control={form.control}
-                  name="cep"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>CEP</FormLabel>
-                      <FormControl>
-                        <Input placeholder="00000-000" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={adicionarEndereco}
+                  className="flex items-center gap-2"
+                >
+                  <Plus className="h-4 w-4" />
+                  Adicionar Endereço
+                </Button>
+              </div>
+              
+              {form.watch('enderecos')?.map((_, index) => (
+                <EnderecoForm
+                  key={index}
+                  form={form}
+                  index={index}
+                  onRemove={() => removerEndereco(index)}
+                  canRemove={(form.watch('enderecos')?.length || 0) > 1}
                 />
-              </CardContent>
-            </Card>
+              ))}
+            </div>
 
             {/* Observações */}
             <Card>

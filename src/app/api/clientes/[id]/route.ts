@@ -15,7 +15,8 @@ export async function GET(
             nome: true,
             descricao: true
           }
-        }
+        },
+        enderecos: true
       }
     });
 
@@ -69,6 +70,22 @@ export async function PUT(
       }
     }
 
+    // Processar endereços se fornecidos
+    let enderecosUpdate = {};
+    if (body.enderecos) {
+      // Garantir que pelo menos um endereço seja principal
+      if (!body.enderecos.some((endereco: any) => endereco.principal)) {
+        body.enderecos[0].principal = true;
+      }
+      
+      enderecosUpdate = {
+        enderecos: {
+          deleteMany: {},
+          create: body.enderecos
+        }
+      };
+    }
+
     // Atualizar cliente
     const cliente = await db.cliente.update({
       where: { id: params.id },
@@ -79,13 +96,10 @@ export async function PUT(
         documento: body.documento,
         tipo: body.tipo,
         status: body.status,
-        endereco: body.endereco,
-        cidade: body.cidade,
-        estado: body.estado,
-        cep: body.cep,
         observacoes: body.observacoes,
         valorPotencial: body.valorPotencial ? parseFloat(body.valorPotencial) : null,
-        grupoHierarquicoId: body.grupoHierarquicoId
+        grupoHierarquicoId: body.grupoHierarquicoId,
+        ...enderecosUpdate
       },
       include: {
         grupoHierarquico: {

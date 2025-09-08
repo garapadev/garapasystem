@@ -35,6 +35,31 @@ model Usuario {
   @@map("usuarios")
 }
 
+// Endereços dos clientes
+model Endereco {
+  id                   String   @id @default(cuid())
+  cep                  String?
+  logradouro           String?  // Rua, Avenida, etc.
+  numero               String?  // Número do endereço
+  complemento          String?  // Apartamento, sala, etc.
+  bairro               String?  // Bairro/Distrito
+  cidade               String?
+  estado               String?  // Estado/UF
+  pais                 String?  @default("Brasil")
+  tipo                 TipoEndereco @default(RESIDENCIAL)
+  informacoesAdicionais String?
+  principal            Boolean  @default(false)
+  ativo                Boolean  @default(true)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  
+  // Relacionamentos
+  clienteId            String
+  cliente              Cliente  @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  
+  @@map("enderecos")
+}
+
 // Clientes e Leads
 model Cliente {
   id             String      @id @default(cuid())
@@ -44,10 +69,6 @@ model Cliente {
   documento      String?     // CPF/CNPJ
   tipo           TipoCliente @default(PESSOA_FISICA)
   status         StatusCliente @default(LEAD)
-  endereco       String?
-  cidade         String?
-  estado         String?
-  cep            String?
   observacoes    String?
   valorPotencial Float?
   createdAt      DateTime    @default(now())
@@ -56,6 +77,9 @@ model Cliente {
   // Relacionamentos
   grupoHierarquicoId String?
   grupoHierarquico   GrupoHierarquico? @relation(fields: [grupoHierarquicoId], references: [id])
+  
+  // Endereços
+  enderecos      Endereco[]
   
   // Oportunidades
   oportunidades  Oportunidade[]
@@ -316,4 +340,14 @@ enum StatusCliente {
   PROSPECT
   CLIENTE
   INATIVO
+}
+
+enum TipoEndereco {
+  RESIDENCIAL
+  COMERCIAL
+  TRABALHO
+  CORRESPONDENCIA
+  ENTREGA
+  COBRANCA
+  OUTRO
 }

@@ -2,6 +2,17 @@
 
 import { useState, useEffect } from 'react';
 
+interface Endereco {
+  cep?: string;
+  endereco?: string;
+  complemento?: string;
+  cidade?: string;
+  estado?: string;
+  tipo: 'CASA' | 'TRABALHO' | 'OUTRO';
+  informacoesAdicionais?: string;
+  principal: boolean;
+}
+
 interface Cliente {
   id: string;
   nome: string;
@@ -10,10 +21,7 @@ interface Cliente {
   documento?: string;
   tipo: 'PESSOA_FISICA' | 'PESSOA_JURIDICA';
   status: 'LEAD' | 'PROSPECT' | 'CLIENTE';
-  endereco?: string;
-  cidade?: string;
-  estado?: string;
-  cep?: string;
+  enderecos: Endereco[];
   observacoes?: string;
   valorPotencial?: number;
   grupoHierarquicoId?: string;

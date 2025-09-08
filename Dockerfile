@@ -28,8 +28,8 @@ RUN npm run build
 FROM node:18-alpine AS runner
 WORKDIR /app
 
-# Instalar dependências do sistema
-RUN apk add --no-cache dumb-init
+# Instalar dependências do sistema incluindo PostgreSQL client
+RUN apk add --no-cache dumb-init postgresql-client
 
 # Criar usuário não-root
 RUN addgroup --system --gid 1001 nodejs
@@ -41,13 +41,13 @@ COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/server.ts ./server.ts
 COPY --from=builder /app/src ./src
 COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/scripts ./scripts
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/tsconfig.json ./tsconfig.json
 
 # Definir permissões
 RUN chown -R nextjs:nodejs /app
-USER nextjs
 
 # Expor porta
 EXPOSE 3000
@@ -57,5 +57,17 @@ ENV NODE_ENV=production
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-# Comando de inicialização usando o servidor customizado
-CMD ["dumb-init", "npx", "tsx", "server.ts"]
+# Script de inicialização personalizado
+RUN echo '#!/bin/sh' > /app/start.sh && \
+    echo 'echo "🚀 Iniciando configuração do banco..."' >> /app/start.sh && \
+    echo 'npx prisma db push --accept-data-loss' >> /app/start.sh && \
+    echo 'echo "🌱 Executando seed..."' >> /app/start.sh && \
+    echo 'npm run db:seed' >> /app/start.sh && \
+    echo 'echo "✅ Configuração concluída! Iniciando aplicação..."' >> /app/start.sh && \
+    echo 'exec dumb-init npx tsx server.ts' >> /app/start.sh && \
+    chmod +x /app/start.sh && \
+    chown nextjs:nodejs /app/start.sh
+
+# Sobrescrever entrypoint e comando de inicialização
+ENTRYPOINT []
+CMD ["/app/start.sh"]

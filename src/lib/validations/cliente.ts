@@ -23,20 +23,55 @@ export const clienteSchema = z.object({
   status: z.enum(['LEAD', 'PROSPECT', 'CLIENTE', 'INATIVO'], {
     message: 'Status deve ser Lead, Prospect, Cliente ou Inativo'
   }),
-  endereco: z.string()
-    .max(255, 'Endereço deve ter no máximo 255 caracteres')
-    .optional(),
-  cidade: z.string()
-    .max(100, 'Cidade deve ter no máximo 100 caracteres')
-    .optional(),
-  estado: z.string()
-    .length(2, 'Estado deve ter 2 caracteres (ex: SP, RJ)')
-    .optional(),
-  cep: z.string()
-    .optional()
-    .refine((val) => !val || /^\d{5}-?\d{3}$/.test(val), {
-      message: 'CEP deve estar no formato XXXXX-XXX'
-    }),
+  enderecos: z.array(z.object({
+    cep: z.string()
+      .optional()
+      .refine((val) => !val || /^\d{5}-?\d{3}$/.test(val), {
+        message: 'CEP deve estar no formato XXXXX-XXX'
+      }),
+    logradouro: z.string()
+      .max(255, 'Logradouro deve ter no máximo 255 caracteres')
+      .optional(),
+    numero: z.string()
+      .max(20, 'Número deve ter no máximo 20 caracteres')
+      .optional(),
+    bairro: z.string()
+      .max(100, 'Bairro deve ter no máximo 100 caracteres')
+      .optional(),
+    complemento: z.string()
+      .max(100, 'Complemento deve ter no máximo 100 caracteres')
+      .optional(),
+    cidade: z.string()
+      .max(100, 'Cidade deve ter no máximo 100 caracteres')
+      .optional(),
+    estado: z.string()
+      .length(2, 'Estado deve ter 2 caracteres (ex: SP, RJ)')
+      .optional(),
+    pais: z.string()
+      .max(100, 'País deve ter no máximo 100 caracteres')
+      .default('Brasil'),
+    tipo: z.enum(['RESIDENCIAL', 'COMERCIAL', 'CORRESPONDENCIA', 'ENTREGA', 'COBRANCA'], {
+      message: 'Tipo deve ser Residencial, Comercial, Correspondência, Entrega ou Cobrança'
+    }).default('RESIDENCIAL'),
+    informacoesAdicionais: z.string()
+      .max(500, 'Informações adicionais devem ter no máximo 500 caracteres')
+      .optional(),
+    principal: z.boolean().default(false),
+    ativo: z.boolean().default(true)
+  })).min(1, 'Pelo menos um endereço é obrigatório').default([{
+    cep: '',
+    logradouro: '',
+    numero: '',
+    bairro: '',
+    complemento: '',
+    cidade: '',
+    estado: '',
+    pais: 'Brasil',
+    tipo: 'RESIDENCIAL' as const,
+    informacoesAdicionais: '',
+    principal: true,
+    ativo: true
+   }]),
   valorPotencial: z.string()
     .optional()
     .refine((val) => !val || !isNaN(parseFloat(val)), {

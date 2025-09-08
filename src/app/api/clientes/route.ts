@@ -94,6 +94,27 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Processar endereços
+    const enderecosData = body.enderecos || [{
+      cep: body.cep || '',
+      logradouro: body.logradouro || body.endereco || '',
+      numero: body.numero || '',
+      bairro: body.bairro || '',
+      complemento: body.complemento || '',
+      cidade: body.cidade || '',
+      estado: body.estado || '',
+      pais: body.pais || 'Brasil',
+      tipo: 'RESIDENCIAL',
+      informacoesAdicionais: body.informacoesAdicionais || '',
+      principal: true,
+      ativo: true
+    }];
+
+    // Garantir que pelo menos um endereço seja principal
+    if (!enderecosData.some((endereco: any) => endereco.principal)) {
+      enderecosData[0].principal = true;
+    }
+
     // Criar cliente
     const cliente = await db.cliente.create({
       data: {
@@ -103,13 +124,12 @@ export async function POST(request: NextRequest) {
         documento: body.documento || null,
         tipo: body.tipo || 'PESSOA_FISICA',
         status: body.status || 'LEAD',
-        endereco: body.endereco || null,
-        cidade: body.cidade || null,
-        estado: body.estado || null,
-        cep: body.cep || null,
         observacoes: body.observacoes || null,
         valorPotencial: body.valorPotencial ? parseFloat(body.valorPotencial) : null,
-        grupoHierarquicoId: body.grupoHierarquicoId || null
+        grupoHierarquicoId: body.grupoHierarquicoId || null,
+        enderecos: {
+          create: enderecosData
+        }
       },
       include: {
         grupoHierarquico: {
@@ -117,7 +137,8 @@ export async function POST(request: NextRequest) {
             id: true,
             nome: true
           }
-        }
+        },
+        enderecos: true
       }
     });
 

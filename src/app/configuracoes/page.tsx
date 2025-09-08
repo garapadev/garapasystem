@@ -1,69 +1,55 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-
-import { Settings, Save, Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useToast } from '@/hooks/use-toast';
 import { useConfiguracoes } from '@/hooks/useConfiguracoes';
-import { useAuth } from '@/hooks/useAuth';
-import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { toast } from 'sonner';
+import { Loader2, Settings, Info } from 'lucide-react';
+import SobreTab from '@/components/configuracoes/SobreTab';
 
 export default function ConfiguracoesPage() {
-  const { canAccess } = useAuth();
-  const { configuracoes, loading, error, updateConfiguracao, getConfiguracao } = useConfiguracoes();
-  const [saving, setSaving] = useState(false);
+  const { toast } = useToast();
+  const { configuracoes, loading, updateConfiguracao, getConfiguracao } = useConfiguracoes();
   const [formData, setFormData] = useState({
-    sistemaNome: '',
-    projetoTitulo: ''
+    nomeDoSistema: '',
+    tituloDoSistema: ''
   });
+  const [saving, setSaving] = useState(false);
 
-  // Inicializar dados do formulário quando as configurações carregarem
   useEffect(() => {
-    if (!loading && configuracoes.length > 0) {
-      const sistemaNome = configuracoes.find(config => config.chave === 'sistema_nome')?.valor || 'CRM/ERP Sistema';
-      const projetoTitulo = configuracoes.find(config => config.chave === 'projeto_titulo')?.valor || 'Gestão Empresarial';
+    if (configuracoes && configuracoes.length > 0) {
+      const nomeDoSistema = getConfiguracao('sistema_nome')?.valor || '';
+      const tituloDoSistema = getConfiguracao('projeto_titulo')?.valor || '';
       
       setFormData({
-        sistemaNome,
-        projetoTitulo
+        nomeDoSistema,
+        tituloDoSistema
       });
     }
-  }, [loading, configuracoes]);
-
-  const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
+  }, [configuracoes, getConfiguracao]);
 
   const handleSave = async () => {
+    setSaving(true);
     try {
-      setSaving(true);
-      
-      // Salvar configurações
       await Promise.all([
-        updateConfiguracao(
-          'sistema_nome', 
-          formData.sistemaNome, 
-          'Nome do sistema CRM/ERP'
-        ),
-        updateConfiguracao(
-          'projeto_titulo', 
-          formData.projetoTitulo, 
-          'Título do projeto'
-        )
+        updateConfiguracao('sistema_nome', formData.nomeDoSistema, 'Nome do sistema'),
+        updateConfiguracao('projeto_titulo', formData.tituloDoSistema, 'Título do projeto')
       ]);
       
-      toast.success('Configurações salvas com sucesso!');
+      toast({
+        title: 'Configurações salvas',
+        description: 'As configurações foram atualizadas com sucesso.',
+      });
     } catch (error) {
-      console.error('Erro ao salvar configurações:', error);
-      toast.error('Erro ao salvar configurações');
+      toast({
+        title: 'Erro ao salvar',
+        description: 'Ocorreu um erro ao salvar as configurações.',
+        variant: 'destructive',
+      });
     } finally {
       setSaving(false);
     }
@@ -71,89 +57,76 @@ export default function ConfiguracoesPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
+      <div className="flex items-center justify-center h-64">
         <Loader2 className="h-8 w-8 animate-spin" />
       </div>
     );
   }
 
   return (
-    <ProtectedRoute requiredPermissions={[{ recurso: 'configuracoes', acao: 'editar' }]}>
-      <div className="container mx-auto py-6">
-        <div className="flex items-center gap-2 mb-6">
-          <Settings className="h-6 w-6" />
-          <h1 className="text-2xl font-bold">Configurações</h1>
-        </div>
-
-        {error && (
-          <Alert className="mb-6">
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
-
-        <div className="w-full">
-          
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Configurações Gerais</CardTitle>
-                <CardDescription>
-                  Configure as informações básicas do sistema
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="sistemaNome">Nome do Sistema</Label>
-                    <Input
-                      id="sistemaNome"
-                      placeholder="Ex: CRM/ERP Sistema"
-                      value={formData.sistemaNome}
-                      onChange={(e) => handleInputChange('sistemaNome', e.target.value)}
-                    />
-                    <p className="text-sm text-muted-foreground">
-                      Este nome aparecerá no cabeçalho e em outras partes do sistema
-                    </p>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="projetoTitulo">Título do Projeto</Label>
-                    <Input
-                      id="projetoTitulo"
-                      placeholder="Ex: Gestão Empresarial"
-                      value={formData.projetoTitulo}
-                      onChange={(e) => handleInputChange('projetoTitulo', e.target.value)}
-                    />
-                    <p className="text-sm text-muted-foreground">
-                      Título que aparecerá na aba do navegador e em documentos
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="flex justify-end pt-4">
-                  <Button 
-                    onClick={handleSave} 
-                    disabled={saving}
-                    className="min-w-[120px]"
-                  >
-                    {saving ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Salvando...
-                      </>
-                    ) : (
-                      <>
-                        <Save className="mr-2 h-4 w-4" />
-                        Salvar
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+    <div className="container mx-auto py-6">
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold tracking-tight">Configurações</h1>
+        <p className="text-muted-foreground">
+          Gerencie as configurações do sistema
+        </p>
       </div>
-    </ProtectedRoute>
+
+      <Tabs defaultValue="geral" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="geral" className="flex items-center gap-2">
+            <Settings className="h-4 w-4" />
+            Configurações Gerais
+          </TabsTrigger>
+          <TabsTrigger value="sobre" className="flex items-center gap-2">
+            <Info className="h-4 w-4" />
+            Sobre
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="geral">
+          <Card>
+            <CardHeader>
+              <CardTitle>Configurações Gerais</CardTitle>
+              <CardDescription>
+                Configure as informações básicas do sistema
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="nomeDoSistema">Nome do Sistema</Label>
+                <Input
+                  id="nomeDoSistema"
+                  value={formData.nomeDoSistema}
+                  onChange={(e) => setFormData({ ...formData, nomeDoSistema: e.target.value })}
+                  placeholder="Digite o nome do sistema"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="tituloDoSistema">Título do Projeto</Label>
+                <Input
+                  id="tituloDoSistema"
+                  value={formData.tituloDoSistema}
+                  onChange={(e) => setFormData({ ...formData, tituloDoSistema: e.target.value })}
+                  placeholder="Digite o título do projeto"
+                />
+              </div>
+
+              <div className="flex justify-end pt-4">
+                <Button onClick={handleSave} disabled={saving}>
+                  {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Salvar Configurações
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="sobre">
+          <SobreTab />
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 }

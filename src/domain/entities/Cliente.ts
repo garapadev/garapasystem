@@ -2,6 +2,17 @@ import { Entity } from '../Entity';
 import { TipoCliente, StatusCliente } from '../value-objects/ClienteEnums';
 import { GrupoHierarquico } from './GrupoHierarquico';
 
+export interface Endereco {
+  cep?: string;
+  endereco?: string;
+  complemento?: string;
+  cidade?: string;
+  estado?: string;
+  tipo: 'CASA' | 'TRABALHO' | 'OUTRO';
+  informacoesAdicionais?: string;
+  principal: boolean;
+}
+
 export interface ClienteProps {
   nome: string;
   email?: string;
@@ -9,10 +20,7 @@ export interface ClienteProps {
   documento?: string;
   tipo: TipoCliente;
   status: StatusCliente;
-  endereco?: string;
-  cidade?: string;
-  estado?: string;
-  cep?: string;
+  enderecos: Endereco[];
   observacoes?: string;
   valorPotencial?: number;
   grupoHierarquico?: GrupoHierarquico;
@@ -45,20 +53,12 @@ export class Cliente extends Entity<ClienteProps> {
     return this.props.status;
   }
 
-  get endereco(): string | undefined {
-    return this.props.endereco;
+  get enderecos(): Endereco[] {
+    return this.props.enderecos;
   }
 
-  get cidade(): string | undefined {
-    return this.props.cidade;
-  }
-
-  get estado(): string | undefined {
-    return this.props.estado;
-  }
-
-  get cep(): string | undefined {
-    return this.props.cep;
+  get enderecoPrincipal(): Endereco | undefined {
+    return this.props.enderecos.find(endereco => endereco.principal);
   }
 
   get observacoes(): string | undefined {
