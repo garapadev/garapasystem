@@ -1,6 +1,6 @@
 {
   "name": "GarapaSystem",
-  "version": "0.1.31",
+  "version": "0.1.33",
   "private": true,
   "scripts": {
     "dev": "nodemon --exec \"npx tsx server.ts\" --watch server.ts --watch src --ext ts,tsx,js,jsx 2>&1 | tee dev.log",
@@ -33,6 +33,7 @@
     "@radix-ui/react-toast": "^1.2.14",
     "@radix-ui/react-tooltip": "^1.2.7",
     "@types/bcryptjs": "^2.4.6",
+    "@types/nodemailer": "^7.0.1",
     "@types/pg": "^8.15.5",
     "axios": "^1.10.0",
     "bcryptjs": "^3.0.2",
@@ -40,10 +41,12 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "date-fns": "^4.1.0",
+    "imapflow": "^1.0.195",
     "input-otp": "^1.4.2",
     "lucide-react": "^0.525.0",
     "next": "15.3.5",
     "next-auth": "^4.24.11",
+    "nodemailer": "^6.10.1",
     "pg": "^8.16.3",
     "prisma": "^6.11.1",
     "react": "^18.3.1",

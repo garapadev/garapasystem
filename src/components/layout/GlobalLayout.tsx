@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { Sidebar } from './Sidebar';
 import { Header } from './Header';
+import { useEmailNotifications } from '@/hooks/useEmailNotifications';
 
 interface GlobalLayoutProps {
   children: ReactNode;
@@ -13,6 +14,9 @@ interface GlobalLayoutProps {
 export function GlobalLayout({ children }: GlobalLayoutProps) {
   const { isAuthenticated, isLoading } = useAuth();
   const pathname = usePathname();
+  
+  // Initialize email notifications
+  useEmailNotifications();
   
   // Páginas que não devem mostrar o sidebar (login, etc.)
   const authPages = ['/auth/login', '/auth/register'];

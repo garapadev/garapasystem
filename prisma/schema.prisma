@@ -175,6 +175,9 @@ model Colaborador {
   // Oportunidades como responsável
   oportunidades  Oportunidade[]
   
+  // Configuração de email
+  emailConfig    EmailConfig?
+  
   @@map("colaboradores")
 }
 
@@ -350,4 +353,152 @@ enum TipoEndereco {
   ENTREGA
   COBRANCA
   OUTRO
+}
+
+// Sistema de Email/Webmail
+
+// Configurações de email por colaborador
+model EmailConfig {
+  id                String   @id @default(cuid())
+  
+  // Configurações IMAP (recebimento)
+  imapHost          String
+  imapPort          Int      @default(993)
+  imapSecure        Boolean  @default(true) // SSL/TLS
+  
+  // Configurações SMTP (envio)
+  smtpHost          String
+  smtpPort          Int      @default(587)
+  smtpSecure        Boolean  @default(false) // STARTTLS
+  
+  // Credenciais
+  email             String
+  password          String   // Criptografado
+  
+  // Configurações de sincronização
+  syncEnabled       Boolean  @default(true)
+  syncInterval      Int      @default(180) // segundos (3 minutos)
+  lastSync          DateTime?
+  
+  // Metadados
+  ativo             Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  // Relacionamentos
+  colaboradorId     String   @unique
+  colaborador       Colaborador @relation(fields: [colaboradorId], references: [id], onDelete: Cascade)
+  
+  // Pastas e emails
+  folders           EmailFolder[]
+  emails            Email[]
+  
+  @@map("email_configs")
+}
+
+// Pastas de email (INBOX, Sent, Drafts, etc.)
+model EmailFolder {
+  id                String   @id @default(cuid())
+  name              String   // Nome da pasta
+  path              String   // Caminho IMAP da pasta
+  delimiter         String   @default("/")
+  specialUse        String?  // \Inbox, \Sent, \Drafts, etc.
+  subscribed        Boolean  @default(true)
+  
+  // Contadores
+  totalMessages     Int      @default(0)
+  unreadMessages    Int      @default(0)
+  
+  // Metadados
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  // Relacionamentos
+  emailConfigId     String
+  emailConfig       EmailConfig @relation(fields: [emailConfigId], references: [id], onDelete: Cascade)
+  
+  emails            Email[]
+  
+  @@unique([emailConfigId, path])
+  @@map("email_folders")
+}
+
+// Emails
+model Email {
+  id                String   @id @default(cuid())
+  
+  // Identificadores únicos
+  messageId         String   // Message-ID do email
+  uid               Int      // UID no servidor IMAP
+  
+  // Cabeçalhos principais
+  subject           String?
+  from              String   // JSON array de remetentes
+  to                String?  // JSON array de destinatários
+  cc                String?  // JSON array de cópias
+  bcc               String?  // JSON array de cópias ocultas
+  replyTo           String?  // JSON array de reply-to
+  
+  // Conteúdo
+  textContent       String?  // Conteúdo em texto puro
+  htmlContent       String?  // Conteúdo em HTML
+  
+  // Metadados
+  date              DateTime // Data do email
+  size              Int?     // Tamanho em bytes
+  flags             String?  // JSON array de flags (\Seen, \Flagged, etc.)
+  isRead            Boolean  @default(false)
+  isFlagged         Boolean  @default(false)
+  isDeleted         Boolean  @default(false)
+  
+  // Threading
+  inReplyTo         String?  // Message-ID do email original
+  references        String?  // JSON array de Message-IDs referenciados
+  threadId          String?  // ID da thread
+  
+  // Sincronização
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  // Relacionamentos
+  emailConfigId     String
+  emailConfig       EmailConfig @relation(fields: [emailConfigId], references: [id], onDelete: Cascade)
+  
+  folderId          String
+  folder            EmailFolder @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  
+  attachments       EmailAttachment[]
+  
+  @@unique([emailConfigId, messageId])
+  @@unique([emailConfigId, folderId, uid])
+  @@map("emails")
+}
+
+// Anexos de email
+model EmailAttachment {
+  id                String   @id @default(cuid())
+  filename          String
+  contentType       String
+  size              Int
+  contentId         String?  // Para anexos inline
+  disposition       String?  // attachment ou inline
+  
+  // Armazenamento
+  filePath          String?  // Caminho no sistema de arquivos
+  
+  // Metadados
+  createdAt         DateTime @default(now())
+  
+  // Relacionamentos
+  emailId           String
+  email             Email    @relation(fields: [emailId], references: [id], onDelete: Cascade)
+  
+  @@map("email_attachments")
+}
+
+enum EmailSyncStatus {
+  IDLE
+  SYNCING
+  ERROR
+  DISABLED
 }

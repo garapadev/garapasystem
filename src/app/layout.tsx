@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import AuthSessionProvider from "@/components/providers/session-provider";
 import { GlobalLayout } from "@/components/layout/GlobalLayout";
+import { NotificationProvider } from "@/components/ui/notification";
 import { generateDynamicMetadata } from "@/lib/metadata";
 
 const geistSans = Geist({
@@ -31,10 +32,12 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
       >
         <AuthSessionProvider>
-          <GlobalLayout>
-            {children}
-          </GlobalLayout>
-          <Toaster />
+          <NotificationProvider>
+            <GlobalLayout>
+              {children}
+            </GlobalLayout>
+            <Toaster />
+          </NotificationProvider>
         </AuthSessionProvider>
       </body>
     </html>

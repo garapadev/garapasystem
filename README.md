@@ -114,9 +114,9 @@ npm run dev
 
 Acesse [http://localhost:3000](http://localhost:3000) para ver a aplicação.
 
-## 🆕 Atualizações Recentes
+##### 🆕 Atualizações Recentes
 
-### Versão 0.1.31 - Setembro 2025
+#### Versão 0.1.32 - Setembro 2025
 - ✨ **Nova Aba Sobre**: Informações detalhadas da aplicação, API e verificação de atualizações
 - 🏠 **Múltiplos Endereços**: Clientes agora podem ter vários endereços cadastrados
 - 📊 **Sistema de Versioning**: API para controle de versões e verificação de atualizações
