@@ -33,6 +33,14 @@ Plataforma completa de gestão empresarial desenvolvida com Next.js 15, TypeScri
 
 ![Configurações de API](./screenshots/api-config-completo-2025-09-06T14-18-41-758Z.png)
 
+### 📧 Sistema de Webmail
+- **Cliente de Email Completo**: Interface moderna para gerenciamento de emails
+- **Suporte IMAP/SMTP**: Configuração flexível de contas de email
+- **Composição de Emails**: Editor rico para criação de mensagens
+- **Sincronização em Tempo Real**: Atualização automática de pastas e mensagens
+- **Gerenciamento de Pastas**: Organização completa de emails (Inbox, Enviados, Rascunhos, Lixeira)
+- **Busca Avançada**: Pesquisa rápida e eficiente de emails
+
 ### 🔄 Comunicação em Tempo Real
 - **WebSocket**: Atualizações instantâneas
 - **Notificações**: Sistema de alertas em tempo real
@@ -58,6 +66,9 @@ Plataforma completa de gestão empresarial desenvolvida com Next.js 15, TypeScri
 - **PostgreSQL** - Banco de dados relacional robusto
 - **NextAuth.js** - Autenticação e autorização segura
 - **Socket.IO** - Comunicação bidirecional em tempo real
+- **Nodemailer** - Envio de emails via SMTP
+- **IMAP Client** - Conexão e sincronização com servidores IMAP
+- **Email Parser** - Processamento e análise de mensagens de email
 
 ### Infraestrutura
 - **Docker** - Containerização para deploy consistente
@@ -116,6 +127,16 @@ Acesse [http://localhost:3000](http://localhost:3000) para ver a aplicação.
 
 ##### 🆕 Atualizações Recentes
 
+#### Versão 0.1.33 - Janeiro 2025
+- 📧 **Sistema de Webmail Completo**: Cliente de email integrado com suporte IMAP/SMTP
+- ✉️ **Composição de Emails**: Editor rico para criação e envio de mensagens
+- 📁 **Gerenciamento de Pastas**: Organização automática de emails (Inbox, Enviados, Rascunhos, Lixeira)
+- 🔄 **Sincronização em Tempo Real**: Atualização automática de pastas e mensagens
+- 🔍 **Busca de Emails**: Sistema de pesquisa avançada integrado
+- 🛠️ **Configurações de Email**: Interface para configuração de contas IMAP/SMTP
+- 🎨 **Interface Moderna**: Design responsivo e intuitivo para o webmail
+- 🔧 **Correções de Tipos TypeScript**: Melhorias na tipagem e estabilidade do código
+
 #### Versão 0.1.32 - Setembro 2025
 - ✨ **Nova Aba Sobre**: Informações detalhadas da aplicação, API e verificação de atualizações
 - 🏠 **Múltiplos Endereços**: Clientes agora podem ter vários endereços cadastrados
@@ -133,6 +154,29 @@ Acesse [http://localhost:3000](http://localhost:3000) para ver a aplicação.
 
 > ⚠️ **Importante**: Altere a senha imediatamente após o primeiro login!
 
+### 📧 Acessando o Webmail
+
+Após fazer login no sistema, você pode acessar o webmail através do menu lateral ou diretamente em:
+- **Desenvolvimento**: [http://localhost:3000/webmail](http://localhost:3000/webmail)
+- **Produção**: `https://seu-dominio.com/webmail`
+
+**Configuração de Email:**
+1. Acesse o webmail
+2. Clique em "Settings" (Configurações)
+3. Configure suas credenciais IMAP/SMTP:
+   - **Servidor IMAP**: `imap.seu-provedor.com`
+   - **Porta IMAP**: `993` (SSL) ou `143` (STARTTLS)
+   - **Servidor SMTP**: `smtp.seu-provedor.com`
+   - **Porta SMTP**: `465` (SSL) ou `587` (STARTTLS)
+   - **Email e Senha**: Suas credenciais de email
+
+**Funcionalidades Disponíveis:**
+- ✉️ Composição e envio de emails
+- 📁 Gerenciamento de pastas (Inbox, Enviados, Rascunhos, Lixeira)
+- 🔍 Busca avançada de mensagens
+- 🔄 Sincronização automática em tempo real
+- 📎 Suporte a anexos (em desenvolvimento)
+
 ## 🔌 API e Documentação
 
 ### Documentação Swagger
@@ -149,6 +193,10 @@ Acesse [http://localhost:3000](http://localhost:3000) para ver a aplicação.
 | `POST` | `/api/negocios` | Criar negócio |
 | `GET` | `/api/webhooks` | Listar webhooks |
 | `POST` | `/api/webhooks` | Criar webhook |
+| `GET` | `/api/email/folders` | Listar pastas de email |
+| `POST` | `/api/email/send` | Enviar email |
+| `GET` | `/api/email/messages` | Listar mensagens |
+| `POST` | `/api/email/config` | Configurar conta de email |
 
 ### Exemplo de Uso da API
 
@@ -180,7 +228,8 @@ garapasystem/
 │   │   ├── 📁 clientes/      # Interface de clientes
 │   │   ├── 📁 colaboradores/ # Interface de colaboradores
 │   │   ├── 📁 configuracoes/ # Configurações do sistema
-│   │   └── 📁 usuarios/      # Interface de usuários
+│   │   ├── 📁 usuarios/      # Interface de usuários
+│   │   └── 📁 webmail/       # Sistema de webmail
 │   ├── 📁 components/        # Componentes reutilizáveis
 │   ├── 📁 hooks/             # Hooks customizados
 │   ├── 📁 lib/               # Utilitários e configurações
@@ -275,18 +324,28 @@ Este projeto está licenciado sob a **Licença MIT**. Veja o arquivo [LICENSE](L
 - **Configurações Avançadas**: Painel de configurações com aba Sobre
 - **API RESTful**: Endpoints completos com documentação Swagger
 - **Sistema de Logs**: Monitoramento detalhado de atividades
+- **Sistema de Webmail**: Cliente de email completo com IMAP/SMTP
+- **Composição de Emails**: Editor rico para criação de mensagens
+- **Sincronização de Email**: Atualização automática em tempo real
+- **Gerenciamento de Pastas**: Organização completa de emails
 
 ### 🚧 Em Desenvolvimento
 - **Relatórios Avançados**: Dashboards com métricas detalhadas
 - **Integração ViaCEP**: Preenchimento automático de endereços
 - **Sistema de Backup**: Backup automático do banco de dados
 - **Notificações Push**: Sistema de notificações em tempo real
+- **Anexos de Email**: Suporte completo para upload e download de anexos
+- **Filtros de Email**: Sistema avançado de filtros e regras
+- **Assinatura de Email**: Editor de assinaturas personalizadas
 
 ### 📋 Roadmap
 - **Mobile App**: Aplicativo móvel React Native
 - **BI Dashboard**: Business Intelligence integrado
 - **API Gateway**: Gerenciamento avançado de APIs
 - **Multi-tenancy**: Suporte para múltiplas empresas
+- **Calendário Integrado**: Integração com calendários de email
+- **Chat em Tempo Real**: Sistema de mensagens instantâneas
+- **Webmail Offline**: Suporte para uso offline do webmail
 
 ---
 
