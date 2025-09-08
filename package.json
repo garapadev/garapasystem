@@ -1,6 +1,6 @@
 {
   "name": "GarapaSystem",
-  "version": "0.1.32",
+  "version": "0.1.31",
   "private": true,
   "scripts": {
     "dev": "nodemon --exec \"npx tsx server.ts\" --watch server.ts --watch src --ext ts,tsx,js,jsx 2>&1 | tee dev.log",
