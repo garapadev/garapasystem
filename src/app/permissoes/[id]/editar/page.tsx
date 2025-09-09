@@ -28,7 +28,8 @@ const recursos = [
   'grupos',
   'perfis',
   'sistema',
-  'relatorios'
+  'relatorios',
+  'webmail'
 ];
 
 const acoes = [

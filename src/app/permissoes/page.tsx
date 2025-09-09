@@ -7,7 +7,8 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Search, Edit, Trash2, Eye, Shield, Loader2 } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Plus, Search, Edit, Trash2, Eye, Shield, Loader2, Filter } from 'lucide-react';
 import { usePermissoes } from '@/hooks/usePermissoes';
 import { useAuth } from '@/hooks/useAuth';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
@@ -58,6 +59,7 @@ export default function PermissoesPage() {
   const router = useRouter();
   const { canAccess } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
+  const [recursoFilter, setRecursoFilter] = useState<string>('');
   const [currentPage, setCurrentPage] = useState(1);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const limit = 10;
@@ -65,11 +67,37 @@ export default function PermissoesPage() {
   const { permissoes, loading, error, meta, refetch, deletePermissao } = usePermissoes({
     page: currentPage,
     limit,
-    search: searchTerm || undefined
+    search: searchTerm || undefined,
+    recurso: recursoFilter || undefined
   });
+
+  // Lista de recursos disponíveis
+  const recursos = [
+    'clientes',
+    'colaboradores', 
+    'dashboard',
+    'grupos',
+    'perfis',
+    'permissoes',
+    'sistema',
+    'usuarios',
+    'webmail'
+  ];
 
   const handleSearch = (value: string) => {
     setSearchTerm(value);
+    setCurrentPage(1);
+  };
+
+  const handleRecursoFilter = (value: string) => {
+    const filterValue = value === 'todos' ? '' : value;
+    setRecursoFilter(filterValue);
+    setCurrentPage(1);
+  };
+
+  const clearFilters = () => {
+    setSearchTerm('');
+    setRecursoFilter('');
     setCurrentPage(1);
   };
 
@@ -122,10 +150,36 @@ export default function PermissoesPage() {
                 <Input
                   placeholder="Buscar permissões..."
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={(e) => handleSearch(e.target.value)}
                   className="pl-8"
                 />
               </div>
+              <Select value={recursoFilter || 'todos'} onValueChange={handleRecursoFilter}>
+                <SelectTrigger className="w-[200px]">
+                  <SelectValue placeholder="Filtrar por recurso" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="todos">Todos os recursos</SelectItem>
+                  {recursos.map((recurso) => (
+                    <SelectItem key={recurso} value={recurso}>
+                      {recurso === 'webmail' ? (
+                        <span className="flex items-center">
+                          <Badge variant="secondary" className="mr-2">Novo</Badge>
+                          {recurso}
+                        </span>
+                      ) : (
+                        recurso
+                      )}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {(searchTerm || recursoFilter) && (
+                <Button variant="outline" onClick={clearFilters}>
+                  <Filter className="mr-2 h-4 w-4" />
+                  Limpar
+                </Button>
+              )}
             </div>
           </CardContent>
         </Card>

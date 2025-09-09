@@ -8,7 +8,6 @@ interface Permissao {
   descricao?: string;
   recurso: string;
   acao: string;
-  ativo: boolean;
   perfis?: {
     perfil: {
       id: string;

@@ -1,5 +1,10 @@
 import { useSession } from 'next-auth/react'
 import { useMemo } from 'react'
+import { 
+  WEBMAIL_PERMISSIONS, 
+  WEBMAIL_ACCESS_LEVELS,
+  WebmailPermissionUtils 
+} from '@/lib/permissions/webmail-permissions'
 
 export interface Permission {
   id: string
@@ -127,7 +132,23 @@ export function useAuth() {
         update: hasPermission('usuarios', 'editar'),
         delete: hasPermission('usuarios', 'excluir'),
         any: hasAnyPermission('usuarios', ['criar', 'ler', 'editar', 'excluir'])
-      }
+      },
+      // Webmail
+       webmail: {
+          access: WebmailPermissionUtils.hasWebmailPermission(permissions.map(p => p.nome), WEBMAIL_PERMISSIONS.EMAIL_READ),
+          viewEmails: WebmailPermissionUtils.hasWebmailPermission(permissions.map(p => p.nome), WEBMAIL_PERMISSIONS.EMAIL_READ),
+          sendEmails: WebmailPermissionUtils.hasWebmailPermission(permissions.map(p => p.nome), WEBMAIL_PERMISSIONS.EMAIL_SEND),
+          deleteEmails: WebmailPermissionUtils.hasWebmailPermission(permissions.map(p => p.nome), WEBMAIL_PERMISSIONS.EMAIL_DELETE),
+          manageConfig: WebmailPermissionUtils.hasWebmailPermission(permissions.map(p => p.nome), WEBMAIL_PERMISSIONS.EMAIL_CONFIG_WRITE),
+          viewConfig: WebmailPermissionUtils.hasWebmailPermission(permissions.map(p => p.nome), WEBMAIL_PERMISSIONS.EMAIL_CONFIG_READ),
+          manageFolders: WebmailPermissionUtils.hasWebmailPermission(permissions.map(p => p.nome), WEBMAIL_PERMISSIONS.FOLDER_MANAGE),
+          viewFolders: WebmailPermissionUtils.hasWebmailPermission(permissions.map(p => p.nome), WEBMAIL_PERMISSIONS.FOLDER_READ),
+          manageAttachments: WebmailPermissionUtils.hasWebmailPermission(permissions.map(p => p.nome), WEBMAIL_PERMISSIONS.ATTACHMENT_UPLOAD),
+          viewAttachments: WebmailPermissionUtils.hasWebmailPermission(permissions.map(p => p.nome), WEBMAIL_PERMISSIONS.ATTACHMENT_DOWNLOAD),
+          viewAuditLogs: WebmailPermissionUtils.hasWebmailPermission(permissions.map(p => p.nome), WEBMAIL_PERMISSIONS.ADMIN_LOGS),
+          manageUsers: WebmailPermissionUtils.hasWebmailPermission(permissions.map(p => p.nome), WEBMAIL_PERMISSIONS.ADMIN_MANAGE_USERS),
+          any: WebmailPermissionUtils.hasAnyWebmailPermission(permissions.map(p => p.nome), [WEBMAIL_PERMISSIONS.EMAIL_READ, WEBMAIL_PERMISSIONS.EMAIL_CONFIG_READ])
+        }
     }
   }, [hasPermission, hasAnyPermission])
 
