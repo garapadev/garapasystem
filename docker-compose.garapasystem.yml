@@ -38,7 +38,7 @@ services:
         order: stop-first
 
   gaparasystem-app:
-    image: garapadev/garapasystem-app:0.1.31
+    image: garapadev/garapasystem-app:0.1.32
     environment:
       DB_HOST: garapasystem-app_gaparasystem-postgres
       DB_PORT: 5432
@@ -47,7 +47,7 @@ services:
       DB_PASSWORD: garapasys_password
       DATABASE_URL: "postgresql://garapasys_user:garapasys_password@gaparasystem-postgres:5432/garapasys_db?schema=public"
       NEXTAUTH_SECRET: "KmYl85qqhLFfe0VMH+k+bAelK+r1fWcGem+F+beJj+M="
-      NEXTAUTH_URL: "https://demo.garapasystem.com"
+      NEXTAUTH_URL: "https://localhost:3000"
       NODE_ENV: "production"
       PORT: "3000"
     # Removido depends_on que não funciona no Swarm mode

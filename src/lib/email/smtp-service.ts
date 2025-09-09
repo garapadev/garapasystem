@@ -1,5 +1,6 @@
 import nodemailer from 'nodemailer';
 import { db } from '@/lib/db';
+import { decryptPassword } from './password-crypto';
 import type { EmailConfig } from '@prisma/client';
 
 interface EmailRecipient {
@@ -55,13 +56,16 @@ export class SmtpService {
       // Para porta 465, usar secure: true
       const isSecure = this.config.smtpPort === 465;
       
+      // Descriptografar senha
+      const password = decryptPassword(this.config.password);
+      
       this.transporter = nodemailer.createTransport({
         host: this.config.smtpHost,
         port: this.config.smtpPort,
         secure: isSecure, // true apenas para porta 465
         auth: {
           user: this.config.email,
-          pass: this.config.password // Em produção, descriptografar adequadamente
+          pass: password
         },
         tls: {
           rejectUnauthorized: false // Para desenvolvimento, em produção configurar adequadamente

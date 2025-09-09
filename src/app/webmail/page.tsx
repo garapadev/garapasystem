@@ -28,8 +28,7 @@ import {
   Paperclip,
   ChevronLeft,
   ChevronRight,
-  Edit,
-  TestTube
+  Edit
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -74,24 +73,9 @@ export default function WebmailPage() {
   const [selectedEmail, setSelectedEmail] = useState<Email | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
-  const [syncing, setSyncing] = useState(false);
-  const [autoSyncEnabled, setAutoSyncEnabled] = useState(false);
-  const [syncStatus, setSyncStatus] = useState<{
-    isActive: boolean;
-    isRunning: boolean;
-    lastSync?: string;
-  }>({ isActive: false, isRunning: false });
-  const [consistencyStatus, setConsistencyStatus] = useState<{
-    hasInconsistencies: boolean;
-    totalFolders: number;
-    inconsistencies: number;
-    lastCheck?: string;
-  } | null>(null);
-  const [isCheckingConsistency, setIsCheckingConsistency] = useState(false);
   const [showConfig, setShowConfig] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [isSendingTest, setIsSendingTest] = useState(false);
 
   useEffect(() => {
     if (session?.user) {
@@ -117,40 +101,6 @@ export default function WebmailPage() {
       loadEmails();
     }
   }, [currentPage]);
-
-  // Verificar status da sincronização automática
-  useEffect(() => {
-    if (!emailConfig) return;
-    
-    checkAutoSyncStatus();
-    checkConsistency();
-    
-    // Verificar status a cada 30 segundos
-    const statusInterval = setInterval(() => {
-      checkAutoSyncStatus();
-    }, 30 * 1000);
-    
-    // Verificar consistência a cada 10 minutos
-    const consistencyInterval = setInterval(() => {
-      checkConsistency();
-    }, 10 * 60 * 1000);
-    
-    return () => {
-      clearInterval(statusInterval);
-      clearInterval(consistencyInterval);
-    };
-  }, [emailConfig]);
-
-  // Auto-sync manual (fallback)
-  useEffect(() => {
-    if (!emailConfig || autoSyncEnabled) return;
-    
-    const interval = setInterval(() => {
-      syncEmails();
-    }, 3 * 60 * 1000); // 3 minutos
-    
-    return () => clearInterval(interval);
-  }, [emailConfig, autoSyncEnabled]);
 
   const loadEmailConfig = async () => {
     try {
@@ -221,151 +171,10 @@ export default function WebmailPage() {
     }
   };
 
-  const checkAutoSyncStatus = async () => {
-    try {
-      const response = await fetch('/api/email-sync/auto');
-      if (response.ok) {
-        const data = await response.json();
-        setSyncStatus({
-          isActive: data.isActive,
-          isRunning: data.isRunning,
-          lastSync: data.lastSync
-        });
-        setAutoSyncEnabled(data.isActive);
-      }
-    } catch (error) {
-      console.error('Erro ao verificar status da sincronização:', error);
-    }
-  };
-
-  const checkConsistency = async () => {
-    setIsCheckingConsistency(true);
-    try {
-      const response = await fetch('/api/email-sync/consistency');
-      if (response.ok) {
-        const data = await response.json();
-        setConsistencyStatus({
-          hasInconsistencies: data.report.hasInconsistencies,
-          totalFolders: data.report.totalFolders,
-          inconsistencies: data.report.inconsistencies.length,
-          lastCheck: data.timestamp
-        });
-      }
-    } catch (error) {
-      console.error('Erro ao verificar consistência:', error);
-    } finally {
-      setIsCheckingConsistency(false);
-    }
-  };
-
-  const fixConsistency = async () => {
-    setIsCheckingConsistency(true);
-    try {
-      const response = await fetch('/api/email-sync/consistency', {
-        method: 'POST'
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setConsistencyStatus({
-          hasInconsistencies: false,
-          totalFolders: data.report.totalFolders,
-          inconsistencies: 0,
-          lastCheck: data.timestamp
-        });
-        // Recarregar emails após correção
-        await loadEmails();
-      }
-    } catch (error) {
-      console.error('Erro ao corrigir inconsistências:', error);
-    } finally {
-      setIsCheckingConsistency(false);
-    }
-  };
-
-  const sendTestEmail = async () => {
-    if (!emailConfig) return;
-    
-    setIsSendingTest(true);
-    try {
-      const response = await fetch('/api/emails/test-send', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          to: 'ronaldodavi@gmail.com',
-          subject: 'Teste de Envio - GarapaSystem Webmail',
-          message: 'Este é um e-mail de teste para verificar a funcionalidade completa do sistema de envio.'
-        })
-      });
-      
-      const result = await response.json();
-      
-      if (response.ok && result.success) {
-        toast.success(`E-mail de teste enviado com sucesso para ronaldodavi@gmail.com!`);
-        console.log('Detalhes do envio:', result.details);
-      } else {
-        toast.error(`Erro ao enviar e-mail de teste: ${result.error || 'Erro desconhecido'}`);
-        console.error('Erro no envio:', result);
-      }
-    } catch (error) {
-      console.error('Erro ao enviar e-mail de teste:', error);
-      toast.error('Erro ao enviar e-mail de teste');
-    } finally {
-      setIsSendingTest(false);
-    }
-  };
-
-  const toggleAutoSync = async () => {
-    try {
-      const response = await fetch('/api/email-sync/auto', {
-        method: autoSyncEnabled ? 'DELETE' : 'POST'
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        setAutoSyncEnabled(!autoSyncEnabled);
-        toast.success(data.message);
-        checkAutoSyncStatus();
-      } else {
-        toast.error('Erro ao alterar sincronização automática');
-      }
-    } catch (error) {
-      console.error('Erro na sincronização automática:', error);
-      toast.error('Erro ao alterar sincronização automática');
-    }
-  };
-
-  const syncEmails = async () => {
-    setSyncing(true);
-    try {
-      const response = await fetch('/api/email-sync', {
-        method: 'POST'
-      });
-      
-      if (response.ok) {
-        toast.success('Sincronização iniciada');
-        // Recarregar emails após alguns segundos
-        setTimeout(() => {
-          loadEmails();
-          loadFolders();
-          checkAutoSyncStatus();
-        }, 3000);
-      } else {
-        toast.error('Erro ao sincronizar emails');
-      }
-    } catch (error) {
-      console.error('Erro na sincronização:', error);
-      toast.error('Erro ao sincronizar emails');
-    } finally {
-      setSyncing(false);
-    }
-  };
-
   const markAsRead = async (emailId: string) => {
     try {
-      const response = await fetch(`/api/emails/${emailId}/mark-read`, {
-        method: 'POST'
+      const response = await fetch(`/api/emails/${emailId}/read`, {
+        method: 'PATCH'
       });
       
       if (response.ok) {
@@ -373,38 +182,136 @@ export default function WebmailPage() {
           email.id === emailId ? { ...email, isRead: true } : email
         ));
         
-        // Atualizar contadores das pastas
-        setFolders(folders.map(folder => {
-          if (folder.id === selectedFolder) {
-            return {
-              ...folder,
-              unreadCount: Math.max(0, folder.unreadCount - 1)
-            };
-          }
-          return folder;
-        }));
+        // Atualizar contador da pasta
+        setFolders(folders.map(folder => 
+          folder.id === selectedFolder 
+            ? { ...folder, unreadCount: Math.max(0, folder.unreadCount - 1) }
+            : folder
+        ));
       }
     } catch (error) {
       console.error('Erro ao marcar como lido:', error);
     }
   };
 
-  const handleEmailClick = (email: Email) => {
-    setSelectedEmail(email);
-    if (!email.isRead) {
-      markAsRead(email.id);
+  const markAsUnread = async (emailId: string) => {
+    try {
+      const response = await fetch(`/api/emails/${emailId}/unread`, {
+        method: 'PATCH'
+      });
+      
+      if (response.ok) {
+        setEmails(emails.map(email => 
+          email.id === emailId ? { ...email, isRead: false } : email
+        ));
+        
+        // Atualizar contador da pasta
+        setFolders(folders.map(folder => 
+          folder.id === selectedFolder 
+            ? { ...folder, unreadCount: folder.unreadCount + 1 }
+            : folder
+        ));
+      }
+    } catch (error) {
+      console.error('Erro ao marcar como não lido:', error);
     }
   };
 
-  const handleReply = () => {
-    if (selectedEmail) {
-      router.push(`/webmail/compose?mode=reply&emailId=${selectedEmail.id}`);
+  const toggleFlag = async (emailId: string) => {
+    try {
+      const email = emails.find(e => e.id === emailId);
+      if (!email) return;
+      
+      const response = await fetch(`/api/emails/${emailId}/flag`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ flagged: !email.isFlagged })
+      });
+      
+      if (response.ok) {
+        setEmails(emails.map(e => 
+          e.id === emailId ? { ...e, isFlagged: !e.isFlagged } : e
+        ));
+      }
+    } catch (error) {
+      console.error('Erro ao alterar flag:', error);
     }
   };
 
-  const handleForward = () => {
-    if (selectedEmail) {
-      router.push(`/webmail/compose?mode=forward&emailId=${selectedEmail.id}`);
+  const moveToFolder = async (emailId: string, targetFolderId: string) => {
+    try {
+      const response = await fetch(`/api/emails/${emailId}/move`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ folderId: targetFolderId })
+      });
+      
+      if (response.ok) {
+        // Remover email da lista atual
+        setEmails(emails.filter(e => e.id !== emailId));
+        
+        // Atualizar contadores das pastas
+        const email = emails.find(e => e.id === emailId);
+        if (email) {
+          setFolders(folders.map(folder => {
+            if (folder.id === selectedFolder) {
+              return {
+                ...folder,
+                totalCount: folder.totalCount - 1,
+                unreadCount: email.isRead ? folder.unreadCount : Math.max(0, folder.unreadCount - 1)
+              };
+            }
+            if (folder.id === targetFolderId) {
+              return {
+                ...folder,
+                totalCount: folder.totalCount + 1,
+                unreadCount: email.isRead ? folder.unreadCount : folder.unreadCount + 1
+              };
+            }
+            return folder;
+          }));
+        }
+        
+        toast.success('Email movido com sucesso');
+      }
+    } catch (error) {
+      console.error('Erro ao mover email:', error);
+      toast.error('Erro ao mover email');
+    }
+  };
+
+  const deleteEmail = async (emailId: string) => {
+    try {
+      const response = await fetch(`/api/emails/${emailId}`, {
+        method: 'DELETE'
+      });
+      
+      if (response.ok) {
+        const email = emails.find(e => e.id === emailId);
+        setEmails(emails.filter(e => e.id !== emailId));
+        
+        // Atualizar contador da pasta
+        if (email) {
+          setFolders(folders.map(folder => 
+            folder.id === selectedFolder 
+              ? { 
+                  ...folder, 
+                  totalCount: folder.totalCount - 1,
+                  unreadCount: email.isRead ? folder.unreadCount : Math.max(0, folder.unreadCount - 1)
+                }
+              : folder
+          ));
+        }
+        
+        if (selectedEmail?.id === emailId) {
+          setSelectedEmail(null);
+        }
+        
+        toast.success('Email excluído com sucesso');
+      }
+    } catch (error) {
+      console.error('Erro ao excluir email:', error);
+      toast.error('Erro ao excluir email');
     }
   };
 
@@ -424,12 +331,34 @@ export default function WebmailPage() {
   };
 
   const formatSize = (bytes: number) => {
-    if (bytes < 1024) return `${bytes} B`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
   };
 
-  // A busca é feita na API, não precisamos filtrar localmente
+  const getEmailSender = (email: Email) => {
+    if (email.from && email.from.length > 0) {
+      return email.from[0].name || email.from[0].address;
+    }
+    return 'Remetente desconhecido';
+  };
+
+  const getFolderIcon = (folder: EmailFolder) => {
+    switch (folder.specialUse) {
+      case '\\Inbox':
+        return <Inbox className="h-4 w-4" />;
+      case '\\Sent':
+        return <Send className="h-4 w-4" />;
+      case '\\Archive':
+        return <Archive className="h-4 w-4" />;
+      case '\\Trash':
+        return <Trash2 className="h-4 w-4" />;
+      default:
+        return <Mail className="h-4 w-4" />;
+    }
+  };
 
   if (loading) {
     return (
@@ -444,23 +373,16 @@ export default function WebmailPage() {
 
   if (showConfig || !emailConfig) {
     return (
-      <div className="container mx-auto p-6">
-        <Card className="max-w-md mx-auto">
+      <div className="container mx-auto p-6 max-w-2xl">
+        <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Settings className="h-5 w-5" />
-              Configuração de Email
-            </CardTitle>
+            <CardTitle>Configuração de Email</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground mb-4">
-              Você precisa configurar sua conta de email antes de usar o webmail.
+              Configure sua conta de email para começar a usar o webmail.
             </p>
-            <Button 
-              onClick={() => window.location.href = '/webmail/config'}
-              className="w-full"
-            >
-              <Plus className="h-4 w-4 mr-2" />
+            <Button onClick={() => router.push('/webmail/config')}>
               Configurar Email
             </Button>
           </CardContent>
@@ -470,165 +392,60 @@ export default function WebmailPage() {
   }
 
   return (
-    <div className="flex h-screen bg-background">
-      {/* Sidebar - Pastas */}
-      <div className="w-64 border-r bg-muted/10">
-        <div className="p-4">
-          <div className="flex items-center gap-2 mb-4">
-            <Mail className="h-5 w-5" />
-            <span className="font-semibold">Webmail</span>
-          </div>
-          
-          <div className="space-y-2 mb-4">
-            <Button 
-              onClick={() => router.push('/webmail/compose')}
-              className="w-full"
+    <div className="flex h-screen bg-gray-50">
+      {/* Sidebar */}
+      <div className="w-64 bg-white border-r border-gray-200 flex flex-col">
+        {/* Header */}
+        <div className="p-4 border-b border-gray-200">
+          <div className="flex items-center justify-between mb-4">
+            <h1 className="text-xl font-semibold flex items-center gap-2">
+              <Mail className="h-6 w-6" />
+              Webmail
+            </h1>
+            <Button
+              onClick={() => router.push('/webmail/admin')}
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2"
+              title="Administração do Webmail"
             >
-              <Edit className="h-4 w-4 mr-2" />
-              Novo Email
+              <Settings className="h-4 w-4" />
             </Button>
-            
-            <div className="space-y-2">
-              {/* Status da Sincronização */}
-              <div className="text-xs text-muted-foreground px-2">
-                <div className="flex items-center gap-2">
-                  <div className={`w-2 h-2 rounded-full ${
-                    syncStatus.isRunning ? 'bg-green-500 animate-pulse' : 
-                    autoSyncEnabled ? 'bg-blue-500' : 'bg-gray-400'
-                  }`} />
-                  <span>
-                    {syncStatus.isRunning ? 'Sincronizando...' : 
-                     autoSyncEnabled ? 'Auto-sync ativo' : 'Auto-sync inativo'}
-                  </span>
-                </div>
-                {syncStatus.lastSync && (
-                  <div className="mt-1 text-xs">
-                    Última sync: {new Date(syncStatus.lastSync).toLocaleTimeString()}
-                  </div>
-                )}
-              </div>
-              
-              {/* Status de Consistência */}
-              {consistencyStatus && (
-                <div className="text-xs text-muted-foreground px-2 mt-2">
-                  <div className="flex items-center gap-2">
-                    <div className={`w-2 h-2 rounded-full ${
-                      consistencyStatus.hasInconsistencies ? 'bg-yellow-500' : 'bg-green-500'
-                    }`} />
-                    <span>
-                      {consistencyStatus.hasInconsistencies 
-                        ? `${consistencyStatus.inconsistencies} inconsistências` 
-                        : 'Pastas consistentes'}
-                    </span>
-                  </div>
-                  <div className="mt-1 text-xs">
-                    {consistencyStatus.totalFolders} pastas verificadas
-                  </div>
-                </div>
-              )}
-              
-              {/* Controles de Sincronização */}
-              <div className="flex gap-2">
-                <Button
-                  onClick={toggleAutoSync}
-                  size="sm"
-                  variant={autoSyncEnabled ? "default" : "outline"}
-                  className="flex items-center gap-2 flex-1"
-                >
-                  <RefreshCw className={`h-4 w-4 ${syncStatus.isRunning ? 'animate-spin' : ''}`} />
-                  {autoSyncEnabled ? 'Auto ON' : 'Auto OFF'}
-                </Button>
-                
-                <Button
-                  onClick={syncEmails}
-                  disabled={syncing}
-                  size="sm"
-                  variant="outline"
-                  className="flex items-center gap-2"
-                >
-                  <RefreshCw className={`h-4 w-4 ${syncing ? 'animate-spin' : ''}`} />
-                  Sync
-                </Button>
-              </div>
-              
-              {/* Controles de Consistência */}
-              <div className="flex gap-2 mt-2">
-                <Button
-                  onClick={checkConsistency}
-                  disabled={isCheckingConsistency}
-                  size="sm"
-                  variant="outline"
-                  className="flex items-center gap-2 flex-1"
-                >
-                  <Search className={`h-4 w-4 ${isCheckingConsistency ? 'animate-spin' : ''}`} />
-                  Verificar
-                </Button>
-                
-                {consistencyStatus?.hasInconsistencies && (
-                  <Button
-                    onClick={fixConsistency}
-                    disabled={isCheckingConsistency}
-                    size="sm"
-                    variant="outline"
-                    className="flex items-center gap-2"
-                  >
-                    <Settings className={`h-4 w-4 ${isCheckingConsistency ? 'animate-spin' : ''}`} />
-                    Corrigir
-                  </Button>
-                )}
-              </div>
-              
-              <div className="space-y-2">
-                <Button
-                  onClick={() => setShowConfig(true)}
-                  size="sm"
-                  variant="outline"
-                  className="flex items-center gap-2 w-full"
-                >
-                  <Settings className="h-4 w-4" />
-                  Settings
-                </Button>
-                
-                <Button
-                  onClick={sendTestEmail}
-                  disabled={isSendingTest}
-                  size="sm"
-                  variant="outline"
-                  className="flex items-center gap-2 w-full"
-                >
-                  <TestTube className={`h-4 w-4 ${isSendingTest ? 'animate-pulse' : ''}`} />
-                  {isSendingTest ? 'Enviando...' : 'Teste Email'}
-                </Button>
-              </div>
-            </div>
-          </div>
-
-          <div className="text-xs text-muted-foreground mb-2">
-            {emailConfig.email}
           </div>
           
-          <ScrollArea className="h-[calc(100vh-200px)]">
+          <Button 
+            onClick={() => router.push('/webmail/compose')}
+            className="w-full flex items-center gap-2"
+          >
+            <Edit className="h-4 w-4" />
+            Escrever
+          </Button>
+        </div>
+
+        {/* Folders */}
+        <ScrollArea className="flex-1">
+          <div className="p-2">
             <div className="space-y-1">
               {folders.map((folder) => (
                 <Button
                   key={folder.id}
-                  variant={selectedFolder === folder.id ? "secondary" : "ghost"}
-                  className="w-full justify-start h-auto p-2"
                   onClick={() => setSelectedFolder(folder.id)}
+                  variant={selectedFolder === folder.id ? "secondary" : "ghost"}
+                  className="w-full justify-start h-auto p-3"
                 >
-                  <div className="flex items-center gap-2 w-full">
-                    {folder.specialUse === '\\Inbox' || folder.path === 'INBOX' ? (
-                      <Inbox className="h-4 w-4" />
-                    ) : folder.specialUse === '\\Sent' ? (
-                      <Send className="h-4 w-4" />
-                    ) : folder.specialUse === '\\Trash' ? (
-                      <Trash2 className="h-4 w-4" />
-                    ) : (
-                      <Archive className="h-4 w-4" />
-                    )}
-                    <span className="flex-1 text-left text-sm">{folder.name}</span>
+                  <div className="flex items-center gap-3 w-full">
+                    {getFolderIcon(folder)}
+                    <div className="flex-1 text-left">
+                      <div className="font-medium">{folder.name}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {folder.unreadCount > 0 && (
+                          <span className="font-semibold">{folder.unreadCount} não lidas • </span>
+                        )}
+                        {folder.totalCount} total
+                      </div>
+                    </div>
                     {folder.unreadCount > 0 && (
-                      <Badge variant="secondary" className="text-xs">
+                      <Badge variant="secondary" className="ml-auto">
                         {folder.unreadCount}
                       </Badge>
                     )}
@@ -636,191 +453,261 @@ export default function WebmailPage() {
                 </Button>
               ))}
             </div>
-          </ScrollArea>
+            
+            <Separator className="my-4" />
+            
+            <div className="space-y-2">
+              {/* Administração */}
+              <div className="space-y-2">
+                <Button
+                  onClick={() => router.push('/webmail/admin')}
+                  size="sm"
+                  variant="outline"
+                  className="flex items-center gap-2 w-full"
+                  title="Administração do Webmail"
+                >
+                  <Settings className="h-4 w-4" />
+                  Administração
+                </Button>
+              </div>
+            </div>
+          </div>
+        </ScrollArea>
+
+        {/* User Info */}
+        <div className="p-4 border-t border-gray-200">
+          <div className="flex items-center gap-3">
+            <Avatar className="h-8 w-8">
+              <AvatarFallback>
+                {emailConfig?.displayName?.[0] || emailConfig?.email?.[0]?.toUpperCase() || 'U'}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex-1 min-w-0">
+              <div className="text-sm font-medium truncate">
+                {emailConfig?.displayName || emailConfig?.email || 'Usuário'}
+              </div>
+              <div className="text-xs text-muted-foreground truncate">
+                {emailConfig?.email || ''}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Lista de Emails */}
-      <div className="w-96 border-r">
-        <div className="p-4">
-          <div className="relative mb-4">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col">
+        {/* Search Bar */}
+        <div className="p-4 bg-white border-b border-gray-200">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
             <Input
-              placeholder="Buscar emails..."
+              placeholder="Pesquisar emails..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
             />
           </div>
         </div>
-        
-        <ScrollArea className="h-[calc(100vh-200px)]">
-          <div className="space-y-1 p-2">
-            {emails.map((email) => (
-              <Card 
-                key={email.id}
-                className={`cursor-pointer transition-colors hover:bg-muted/50 ${
-                  selectedEmail?.id === email.id ? 'bg-muted' : ''
-                } ${!email.isRead ? 'border-l-4 border-l-blue-500' : ''}`}
-                onClick={() => handleEmailClick(email)}
-              >
-                <CardContent className="p-3">
-                  <div className="flex items-start gap-3">
-                    <Avatar className="h-8 w-8">
-                      <AvatarFallback className="text-xs">
-                        {email.from[0]?.name?.charAt(0) || email.from[0]?.address.charAt(0) || '?'}
-                      </AvatarFallback>
-                    </Avatar>
-                    
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between mb-1">
-                        <span className={`text-sm truncate ${
-                          !email.isRead ? 'font-semibold' : 'font-normal'
-                        }`}>
-                          {email.from[0]?.name || email.from[0]?.address}
-                        </span>
-                        <div className="flex items-center gap-1">
-                          {email.hasAttachments && <Paperclip className="h-3 w-3 text-gray-400" />}
-                          {email.isFlagged && <Star className="h-3 w-3 text-yellow-500" />}
-                          <span className="text-xs text-muted-foreground">
-                            {formatDate(email.date)}
-                          </span>
+
+        <div className="flex-1 flex">
+          {/* Email List */}
+          <div className="w-1/3 bg-white border-r border-gray-200">
+            <ScrollArea className="h-full">
+              {loading ? (
+                <div className="p-4 text-center">
+                  <RefreshCw className="h-6 w-6 animate-spin mx-auto mb-2" />
+                  <p className="text-sm text-muted-foreground">Carregando emails...</p>
+                </div>
+              ) : emails.length === 0 ? (
+                <div className="p-4 text-center">
+                  <Mail className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                  <p className="text-muted-foreground">
+                    {searchTerm ? 'Nenhum email encontrado' : 'Nenhum email nesta pasta'}
+                  </p>
+                </div>
+              ) : (
+                <div className="divide-y divide-gray-100">
+                  {emails.map((email) => (
+                    <div
+                      key={email.id}
+                      onClick={() => {
+                        setSelectedEmail(email);
+                        if (!email.isRead) {
+                          markAsRead(email.id);
+                        }
+                      }}
+                      className={`p-4 cursor-pointer hover:bg-gray-50 transition-colors ${
+                        selectedEmail?.id === email.id ? 'bg-blue-50 border-r-2 border-blue-500' : ''
+                      } ${!email.isRead ? 'bg-blue-50/30' : ''}`}
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className={`text-sm truncate ${
+                              !email.isRead ? 'font-semibold' : 'font-medium'
+                            }`}>
+                              {getEmailSender(email)}
+                            </span>
+                            <div className="flex items-center gap-1 ml-auto">
+                              {email.hasAttachments && (
+                                <Paperclip className="h-3 w-3 text-gray-400" />
+                              )}
+                              {email.isFlagged && (
+                                <Star className="h-3 w-3 text-yellow-500 fill-current" />
+                              )}
+                              {!email.isRead && (
+                                <div className="w-2 h-2 bg-blue-500 rounded-full" />
+                              )}
+                            </div>
+                          </div>
+                          <div className={`text-sm mb-1 truncate ${
+                            !email.isRead ? 'font-semibold' : ''
+                          }`}>
+                            {email.subject || '(sem assunto)'}
+                          </div>
+                          <div className="text-xs text-muted-foreground truncate mb-2">
+                            {email.preview}
+                          </div>
+                          <div className="flex items-center justify-between text-xs text-muted-foreground">
+                            <span>{formatDate(email.date)}</span>
+                            <span>{formatSize(email.size)}</span>
+                          </div>
                         </div>
                       </div>
-                      
-                      <div className={`text-sm truncate mb-1 ${
-                        !email.isRead ? 'font-medium' : 'font-normal'
-                      }`}>
-                        {email.subject || '(sem assunto)'}
-                      </div>
-                      
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs text-muted-foreground truncate">
-                          {email.preview || 'Sem prévia disponível'}
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          {formatSize(email.size)}
-                        </span>
-                      </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  ))}
+                </div>
+              )}
+            </ScrollArea>
             
-            {emails.length === 0 && (
-              <div className="text-center py-8 text-muted-foreground">
-                {searchTerm ? 'Nenhum email encontrado' : 'Nenhum email nesta pasta'}
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="p-4 border-t border-gray-200 bg-white">
+                <div className="flex items-center justify-between">
+                  <Button
+                    onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                    disabled={currentPage === 1}
+                    variant="outline"
+                    size="sm"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                    Anterior
+                  </Button>
+                  
+                  <span className="text-sm text-muted-foreground">
+                    Página {currentPage} de {totalPages}
+                  </span>
+                  
+                  <Button
+                    onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                    disabled={currentPage === totalPages}
+                    variant="outline"
+                    size="sm"
+                  >
+                    Próxima
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             )}
           </div>
-        </ScrollArea>
-        
-        {/* Paginação */}
-        {totalPages > 1 && (
-          <div className="p-4 border-t flex items-center justify-between">
-            <div className="text-sm text-muted-foreground">
-              Página {currentPage} de {totalPages}
-            </div>
-            <div className="flex items-center space-x-2">
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                disabled={currentPage === 1}
-              >
-                Anterior
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                disabled={currentPage === totalPages}
-              >
-                Próxima
-              </Button>
-            </div>
-          </div>
-        )}
-      </div>
 
-      {/* Visualização do Email */}
-      <div className="flex-1">
-        {selectedEmail ? (
-          <div className="h-full flex flex-col">
-            {/* Header do Email */}
-            <div className="p-6 border-b">
-              <div className="flex items-center justify-between mb-4">
-                <h1 className="text-xl font-semibold">
-                  {selectedEmail.subject || '(sem assunto)'}
-                </h1>
-                <div className="flex gap-2">
-                  <Button size="sm" variant="outline" onClick={handleReply}>
-                    <Reply className="h-4 w-4 mr-1" />
-                    Responder
-                  </Button>
-                  <Button size="sm" variant="outline">
-                    <ReplyAll className="h-4 w-4 mr-1" />
-                    Resp. Todos
-                  </Button>
-                  <Button size="sm" variant="outline" onClick={handleForward}>
-                    <Forward className="h-4 w-4 mr-1" />
-                    Encaminhar
-                  </Button>
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <Avatar className="h-8 w-8">
-                    <AvatarFallback>
-                      {(selectedEmail.from[0]?.name || selectedEmail.from[0]?.address)?.charAt(0) || '?'}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <div className="font-medium">
-                      {selectedEmail.from[0]?.name || selectedEmail.from[0]?.address || 'Remetente desconhecido'}
+          {/* Email Content */}
+          <div className="flex-1 bg-white">
+            {selectedEmail ? (
+              <div className="h-full flex flex-col">
+                {/* Email Header */}
+                <div className="p-6 border-b border-gray-200">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex-1">
+                      <h2 className="text-xl font-semibold mb-2">
+                        {selectedEmail.subject || '(sem assunto)'}
+                      </h2>
+                      <div className="space-y-1 text-sm text-muted-foreground">
+                        <div>
+                          <strong>De:</strong> {getEmailSender(selectedEmail)}
+                        </div>
+                        <div>
+                          <strong>Para:</strong> {selectedEmail.to.map(t => t.name || t.address).join(', ')}
+                        </div>
+                        <div>
+                          <strong>Data:</strong> {new Date(selectedEmail.date).toLocaleString('pt-BR')}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Email Actions */}
+                    <div className="flex items-center gap-2">
+                      <Button
+                        onClick={() => toggleFlag(selectedEmail.id)}
+                        variant="outline"
+                        size="sm"
+                        className={selectedEmail.isFlagged ? 'text-yellow-600' : ''}
+                      >
+                        <Star className={`h-4 w-4 ${selectedEmail.isFlagged ? 'fill-current' : ''}`} />
+                      </Button>
+                      
+                      <Button
+                        onClick={() => selectedEmail.isRead ? markAsUnread(selectedEmail.id) : markAsRead(selectedEmail.id)}
+                        variant="outline"
+                        size="sm"
+                      >
+                        <MailOpen className="h-4 w-4" />
+                      </Button>
+                      
+                      <Button
+                        onClick={() => router.push(`/webmail/compose?reply=${selectedEmail.id}`)}
+                        variant="outline"
+                        size="sm"
+                      >
+                        <Reply className="h-4 w-4" />
+                      </Button>
+                      
+                      <Button
+                        onClick={() => router.push(`/webmail/compose?replyAll=${selectedEmail.id}`)}
+                        variant="outline"
+                        size="sm"
+                      >
+                        <ReplyAll className="h-4 w-4" />
+                      </Button>
+                      
+                      <Button
+                        onClick={() => router.push(`/webmail/compose?forward=${selectedEmail.id}`)}
+                        variant="outline"
+                        size="sm"
+                      >
+                        <Forward className="h-4 w-4" />
+                      </Button>
+                      
+                      <Button
+                        onClick={() => deleteEmail(selectedEmail.id)}
+                        variant="outline"
+                        size="sm"
+                        className="text-red-600 hover:text-red-700"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </div>
                   </div>
                 </div>
-                
-                <div className="text-sm text-muted-foreground">
-                  <span>Para: </span>
-                  {selectedEmail.to.map(t => t.name || t.address).join(', ') || 'Destinatário desconhecido'}
-                </div>
-                
-                <div className="text-sm text-muted-foreground">
-                  {new Date(selectedEmail.date).toLocaleString('pt-BR')}
-                  {selectedEmail.hasAttachments && (
-                    <span className="ml-4 flex items-center">
-                      <Paperclip className="h-3 w-3 mr-1" />
-                      Anexos
-                    </span>
-                  )}
+
+                {/* Email Body */}
+                <ScrollArea className="flex-1 p-6">
+                  <div className="prose max-w-none">
+                    <div dangerouslySetInnerHTML={{ __html: selectedEmail.preview }} />
+                  </div>
+                </ScrollArea>
+              </div>
+            ) : (
+              <div className="h-full flex items-center justify-center">
+                <div className="text-center">
+                  <Mail className="h-16 w-16 mx-auto mb-4 text-gray-300" />
+                  <p className="text-lg text-muted-foreground">Selecione um email para visualizar</p>
                 </div>
               </div>
-            </div>
-            
-            {/* Conteúdo do Email */}
-            <ScrollArea className="flex-1 p-6">
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <p className="text-gray-700 whitespace-pre-wrap">
-                  {selectedEmail.preview || 'Conteúdo não disponível'}
-                </p>
-                <div className="mt-4 text-xs text-gray-500">
-                  <p>Para visualizar o conteúdo completo do email, implemente a API de detalhes do email.</p>
-                </div>
-              </div>
-            </ScrollArea>
+            )}
           </div>
-        ) : (
-          <div className="flex items-center justify-center h-full text-muted-foreground">
-            <div className="text-center">
-              <Mail className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>Selecione um email para visualizar</p>
-            </div>
-          </div>
-        )}
+        </div>
       </div>
     </div>
   );

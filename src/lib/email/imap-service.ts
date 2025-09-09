@@ -2,6 +2,7 @@ import { ImapFlow } from 'imapflow';
 import { db } from '@/lib/db';
 import bcrypt from 'bcryptjs';
 import { EmailNotificationService } from './notification-service';
+import { decryptPassword } from './password-crypto';
 import type { EmailConfig, Colaborador } from '@prisma/client';
 
 interface ImapMessage {
@@ -36,67 +37,176 @@ interface ImapFolder {
 // Pool de conexões IMAP para reutilização
 class ImapConnectionPool {
   private static instance: ImapConnectionPool;
-  private connections: Map<string, { client: ImapFlow; lastUsed: number; inUse: boolean }> = new Map();
-  private readonly maxConnections = 5;
-  private readonly connectionTTL = 300000; // 5 minutos
+  private connections: Map<string, { client: ImapFlow; lastUsed: number; inUse: boolean; isHealthy: boolean }> = new Map();
+  private readonly maxConnections = 3; // Reduzido para evitar sobrecarga
+  private readonly connectionTTL = 180000; // 3 minutos
+  private readonly healthCheckInterval = 30000; // 30 segundos
+  private healthCheckTimer?: NodeJS.Timeout;
 
   static getInstance(): ImapConnectionPool {
     if (!ImapConnectionPool.instance) {
       ImapConnectionPool.instance = new ImapConnectionPool();
+      ImapConnectionPool.instance.startHealthCheck();
     }
     return ImapConnectionPool.instance;
+  }
+
+  private startHealthCheck() {
+    this.healthCheckTimer = setInterval(() => {
+      this.performHealthCheck();
+    }, this.healthCheckInterval);
+  }
+
+  private async performHealthCheck() {
+    for (const [key, connection] of this.connections.entries()) {
+      if (!connection.inUse) {
+        try {
+          await Promise.race([
+            connection.client.noop(),
+            new Promise((_, reject) => 
+              setTimeout(() => reject(new Error('Health check timeout')), 5000)
+            )
+          ]);
+          connection.isHealthy = true;
+        } catch (error) {
+          console.log(`Conexão não saudável detectada: ${key}`);
+          connection.isHealthy = false;
+          this.connections.delete(key);
+          try {
+            await connection.client.logout();
+          } catch (e) {
+            // Ignorar erros de logout
+          }
+        }
+      }
+    }
+  }
+
+  private async decryptPasswordInternal(password: string): Promise<string> {
+    try {
+      return decryptPassword(password);
+    } catch (error) {
+      console.warn('Erro ao descriptografar senha:', error);
+      return password;
+    }
   }
 
   async getConnection(configId: string, config: EmailConfig): Promise<ImapFlow> {
     const existing = this.connections.get(configId);
     
-    if (existing && !existing.inUse && (Date.now() - existing.lastUsed) < this.connectionTTL) {
-      existing.inUse = true;
-      existing.lastUsed = Date.now();
-      return existing.client;
+    // Verificar se conexão existente ainda está válida e saudável
+    if (existing && !existing.inUse && existing.isHealthy && (Date.now() - existing.lastUsed) < this.connectionTTL) {
+      try {
+        // Testar rapidamente se a conexão ainda está ativa
+        await Promise.race([
+          existing.client.noop(),
+          new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Connection test timeout')), 3000)
+          )
+        ]);
+        existing.inUse = true;
+        existing.lastUsed = Date.now();
+        console.log(`Reutilizando conexão IMAP para ${config.email}`);
+        return existing.client;
+      } catch (error) {
+        console.warn('Conexão IMAP existente inválida, removendo do pool:', error);
+        this.connections.delete(configId);
+        try {
+          await existing.client.logout();
+        } catch (e) {
+          // Ignorar erros de logout
+        }
+      }
     }
 
     // Limpar conexões antigas
     this.cleanupOldConnections();
 
-    // Criar nova conexão se necessário
+    // Verificar limite de conexões
     if (this.connections.size >= this.maxConnections) {
-      throw new Error('Pool de conexões IMAP esgotado');
+      // Remover a conexão mais antiga não utilizada
+      const oldestKey = Array.from(this.connections.entries())
+        .filter(([_, conn]) => !conn.inUse)
+        .sort(([_, a], [__, b]) => a.lastUsed - b.lastUsed)[0]?.[0];
+      
+      if (oldestKey) {
+        const oldConnection = this.connections.get(oldestKey);
+        this.connections.delete(oldestKey);
+        try {
+          await oldConnection?.client.logout();
+        } catch (e) {
+          // Ignorar erros de logout
+        }
+      } else {
+        throw new Error('Pool de conexões IMAP esgotado');
+      }
     }
 
-    const client = new ImapFlow({
-      host: config.imapHost,
-      port: config.imapPort,
-      secure: config.imapSecure,
-      auth: {
-        user: config.email,
-        pass: config.password
-      },
-      logger: false,
-      tls: {
-        rejectUnauthorized: true,
-        minVersion: 'TLSv1.2',
-        ciphers: 'ECDHE+AESGCM:ECDHE+CHACHA20:DHE+AESGCM:DHE+CHACHA20:!aNULL:!MD5:!DSS'
-      },
-      connectionTimeout: 30000,
-      greetingTimeout: 10000,
-      socketTimeout: 60000,
-      maxIdleTime: 300000,
-      clientInfo: {
-        name: 'GarapaSystem WebMail',
-        version: '1.0.0'
+    // Descriptografar senha
+    const password = await this.decryptPasswordInternal(config.password);
+
+    // Criar nova conexão com configurações otimizadas
+    let lastError;
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        console.log(`Tentativa ${attempt}/3 de conexão IMAP para ${config.email}`);
+        
+        const client = new ImapFlow({
+          host: config.imapHost,
+          port: config.imapPort,
+          secure: config.imapSecure,
+          auth: {
+            user: config.email,
+            pass: password
+          },
+          logger: false, // Desabilitar logs verbosos em produção
+          tls: {
+            rejectUnauthorized: false, // Mais permissivo para servidores em nuvem
+            minVersion: 'TLSv1.2', // Mais seguro que TLSv1.0
+            maxVersion: 'TLSv1.3',
+            ciphers: 'HIGH:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!SRP:!CAMELLIA'
+          },
+          connectionTimeout: 20000, // Reduzido para detectar problemas mais rápido
+          greetingTimeout: 15000,
+          socketTimeout: 45000, // Reduzido
+          maxIdleTime: 180000, // 3 minutos
+          clientInfo: {
+            name: 'GarapaSystem WebMail',
+            version: '1.0.0'
+          },
+          disableAutoIdle: true,
+          emitLogs: false
+        });
+
+        // Conectar com timeout
+        await Promise.race([
+          client.connect(),
+          new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Connection timeout')), 25000)
+          )
+        ]);
+        
+        this.connections.set(configId, {
+          client,
+          lastUsed: Date.now(),
+          inUse: true,
+          isHealthy: true
+        });
+
+        console.log(`Conexão IMAP estabelecida com sucesso para ${config.email}`);
+        return client;
+      } catch (error) {
+        lastError = error;
+        console.error(`Tentativa ${attempt}/3 falhou para ${config.email}:`, error);
+        
+        if (attempt < 3) {
+          // Intervalo crescente entre tentativas
+          await new Promise(resolve => setTimeout(resolve, 1000 * attempt * attempt));
+        }
       }
-    });
+    }
 
-    await client.connect();
-    
-    this.connections.set(configId, {
-      client,
-      lastUsed: Date.now(),
-      inUse: true
-    });
-
-    return client;
+    throw new Error(`Falha ao conectar ao servidor IMAP após 3 tentativas: ${lastError?.message || 'Erro desconhecido'}`);
   }
 
   releaseConnection(configId: string): void {
@@ -104,6 +214,8 @@ class ImapConnectionPool {
     if (connection) {
       connection.inUse = false;
       connection.lastUsed = Date.now();
+      // Manter como saudável até próxima verificação
+      connection.isHealthy = true;
     }
   }
 
@@ -111,25 +223,35 @@ class ImapConnectionPool {
     const now = Date.now();
     for (const [configId, connection] of this.connections.entries()) {
       if (!connection.inUse && (now - connection.lastUsed) > this.connectionTTL) {
-        try {
-          connection.client.logout();
-        } catch (e) {
-          console.warn('Erro ao fechar conexão IMAP:', e);
-        }
+        console.log(`Removendo conexão expirada: ${configId}`);
         this.connections.delete(configId);
+        connection.client.logout().catch(() => {
+          // Ignorar erros de logout em conexões expiradas
+        });
       }
     }
   }
 
-  async closeAll(): Promise<void> {
+  // Método para limpeza completa do pool
+  async cleanup(): Promise<void> {
+    if (this.healthCheckTimer) {
+      clearInterval(this.healthCheckTimer);
+    }
+    
     for (const [configId, connection] of this.connections.entries()) {
       try {
         await connection.client.logout();
-      } catch (e) {
-        console.warn('Erro ao fechar conexão IMAP:', e);
+      } catch (error) {
+        // Ignorar erros de logout
       }
     }
+    
     this.connections.clear();
+    console.log('Pool de conexões IMAP limpo');
+  }
+
+  async closeAll(): Promise<void> {
+    await this.cleanup();
   }
 }
 
@@ -141,37 +263,51 @@ export class ImapService {
 
   constructor(private emailConfigId: string) {}
 
-  async connect(): Promise<boolean> {
+  async connect(colaboradorId?: string): Promise<boolean> {
     try {
-      // Buscar configuração de email
+      // Buscar configuração de email do colaborador
+      const searchId = colaboradorId || this.emailConfigId;
+      if (!searchId) {
+        throw new Error('ID do colaborador não fornecido');
+      }
+
+      console.log(`Buscando configuração de email para ID: ${searchId}`);
+      
       this.config = await db.emailConfig.findUnique({
-        where: { id: this.emailConfigId },
+        where: { id: searchId },
         include: {
-          colaborador: {
-            select: {
-              id: true,
-              nome: true,
-              email: true
-            }
-          }
+          colaborador: true
         }
       });
 
       if (!this.config || !this.config.ativo) {
-        throw new Error('Configuração de email não encontrada ou inativa');
+        throw new Error(`Configuração de email não encontrada ou inativa para ID ${searchId}`);
+      }
+
+      console.log(`Configuração encontrada para ${this.config.email}`);
+
+      // Validar configurações obrigatórias
+      if (!this.config.imapHost || !this.config.email || !this.config.password) {
+        throw new Error('Configurações IMAP incompletas (host, email ou senha em falta)');
       }
 
       // Usar pool de conexões para melhor eficiência
+      console.log(`Estabelecendo conexão IMAP para ${this.config.email}...`);
       this.client = await this.connectionPool.getConnection(this.emailConfigId, this.config);
       this.isConnected = true;
 
-      console.log(`Conectado ao IMAP: ${this.config.email}`);
+      console.log(`Conexão IMAP estabelecida com sucesso para ${this.config.email}`);
       return true;
 
     } catch (error) {
       console.error('Erro ao conectar IMAP:', error);
       this.isConnected = false;
-      return false;
+      
+      // Re-throw com mais contexto
+      if (error instanceof Error) {
+        throw new Error(`Falha ao conectar ao servidor IMAP: ${error.message}`);
+      }
+      throw new Error('Falha ao conectar ao servidor IMAP: Erro desconhecido');
     }
   }
 
@@ -318,6 +454,13 @@ export class ImapService {
       }
 
       console.log(`Sincronização de emails da pasta ${folderPath} concluída (${processedCount} emails processados)`);
+
+      return {
+        success: true,
+        emailsSincronizados: processedCount,
+        pastasSincronizadas: 1,
+        message: 'Sincronização concluída com sucesso'
+      };
 
     } catch (error) {
       console.error(`Erro ao sincronizar emails da pasta ${folderPath}:`, error);
@@ -473,12 +616,12 @@ export class ImapService {
       await db.email.update({
         where: { id: email.id },
         data: {
-          textContent: result.text || null,
-          htmlContent: result.html || null
+          textContent: emailContent.text || null,
+          htmlContent: emailContent.html || null
         }
       });
 
-      return result;
+      return emailContent;
 
     } catch (error) {
       console.error('Erro ao buscar conteúdo do email:', error);

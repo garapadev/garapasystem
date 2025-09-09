@@ -3,6 +3,7 @@ import { setupSocket, setSocketIO } from '@/lib/socket';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import next from 'next';
+import { initializeAutoSync } from './src/lib/email/auto-sync-initializer';
 
 const dev = process.env.NODE_ENV !== 'production';
 const currentPort = parseInt(process.env.PORT || '3000', 10);
@@ -54,9 +55,19 @@ async function createCustomServer() {
     setupSocket(io);
 
     // Start the server
-    server.listen(currentPort, hostname, () => {
+    server.listen(currentPort, hostname, async () => {
       console.log(`> Ready on http://${hostname}:${currentPort}`);
       console.log(`> Socket.IO server running at ws://${hostname}:${currentPort}/api/socketio`);
+      
+      // Inicializar sincronização automática de e-mail após o servidor estar pronto
+      try {
+        console.log('Inicializando sincronização automática de e-mail...');
+        await initializeAutoSync();
+        console.log('Sincronização automática de e-mail inicializada com sucesso');
+      } catch (error) {
+        console.error('Erro ao inicializar sincronização automática:', error);
+        // Não parar o servidor por causa disso
+      }
     });
 
   } catch (err) {

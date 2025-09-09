@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { z } from 'zod';
 import bcrypt from 'bcryptjs';
+import { encryptPassword } from '@/lib/email/password-crypto';
 
 // Schema de validação para configuração de email
 const emailConfigSchema = z.object({
@@ -31,16 +32,17 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Buscar colaborador pelo email da sessão
-    const colaborador = await db.colaborador.findFirst({
+    // Buscar colaborador pelo email da sessão através do relacionamento com usuarios
+    const usuario = await db.usuario.findUnique({
       where: {
-        usuarios: {
-          some: {
-            email: session.user.email
-          }
-        }
+        email: session.user.email
+      },
+      include: {
+        colaborador: true
       }
     });
+
+    const colaborador = usuario?.colaborador;
 
     if (!colaborador) {
       return NextResponse.json(
@@ -101,10 +103,17 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const validatedData = emailConfigSchema.parse(body);
 
-    // Buscar o colaborador pelo email do usuário
-    const colaborador = await db.colaborador.findUnique({
-      where: { email: session.user.email }
+    // Buscar o colaborador através do relacionamento com usuarios
+    const usuario = await db.usuario.findUnique({
+      where: {
+        email: session.user.email
+      },
+      include: {
+        colaborador: true
+      }
     });
+
+    const colaborador = usuario?.colaborador;
 
     if (!colaborador) {
       return NextResponse.json(
@@ -113,8 +122,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Criptografar a senha
-    const hashedPassword = await bcrypt.hash(validatedData.password, 12);
+    // Criptografar a senha para armazenamento seguro
+    const encryptedPassword = encryptPassword(validatedData.password);
 
     // Criar ou atualizar configuração de email
     const emailConfig = await db.emailConfig.upsert({
@@ -123,12 +132,12 @@ export async function POST(request: NextRequest) {
       },
       create: {
         ...validatedData,
-        password: hashedPassword,
+        password: encryptedPassword,
         colaboradorId: colaborador.id
       },
       update: {
         ...validatedData,
-        password: hashedPassword,
+        password: encryptedPassword,
         updatedAt: new Date()
       },
       select: {

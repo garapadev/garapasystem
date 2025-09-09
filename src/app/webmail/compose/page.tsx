@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -46,7 +46,7 @@ interface EmailAttachment {
   size: number;
 }
 
-export default function ComposePage() {
+function ComposePageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { data: session } = useSession();
@@ -646,5 +646,13 @@ export default function ComposePage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ComposePage() {
+  return (
+    <Suspense fallback={<div>Carregando...</div>}>
+      <ComposePageContent />
+    </Suspense>
   );
 }
