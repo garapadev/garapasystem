@@ -218,14 +218,6 @@ npm start
 2. **Prisma Studio** (Gerenciamento do BD): `http://localhost:5555`
 3. **API Documentation**: `http://localhost:3000/api/docs`
 
-### 👤 Primeiro Acesso
-
-1. Acesse `http://localhost:3000`
-2. Clique em "Criar Conta" na tela de login
-3. Preencha os dados do primeiro usuário (será admin)
-4. Faça login com as credenciais criadas
-5. Configure as integrações necessárias em "Configurações"
-
 ### 📧 Configuração do Webmail
 
 1. Acesse "Configurações" → "Email"
