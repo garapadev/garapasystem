@@ -495,24 +495,6 @@ Este projeto está licenciado sob a **Licença MIT**. Veja o arquivo [LICENSE](L
 - **Sincronização de Email**: Atualização automática em tempo real
 - **Gerenciamento de Pastas**: Organização completa de emails
 
-### 🚧 Em Desenvolvimento
-- **Relatórios Avançados**: Dashboards com métricas detalhadas
-- **Integração ViaCEP**: Preenchimento automático de endereços
-- **Sistema de Backup**: Backup automático do banco de dados
-- **Notificações Push**: Sistema de notificações em tempo real
-- **Anexos de Email**: Suporte completo para upload e download de anexos
-- **Filtros de Email**: Sistema avançado de filtros e regras
-- **Assinatura de Email**: Editor de assinaturas personalizadas
-
-### 📋 Roadmap
-- **Mobile App**: Aplicativo móvel React Native
-- **BI Dashboard**: Business Intelligence integrado
-- **API Gateway**: Gerenciamento avançado de APIs
-- **Multi-tenancy**: Suporte para múltiplas empresas
-- **Calendário Integrado**: Integração com calendários de email
-- **Chat em Tempo Real**: Sistema de mensagens instantâneas
-- **Webmail Offline**: Suporte para uso offline do webmail
-
 ---
 
 **GarapaSystem** - Sistema de gestão empresarial moderno e eficiente 🚀
