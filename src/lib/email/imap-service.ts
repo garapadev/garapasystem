@@ -620,7 +620,7 @@ export class ImapService {
           envelope: true
         }, { uid: true });
 
-        if (!message || message === false || !message.bodyStructure) {
+        if (!message || !message.bodyStructure) {
           console.log(`Estrutura do corpo não encontrada para email ${email.uid}`);
           return null;
         }
@@ -863,6 +863,55 @@ export class ImapService {
 
     } catch (error) {
       console.error('Erro ao alterar flag do email:', error);
+      return false;
+    }
+  }
+
+  async moveEmailToFolder(messageId: string, sourceFolderPath: string, targetFolderPath: string): Promise<boolean> {
+    if (!this.client || !this.config) {
+      throw new Error('Cliente IMAP não conectado');
+    }
+
+    try {
+      const email = await db.email.findUnique({
+        where: {
+          emailConfigId_messageId: {
+            emailConfigId: this.config.id,
+            messageId: messageId
+          }
+        }
+      });
+
+      if (!email) {
+        console.warn(`Email com messageId ${messageId} não encontrado no banco`);
+        return false;
+      }
+
+      // Selecionar pasta de origem
+      const sourceLock = await this.client.getMailboxLock(sourceFolderPath);
+
+      try {
+        // Mover email usando comando MOVE do IMAP
+        try {
+          const result = await this.client.messageMove(email.uid, targetFolderPath, { uid: true });
+          console.log(`Email ${messageId} movido com sucesso de ${sourceFolderPath} para ${targetFolderPath}`);
+          return true;
+        } catch (moveError) {
+          console.warn('Comando MOVE falhou, tentando fallback:', moveError);
+          // Fallback: usar COPY + STORE + EXPUNGE se MOVE não funcionar
+          await this.client.messageCopy(email.uid, targetFolderPath, { uid: true });
+          await this.client.messageFlagsAdd(email.uid, ['\\Deleted'], { uid: true });
+          // Usar mailboxClose com expunge em vez de expunge() direto
+          await this.client.mailboxClose();
+          console.log(`Email ${messageId} movido usando fallback de ${sourceFolderPath} para ${targetFolderPath}`);
+          return true;
+        }
+      } finally {
+        sourceLock.release();
+      }
+
+    } catch (error) {
+      console.error('Erro ao mover email no servidor IMAP:', error);
       return false;
     }
   }

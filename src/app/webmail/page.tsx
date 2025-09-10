@@ -151,10 +151,17 @@ export default function WebmailPage() {
     
     setLoading(true);
     try {
+      // Encontrar a pasta selecionada para obter o path
+      const folder = folders.find(f => f.id === selectedFolder);
+      if (!folder) {
+        console.error('Pasta não encontrada');
+        return;
+      }
+      
       const params = new URLSearchParams({
-        folderId: selectedFolder,
-        page: currentPage.toString(),
-        limit: '20'
+        folder: folder.path, // Usar o path da pasta em vez do ID
+        limit: '20',
+        offset: ((currentPage - 1) * 20).toString()
       });
       
       if (searchTerm) {
@@ -165,7 +172,9 @@ export default function WebmailPage() {
       if (response.ok) {
         const data = await response.json();
         setEmails(data.emails || []);
-        setTotalPages(data.pagination?.totalPages || 1);
+        // Calcular total de páginas baseado na paginação retornada
+        const totalPages = Math.ceil((data.pagination?.total || 0) / 20);
+        setTotalPages(totalPages);
       }
     } catch (error) {
       console.error('Erro ao carregar emails:', error);
@@ -244,7 +253,7 @@ export default function WebmailPage() {
   const moveToFolder = async (emailId: string, targetFolderId: string) => {
     try {
       const response = await fetch(`/api/emails/${emailId}/move`, {
-        method: 'PATCH',
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ folderId: targetFolderId })
       });
@@ -285,36 +294,30 @@ export default function WebmailPage() {
 
   const deleteEmail = async (emailId: string) => {
     try {
-      const response = await fetch(`/api/emails/${emailId}`, {
-        method: 'DELETE'
-      });
+      // Encontrar a pasta Lixeira
+      const trashFolder = folders.find(folder => 
+        folder.specialUse === '\\Trash' || 
+        folder.name.toLowerCase().includes('trash') ||
+        folder.name.toLowerCase().includes('lixeira') ||
+        folder.path.toLowerCase().includes('trash')
+      );
       
-      if (response.ok) {
-        const email = emails.find(e => e.id === emailId);
-        setEmails(emails.filter(e => e.id !== emailId));
-        
-        // Atualizar contador da pasta
-        if (email) {
-          setFolders(folders.map(folder => 
-            folder.id === selectedFolder 
-              ? { 
-                  ...folder, 
-                  totalCount: folder.totalCount - 1,
-                  unreadCount: email.isRead ? folder.unreadCount : Math.max(0, folder.unreadCount - 1)
-                }
-              : folder
-          ));
-        }
-        
-        if (selectedEmail?.id === emailId) {
-          setSelectedEmail(null);
-        }
-        
-        toast.success('Email excluído com sucesso');
+      if (!trashFolder) {
+        toast.error('Pasta Lixeira não encontrada');
+        return;
       }
+      
+      // Mover email para a lixeira em vez de deletar permanentemente
+      await moveToFolder(emailId, trashFolder.id);
+      
+      if (selectedEmail?.id === emailId) {
+        setSelectedEmail(null);
+      }
+      
+      toast.success('Email movido para a lixeira');
     } catch (error) {
-      console.error('Erro ao excluir email:', error);
-      toast.error('Erro ao excluir email');
+      console.error('Erro ao mover email para lixeira:', error);
+      toast.error('Erro ao mover email para lixeira');
     }
   };
 
@@ -561,21 +564,7 @@ export default function WebmailPage() {
               }
             </div>
             
-            <Separator className="my-3" />
-            
-            <div className="space-y-1">
-              {/* Administração */}
-              <Button
-                onClick={() => router.push('/webmail/admin')}
-                size="sm"
-                variant="outline"
-                className="flex items-center gap-2 w-full h-8"
-                title="Administração do Webmail"
-              >
-                <Settings className="h-3 w-3" />
-                <span className="text-xs">Administração</span>
-              </Button>
-            </div>
+
           </div>
         </ScrollArea>
 
@@ -667,7 +656,7 @@ export default function WebmailPage() {
                         {/* Remetente e indicadores */}
                         <div className="flex items-center justify-between">
                           <span className={`text-sm truncate ${
-                            !email.isRead ? 'font-semibold' : 'font-medium'
+                            !email.isRead ? 'font-bold' : 'font-medium'
                           }`}>
                             {getEmailSender(email)}
                           </span>
@@ -686,7 +675,7 @@ export default function WebmailPage() {
                         
                         {/* Assunto */}
                         <div className={`text-sm truncate ${
-                          !email.isRead ? 'font-semibold text-gray-900' : 'text-gray-700'
+                          !email.isRead ? 'font-bold text-gray-900' : 'text-gray-700'
                         }`}>
                           {email.subject || '(sem assunto)'}
                         </div>
@@ -817,7 +806,7 @@ export default function WebmailPage() {
                         variant="outline"
                         size="sm"
                         className="h-7 w-7 p-0 text-red-600 hover:text-red-700"
-                        title="Deletar"
+                        title="Mover para Lixeira"
                       >
                         <Trash2 className="h-3 w-3" />
                       </Button>

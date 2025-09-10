@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { db } from '@/lib/db';
+import { ImapService } from '@/lib/email/imap-service';
 import { z } from 'zod';
 
 const moveEmailSchema = z.object({
@@ -85,7 +86,12 @@ export async function PUT(
       );
     }
 
-    // Mover o email para a nova pasta
+    // Buscar pasta de origem do email
+    const sourceFolder = await db.emailFolder.findUnique({
+      where: { id: email.folderId }
+    });
+
+    // Mover o email para a nova pasta no banco de dados
     const updatedEmail = await db.email.update({
       where: { id: emailId },
       data: { 
@@ -102,6 +108,28 @@ export async function PUT(
         }
       }
     });
+
+    // Sincronizar com o servidor IMAP
+    try {
+      const imapService = new ImapService(colaborador.emailConfig.id);
+      const connected = await imapService.connect();
+      
+      if (connected && sourceFolder) {
+        // Mover email no servidor IMAP
+        await imapService.moveEmailToFolder(
+          email.messageId, 
+          sourceFolder.path, 
+          targetFolder.path
+        );
+        console.log(`Email ${email.messageId} movido de ${sourceFolder.path} para ${targetFolder.path} no servidor IMAP`);
+      }
+      
+      await imapService.disconnect();
+    } catch (imapError) {
+      console.error('Erro ao sincronizar movimentação com IMAP:', imapError);
+      // Não falhar a operação se a sincronização IMAP falhar
+      // O email já foi movido no banco de dados
+    }
 
     return NextResponse.json({
       id: updatedEmail.id,

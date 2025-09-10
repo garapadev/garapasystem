@@ -208,24 +208,50 @@ export default function EmailViewPage() {
   };
 
   const deleteEmail = async () => {
-    if (!confirm('Tem certeza que deseja excluir este email?')) {
+    if (!confirm('Tem certeza que deseja mover este email para a lixeira?')) {
       return;
     }
 
     try {
-      const response = await fetch(`/api/emails/${emailId}`, {
-        method: 'DELETE'
+      // Primeiro, buscar as pastas disponíveis para encontrar a lixeira
+      const foldersResponse = await fetch('/api/email-folders');
+      if (!foldersResponse.ok) {
+        toast.error('Erro ao buscar pastas');
+        return;
+      }
+      
+      const foldersData = await foldersResponse.json();
+      const folders = foldersData.folders || [];
+      
+      // Encontrar a pasta Lixeira
+      const trashFolder = folders.find((folder: any) => 
+        folder.specialUse === '\\Trash' || 
+        folder.name.toLowerCase().includes('trash') ||
+        folder.name.toLowerCase().includes('lixeira') ||
+        folder.path.toLowerCase().includes('trash')
+      );
+      
+      if (!trashFolder) {
+        toast.error('Pasta Lixeira não encontrada');
+        return;
+      }
+      
+      // Mover email para a lixeira em vez de deletar permanentemente
+      const response = await fetch(`/api/emails/${emailId}/move`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ folderId: trashFolder.id })
       });
 
       if (response.ok) {
-        toast.success('Email excluído');
+        toast.success('Email movido para a lixeira');
         router.push('/webmail');
       } else {
-        toast.error('Erro ao excluir email');
+        toast.error('Erro ao mover email para lixeira');
       }
     } catch (error) {
-      console.error('Erro ao excluir email:', error);
-      toast.error('Erro ao excluir email');
+      console.error('Erro ao mover email para lixeira:', error);
+      toast.error('Erro ao mover email para lixeira');
     }
   };
 
@@ -367,7 +393,7 @@ export default function EmailViewPage() {
             size="sm"
             onClick={() => handleAction('delete')}
             disabled={actionLoading === 'delete'}
-            title="Deletar"
+            title="Mover para Lixeira"
           >
             <Trash2 className="h-4 w-4" />
           </Button>
