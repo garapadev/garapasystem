@@ -8,48 +8,95 @@ Plataforma completa de gestão empresarial desenvolvida com Next.js 15, TypeScri
 
 ## ✨ Principais Funcionalidades
 
-### 👥 Gestão de Pessoas
-- **Usuários**: Sistema completo de autenticação e autorização
-- **Clientes**: Cadastro e gerenciamento de base de clientes com múltiplos endereços
-- **Colaboradores**: Controle de funcionários e suas informações
-- **Perfis e Permissões**: Controle granular de acesso
+### 🔐 Sistema de Autenticação e Segurança
+
+O GarapaSystem oferece um sistema robusto de autenticação com NextAuth.js, garantindo segurança e controle de acesso granular.
+
+**Características:**
+- Autenticação segura com JWT tokens
+- Sistema de sessões persistentes
+- Controle de permissões por perfil de usuário
+- Rate limiting para proteção contra ataques
+- Middleware de segurança em todas as rotas
+
+![Página de Login](./screenshots/login_page-2025-09-10T14-38-36-919Z.png)
+
+### 👥 Gestão Completa de Pessoas
+
+Gerenciamento centralizado de todos os stakeholders do seu negócio com interface intuitiva e funcionalidades avançadas.
+
+**Funcionalidades:**
+- **Usuários**: Cadastro completo com perfis e permissões personalizáveis
+- **Clientes**: Base de clientes com histórico completo e múltiplos endereços
+- **Colaboradores**: Controle de funcionários com informações detalhadas
+- **Perfis e Permissões**: Sistema granular de controle de acesso
+- **Integração ViaCEP**: Preenchimento automático de endereços
 
 ![Gestão de Clientes](./screenshots/clientes-gestao-2025-09-06T14-12-07-966Z.png)
 
-### 🏢 Gestão de Negócios
-- **Pipeline de Vendas**: Gestão completa de oportunidades
+### 🏢 Gestão Estratégica de Negócios
+
+Ferramentas completas para gestão de vendas e acompanhamento de performance empresarial.
+
+**Recursos:**
+- **Pipeline de Vendas**: Gestão visual de oportunidades com drag & drop
+- **Dashboard Interativo**: Métricas em tempo real com gráficos dinâmicos
 - **Grupos Hierárquicos**: Organização estrutural da empresa
-- **Dashboard Interativo**: Métricas e KPIs em tempo real
-- **Relatórios**: Análises detalhadas do negócio
+- **Relatórios Avançados**: Análises detalhadas com exportação
+- **KPIs Personalizáveis**: Indicadores customizados por setor
 
 ![Pipeline de Vendas](./screenshots/pipeline-vendas-completo-2025-09-06T14-18-23-046Z.png)
 
-### ⚙️ Integrações e Automação
-- **Sistema de Webhooks**: Configuração flexível de integrações
-- **API RESTful**: Endpoints completos com documentação Swagger
+### ⚙️ Integrações e Automação Avançada
+
+Ecossistema completo de integrações para conectar o GarapaSystem com outras ferramentas.
+
+**Capacidades:**
+- **Sistema de Webhooks**: Configuração flexível de integrações em tempo real
+- **API RESTful Completa**: Endpoints documentados com Swagger UI
 - **Chaves API**: Geração e gerenciamento seguro de acesso
-- **Logs Detalhados**: Monitoramento completo de atividades
+- **Logs Detalhados**: Monitoramento completo de atividades do sistema
 - **Sistema de Versioning**: Controle de versões da aplicação e API
+- **Rate Limiting**: Proteção contra abuso de recursos
 
 ![Configurações de API](./screenshots/api-config-completo-2025-09-06T14-18-41-758Z.png)
 
-### 📧 Sistema de Webmail
-- **Cliente de Email Completo**: Interface moderna para gerenciamento de emails
-- **Suporte IMAP/SMTP**: Configuração flexível de contas de email
-- **Composição de Emails**: Editor rico para criação de mensagens
+### 📧 Sistema de Webmail Profissional
+
+Cliente de email completo integrado ao sistema, oferecendo uma experiência moderna e eficiente.
+
+**Funcionalidades Principais:**
+- **Interface Moderna**: Design responsivo e intuitivo
+- **Suporte IMAP/SMTP**: Configuração flexível de múltiplas contas
+- **Composição Rica**: Editor avançado para criação de emails
 - **Sincronização em Tempo Real**: Atualização automática de pastas e mensagens
-- **Gerenciamento de Pastas**: Organização completa de emails (Inbox, Enviados, Rascunhos, Lixeira)
-- **Busca Avançada**: Pesquisa rápida e eficiente de emails
+- **Gerenciamento de Pastas**: Organização completa (Inbox, Enviados, Rascunhos, Lixeira)
+- **Busca Avançada**: Pesquisa rápida e eficiente com filtros
+- **Configurações Flexíveis**: Suporte a SSL/TLS e autenticação segura
+
+![Webmail - Estado Inicial](./screenshots/webmail_initial_state-2025-09-10T14-37-02-030Z.png)
+
+![Webmail - Email Selecionado](./screenshots/email_clicked_state-2025-09-10T14-37-30-141Z.png)
 
 ### 🔄 Comunicação em Tempo Real
-- **WebSocket**: Atualizações instantâneas
-- **Notificações**: Sistema de alertas em tempo real
-- **Sincronização**: Dados sempre atualizados
 
-### ⚙️ Configurações Avançadas
-- **Aba Sobre**: Informações detalhadas da aplicação, API e verificação de atualizações
+Sistema avançado de comunicação bidirecional para atualizações instantâneas.
+
+**Recursos:**
+- **WebSocket**: Conexões persistentes para atualizações em tempo real
+- **Notificações Push**: Sistema de alertas instantâneos
+- **Sincronização Automática**: Dados sempre atualizados em todos os dispositivos
+- **Status de Conexão**: Indicadores visuais de conectividade
+
+### ⚙️ Configurações e Monitoramento
+
+Painel completo de configurações e monitoramento do sistema.
+
+**Características:**
+- **Aba Sobre**: Informações detalhadas da aplicação e verificação de atualizações
 - **Configurações de Sistema**: Painel completo de configurações
-- **Monitoramento**: Status em tempo real do sistema
+- **Monitoramento em Tempo Real**: Status do sistema e performance
+- **Logs de Auditoria**: Rastreamento completo de ações do usuário
 
 ## 🛠️ Stack Tecnológico
 
@@ -75,55 +122,174 @@ Plataforma completa de gestão empresarial desenvolvida com Next.js 15, TypeScri
 - **Rate Limiting** - Proteção contra abuso de API
 - **Middleware de Segurança** - Proteção de rotas e endpoints
 
-## 🚀 Instalação Rápida
+## 🚀 Como Utilizar
 
-### Pré-requisitos
-- Node.js 18.0+
-- PostgreSQL 13.0+
-- Docker (opcional)
+### 📋 Pré-requisitos
 
-### 1. Clone o Repositório
+Antes de começar, certifique-se de ter instalado em sua máquina:
+
+- **Node.js 18+** - [Download aqui](https://nodejs.org/)
+- **PostgreSQL 14+** - [Download aqui](https://www.postgresql.org/download/)
+- **Git** - [Download aqui](https://git-scm.com/)
+- **Docker** (opcional, para ambiente containerizado) - [Download aqui](https://www.docker.com/)
+
+### 🔧 Instalação e Configuração
+
+#### 1. Clone o Repositório
 ```bash
 git clone https://github.com/garapadev/garapasystem.git
 cd garapasystem
 ```
 
-### 2. Configuração do Ambiente
+#### 2. Instale as Dependências
+```bash
+npm install
+# ou
+yarn install
+```
+
+#### 3. Configure o Banco de Dados
+
+**Opção A: PostgreSQL Local**
+```bash
+# Crie um banco de dados PostgreSQL
+creatdb garapasystem
+```
+
+**Opção B: Docker (Recomendado)**
+```bash
+# Inicie o PostgreSQL via Docker
+docker-compose up -d postgres
+```
+
+#### 4. Configure as Variáveis de Ambiente
 ```bash
 # Copie o arquivo de exemplo
-cp .env.example .env
+cp .env.example .env.local
 
-# Configure suas variáveis de ambiente
-nano .env
+# Edite o arquivo .env.local com suas configurações
+nano .env.local
 ```
 
-### 3. Instalação com Docker (Recomendado)
+**Variáveis principais a configurar:**
+```env
+# Banco de Dados
+DATABASE_URL="postgresql://usuario:senha@localhost:5432/garapasystem"
+
+# NextAuth
+NEXTAUTH_SECRET="seu-secret-aqui"
+NEXTAUTH_URL="http://localhost:3000"
+
+# Email (para webmail)
+IMAP_HOST="seu-servidor-imap"
+IMAP_PORT=993
+SMTP_HOST="seu-servidor-smtp"
+SMTP_PORT=587
+```
+
+#### 5. Execute as Migrações do Banco
 ```bash
-# Inicie todos os serviços
-docker-compose up -d
+# Gere o cliente Prisma
+npx prisma generate
 
 # Execute as migrações
-docker-compose exec app npm run db:migrate
+npx prisma migrate dev
 
-# Popule o banco com dados iniciais
-docker-compose exec app npm run db:seed
+# (Opcional) Popule com dados de exemplo
+npx prisma db seed
 ```
 
-### 4. Instalação Manual
+#### 6. Inicie a Aplicação
+
+**Desenvolvimento:**
 ```bash
-# Instale as dependências
-npm install
-
-# Configure o banco de dados
-npm run db:generate
-npm run db:migrate
-npm run db:seed
-
-# Inicie o servidor de desenvolvimento
 npm run dev
 ```
 
-Acesse [http://localhost:3000](http://localhost:3000) para ver a aplicação.
+**Produção:**
+```bash
+npm run build
+npm start
+```
+
+### 🌐 Acessando a Aplicação
+
+1. **Aplicação Principal**: `http://localhost:3000`
+2. **Prisma Studio** (Gerenciamento do BD): `http://localhost:5555`
+3. **API Documentation**: `http://localhost:3000/api/docs`
+
+### 👤 Primeiro Acesso
+
+1. Acesse `http://localhost:3000`
+2. Clique em "Criar Conta" na tela de login
+3. Preencha os dados do primeiro usuário (será admin)
+4. Faça login com as credenciais criadas
+5. Configure as integrações necessárias em "Configurações"
+
+### 📧 Configuração do Webmail
+
+1. Acesse "Configurações" → "Email"
+2. Configure os servidores IMAP/SMTP:
+   - **Host IMAP**: servidor de entrada
+   - **Porta IMAP**: 993 (SSL) ou 143 (STARTTLS)
+   - **Host SMTP**: servidor de saída
+   - **Porta SMTP**: 587 (STARTTLS) ou 465 (SSL)
+3. Teste a conexão
+4. Acesse o webmail em "Email" no menu principal
+
+### 🔧 Comandos Úteis
+
+```bash
+# Resetar banco de dados
+npx prisma migrate reset
+
+# Visualizar banco de dados
+npx prisma studio
+
+# Executar testes
+npm test
+
+# Verificar tipos TypeScript
+npm run type-check
+
+# Executar linting
+npm run lint
+
+# Formatar código
+npm run format
+```
+
+### 🐳 Execução com Docker
+
+```bash
+# Construir e executar todos os serviços
+docker-compose up -d
+
+# Executar apenas o banco de dados
+docker-compose up -d postgres
+
+# Ver logs dos containers
+docker-compose logs -f
+
+# Parar todos os serviços
+docker-compose down
+```
+
+### ⚠️ Solução de Problemas
+
+**Erro de conexão com banco:**
+- Verifique se o PostgreSQL está rodando
+- Confirme as credenciais no `.env.local`
+- Execute `npx prisma db push` para sincronizar o schema
+
+**Erro de autenticação:**
+- Verifique se `NEXTAUTH_SECRET` está definido
+- Confirme se `NEXTAUTH_URL` está correto
+
+**Problemas com webmail:**
+- Verifique as configurações IMAP/SMTP
+- Confirme se as portas estão abertas
+- Teste a conectividade com `telnet servidor porta`
 
 ##### 🆕 Atualizações Recentes
 
