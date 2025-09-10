@@ -95,14 +95,19 @@ export async function GET(request: NextRequest) {
         isFlagged: true,
         size: true,
         textContent: true,
-        htmlContent: true
+        htmlContent: true,
+        attachments: {
+          select: {
+            id: true
+          }
+        }
       }
     });
 
     // Processar dados dos emails
     const processedEmails = emails.map(email => {
-      let fromArray = [];
-      let toArray = [];
+      let fromArray: Array<{ address: string; name?: string }> = [];
+      let toArray: Array<{ address: string; name?: string }> = [];
       
       try {
         fromArray = typeof email.from === 'string' ? JSON.parse(email.from) : email.from || [];
@@ -116,6 +121,13 @@ export async function GET(request: NextRequest) {
         toArray = [{ address: email.to || '', name: '' }];
       }
 
+      // Gerar preview do conteúdo
+      const preview = email.textContent 
+        ? email.textContent.substring(0, 200).replace(/\n/g, ' ').trim()
+        : email.htmlContent 
+          ? email.htmlContent.replace(/<[^>]*>/g, '').substring(0, 200).replace(/\n/g, ' ').trim()
+          : 'Sem conteúdo';
+
       return {
         id: email.id,
         messageId: email.messageId,
@@ -125,9 +137,9 @@ export async function GET(request: NextRequest) {
         date: email.date.toISOString(),
         isRead: email.isRead,
         isFlagged: email.isFlagged,
-        size: email.size || 0,
-        textContent: email.textContent?.substring(0, 200), // Prévia limitada
-        htmlContent: email.htmlContent ? email.htmlContent.substring(0, 200) : undefined
+        hasAttachments: email.attachments && email.attachments.length > 0,
+        preview: preview,
+        size: email.size || 0
       };
     });
 

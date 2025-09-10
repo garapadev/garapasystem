@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { db } from '@/lib/db';
+import { processEmailContent } from '@/lib/html-utils';
 
 // GET - Buscar email específico por ID
 export async function GET(
@@ -103,6 +104,40 @@ export async function GET(
     const ccArray = parseEmailField(email.cc);
     const bccArray = parseEmailField(email.bcc);
 
+    // Se o conteúdo não estiver disponível, buscar via IMAP
+    let body = email.textContent || email.htmlContent || '';
+    let bodyType = email.htmlContent ? 'html' : 'text';
+    
+    if (!body) {
+      try {
+        const { ImapService } = await import('@/lib/email/imap-service');
+        const imapService = new ImapService(colaborador.emailConfig.id);
+        const connected = await imapService.connect();
+        
+        if (connected) {
+          const content = await imapService.getEmailContent(email.messageId);
+          if (content) {
+            body = content.html || content.text || 'Conteúdo não disponível';
+            bodyType = content.html ? 'html' : 'text';
+          } else {
+            body = 'Conteúdo não disponível';
+          }
+          await imapService.disconnect();
+        } else {
+          body = 'Erro ao conectar ao servidor de email';
+        }
+      } catch (error) {
+        console.error('Erro ao buscar conteúdo do email:', error);
+        body = 'Erro ao carregar conteúdo';
+      }
+    }
+
+    // Processar conteúdo para extrair texto limpo
+    const processedContent = processEmailContent(
+      email.textContent,
+      email.htmlContent || body
+    );
+
     const emailData = {
       id: email.id,
       messageId: email.messageId,
@@ -112,8 +147,10 @@ export async function GET(
       cc: ccArray.length > 0 ? ccArray : undefined,
       bcc: bccArray.length > 0 ? bccArray : undefined,
       date: email.date.toISOString(),
-      body: email.textContent || email.htmlContent || '',
-      bodyType: email.htmlContent ? 'html' : 'text',
+      body: body,
+      bodyType: bodyType,
+      textContent: processedContent.text,
+      preview: processedContent.preview,
       isRead: email.isRead,
       attachments: email.attachments || [],
       folder: email.folder

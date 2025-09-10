@@ -1,5 +1,6 @@
 import { startEmailSync } from './imap-service';
 import { db } from '@/lib/db';
+import { emailSyncMonitor, initializeSyncMonitor } from './sync-monitor';
 
 interface SyncJob {
   emailConfigId: string;
@@ -9,8 +10,50 @@ interface SyncJob {
 
 class EmailSyncScheduler {
   private jobs: Map<string, SyncJob> = new Map();
-  private readonly SYNC_INTERVAL = 3 * 60 * 1000; // 3 minutos em millisegundos
+  private readonly SYNC_INTERVAL = 30 * 1000; // 30 segundos em millisegundos (otimizado)
   private syncCount = 0; // Contador para verificações de consistência
+  private isGlobalSyncEnabled = true; // Controle global do worker
+
+  // Método para validar configuração de email
+  private validateEmailConfig(config: any): boolean {
+    try {
+      // Validação básica dos campos obrigatórios
+      if (!config.email || !config.imapHost || !config.imapPort || !config.password) {
+        return false;
+      }
+      return true;
+    } catch (error) {
+      console.error('Erro na validação da configuração de email:', error);
+      return false;
+    }
+  }
+
+  // Método para lidar com erros de validação
+  private handleValidationError(error: any, context: string): void {
+    if (error.name === 'ZodError') {
+      console.error(`Erro de validação Zod em ${context}:`, error.errors);
+    } else {
+      console.error(`Erro em ${context}:`, error);
+    }
+  }
+
+  // Método para retry de operações
+  private async retryOperation<T>(operation: () => Promise<T>, maxRetries: number = 3): Promise<T | null> {
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        return await operation();
+      } catch (error) {
+        console.warn(`Tentativa ${attempt}/${maxRetries} falhou:`, error);
+        if (attempt === maxRetries) {
+          console.error('Todas as tentativas falharam');
+          return null;
+        }
+        // Aguardar antes da próxima tentativa
+        await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+      }
+    }
+    return null;
+  }
 
   async startSyncForUser(colaboradorId: string): Promise<boolean> {
     try {
@@ -48,7 +91,7 @@ class EmailSyncScheduler {
         isRunning: true
       });
 
-      console.log(`Sincronização iniciada para configuração ${emailConfig.id} (colaborador ${colaboradorId})`);
+      console.log(`[Worker] Sincronização iniciada para configuração ${emailConfig.id} (colaborador ${colaboradorId})`);
       return true;
 
     } catch (error) {
@@ -89,6 +132,51 @@ class EmailSyncScheduler {
     }
   }
 
+  async startSyncForConfig(emailConfigId: string, syncInterval?: number): Promise<boolean> {
+    try {
+      // Verificar se já existe um job rodando para esta configuração
+      if (this.jobs.has(emailConfigId)) {
+        console.log(`Sincronização já está rodando para configuração ${emailConfigId}`);
+        return true;
+      }
+
+      // Buscar configuração de email
+      const emailConfig = await db.emailConfig.findUnique({
+        where: { id: emailConfigId }
+      });
+
+      if (!emailConfig || !emailConfig.ativo) {
+        console.log(`Configuração de email ${emailConfigId} não encontrada ou inativa`);
+        return false;
+      }
+
+      // Executar sincronização inicial
+      await this.performSync(emailConfigId);
+
+      // Usar intervalo personalizado ou padrão
+      const interval = (syncInterval || emailConfig.syncInterval || 180) * 1000;
+
+      // Agendar sincronizações periódicas
+      const intervalId = setInterval(async () => {
+        await this.performSync(emailConfigId);
+      }, interval);
+
+      // Armazenar job
+      this.jobs.set(emailConfigId, {
+        emailConfigId,
+        intervalId,
+        isRunning: true
+      });
+
+      console.log(`[Worker] Sincronização iniciada para configuração ${emailConfigId}`);
+      return true;
+
+    } catch (error) {
+      console.error(`Erro ao iniciar sincronização para configuração ${emailConfigId}:`, error);
+      return false;
+    }
+  }
+
   stopSyncForConfig(emailConfigId: string): boolean {
     const job = this.jobs.get(emailConfigId);
     
@@ -108,11 +196,23 @@ class EmailSyncScheduler {
   }
 
   private async performSync(emailConfigId: string): Promise<void> {
+    // Verificar se o worker global está habilitado
+    if (!this.isGlobalSyncEnabled) {
+      emailSyncMonitor.logSyncSkip(emailConfigId, 'Sincronização global desabilitada');
+      return;
+    }
+
     const job = this.jobs.get(emailConfigId);
     
     if (!job || job.isRunning) {
+      if (job?.isRunning) {
+        emailSyncMonitor.logSyncSkip(emailConfigId, 'Sincronização já em andamento');
+      }
       return; // Evitar sobreposição de sincronizações
     }
+
+    const startTime = Date.now();
+    emailSyncMonitor.logSyncStart(emailConfigId);
 
     try {
       job.isRunning = true;
@@ -140,10 +240,10 @@ class EmailSyncScheduler {
           const result = await consistencyService.maintainConsistency();
           
           if (result.success && result.fixes) {
-            console.log(`Consistência verificada para configuração ${emailConfigId}: ${result.fixes.foldersFixed} pastas corrigidas`);
+            console.log(`[Worker] Consistência verificada para configuração ${emailConfigId}: ${result.fixes.foldersFixed} pastas corrigidas`);
           }
         } catch (consistencyError) {
-          console.warn(`Erro na verificação de consistência para configuração ${emailConfigId}:`, consistencyError);
+          console.error(`[Worker] Erro na verificação de consistência para configuração ${emailConfigId}:`, consistencyError);
         }
       }
       
@@ -169,10 +269,15 @@ class EmailSyncScheduler {
         }
       });
 
-      console.log(`Sincronização concluída para configuração ${emailConfigId}`);
+      // Log de sucesso com métricas
+      const duration = Date.now() - startTime;
+      const newEmails = emailsAfter - emailsBefore;
+      emailSyncMonitor.logSyncSuccess(emailConfigId, duration, newEmails);
 
     } catch (error) {
-      console.error(`Erro na sincronização da configuração ${emailConfigId}:`, error);
+      const duration = Date.now() - startTime;
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      emailSyncMonitor.logSyncError(emailConfigId, errorMessage, duration);
     } finally {
       if (job) {
         job.isRunning = false;
@@ -254,14 +359,46 @@ class EmailSyncScheduler {
   }
 
   stopAllSyncs(): void {
-    console.log(`Parando ${this.jobs.size} sincronização(ões) ativa(s)`);
+    console.log('Parando todas as sincronizações...');
     
-    for (const [configId, job] of this.jobs.entries()) {
+    for (const [emailConfigId, job] of this.jobs) {
       clearInterval(job.intervalId);
+      console.log(`Sincronização parada para configuração ${emailConfigId}`);
     }
     
     this.jobs.clear();
     console.log('Todas as sincronizações foram paradas');
+  }
+
+  // Métodos para controle global do worker
+  enableGlobalSync(): void {
+    this.isGlobalSyncEnabled = true;
+    console.log('[Worker] Sincronização global habilitada');
+  }
+
+  disableGlobalSync(): void {
+    this.isGlobalSyncEnabled = false;
+    console.log('[Worker] Sincronização global desabilitada');
+  }
+
+  getGlobalStatus(): { isEnabled: boolean } {
+    return {
+      isEnabled: this.isGlobalSyncEnabled
+    };
+  }
+
+  getActiveJobs(): Array<{ emailConfigId: string; isRunning: boolean; startedAt?: Date }> {
+    const activeJobs: Array<{ emailConfigId: string; isRunning: boolean; startedAt?: Date }> = [];
+    
+    for (const [emailConfigId, job] of this.jobs) {
+      activeJobs.push({
+        emailConfigId,
+        isRunning: job.isRunning,
+        startedAt: new Date() // Aproximação, pois não temos o timestamp exato
+      });
+    }
+    
+    return activeJobs;
   }
 
   getActiveSyncs(): string[] {
@@ -270,14 +407,32 @@ class EmailSyncScheduler {
 
   getSyncStatus(emailConfigId: string): { isActive: boolean; isRunning: boolean } | null {
     const job = this.jobs.get(emailConfigId);
-    
     if (!job) {
       return null;
     }
-    
+
     return {
       isActive: true,
       isRunning: job.isRunning
+    };
+  }
+
+  isGlobalSyncActive(): boolean {
+    return this.isGlobalSyncEnabled;
+  }
+
+  // Estatísticas do worker
+  getWorkerStats(): {
+    totalActiveJobs: number;
+    syncInterval: number;
+    globalSyncEnabled: boolean;
+    activeSyncs: string[];
+  } {
+    return {
+      totalActiveJobs: this.jobs.size,
+      syncInterval: this.SYNC_INTERVAL,
+      globalSyncEnabled: this.isGlobalSyncEnabled,
+      activeSyncs: this.getActiveSyncs()
     };
   }
 }
@@ -288,6 +443,9 @@ export const emailSyncScheduler = new EmailSyncScheduler();
 // Função para inicializar o sistema de sincronização
 export async function initializeEmailSync(): Promise<void> {
   console.log('Inicializando sistema de sincronização de emails...');
+  
+  // Inicializar sistema de monitoramento
+  initializeSyncMonitor();
   
   // Iniciar sincronização para todas as configurações ativas
   await emailSyncScheduler.startAllActiveConfigs();

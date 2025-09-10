@@ -455,13 +455,6 @@ export class ImapService {
 
       console.log(`Sincronização de emails da pasta ${folderPath} concluída (${processedCount} emails processados)`);
 
-      return {
-        success: true,
-        emailsSincronizados: processedCount,
-        pastasSincronizadas: 1,
-        message: 'Sincronização concluída com sucesso'
-      };
-
     } catch (error) {
       console.error(`Erro ao sincronizar emails da pasta ${folderPath}:`, error);
       throw error;
@@ -514,6 +507,41 @@ export class ImapService {
         return;
       }
 
+      // Buscar conteúdo do email durante a sincronização
+      let textContent: string | null = null;
+      let htmlContent: string | null = null;
+      
+      try {
+        // Buscar conteúdo TEXT
+        const textResult = await this.client?.fetchOne(message.uid, {
+          bodyParts: ['TEXT']
+        }, { uid: true });
+        
+        if (textResult && typeof textResult === 'object' && 'bodyParts' in textResult) {
+          const bodyParts = textResult.bodyParts as Map<string, Buffer>;
+          const textBuffer = bodyParts.get('TEXT');
+          if (textBuffer) {
+            textContent = textBuffer.toString();
+          }
+        }
+        
+        // Buscar conteúdo HTML
+        const htmlResult = await this.client?.fetchOne(message.uid, {
+          bodyParts: ['HTML']
+        }, { uid: true });
+        
+        if (htmlResult && typeof htmlResult === 'object' && 'bodyParts' in htmlResult) {
+          const bodyParts = htmlResult.bodyParts as Map<string, Buffer>;
+          const htmlBuffer = bodyParts.get('HTML');
+          if (htmlBuffer) {
+            htmlContent = htmlBuffer.toString();
+          }
+        }
+      } catch (contentError) {
+        console.warn(`Erro ao buscar conteúdo do email ${message.envelope.messageId}:`, contentError);
+        // Continuar mesmo se não conseguir buscar o conteúdo
+      }
+
       // Criar novo email
       const newEmail = await db.email.create({
         data: {
@@ -533,6 +561,8 @@ export class ImapService {
           isDeleted: message.flags.has('\\Deleted'),
           inReplyTo: message.envelope.inReplyTo || null,
           references: JSON.stringify(message.envelope.references || []),
+          textContent: textContent,
+          htmlContent: htmlContent,
           emailConfigId: this.config.id,
           folderId: folderId
         }
@@ -584,44 +614,100 @@ export class ImapService {
       const lock = await this.client.getMailboxLock(email.folder.path);
 
       try {
-        // Buscar conteúdo do email
-        const textContent = await this.client.fetchOne(email.uid, {
-          bodyParts: ['TEXT']
+        // Buscar o email completo com bodyStructure para analisar as partes
+        const message = await this.client.fetchOne(email.uid, {
+          bodyStructure: true,
+          envelope: true
         }, { uid: true });
 
-        const htmlContent = await this.client.fetchOne(email.uid, {
-          bodyParts: ['HTML']
-        }, { uid: true });
+        if (!message || message === false || !message.bodyStructure) {
+          console.log(`Estrutura do corpo não encontrada para email ${email.uid}`);
+          return null;
+        }
 
         const result: { text?: string; html?: string } = {};
 
-        if (textContent && typeof textContent === 'object' && 'bodyParts' in textContent) {
-          const bodyParts = textContent.bodyParts as Map<string, Buffer>;
-          if (bodyParts.get('TEXT')) {
-            result.text = bodyParts.get('TEXT')?.toString();
+        // Função para encontrar partes específicas do email
+        const findBodyParts = (structure: any, parts: { text?: string; html?: string } = {}): { text?: string; html?: string } => {
+          if (!structure) return parts;
+
+          if (structure.type === 'text') {
+            if (structure.subtype === 'plain' && !parts.text) {
+              parts.text = structure.part || '1';
+            } else if (structure.subtype === 'html' && !parts.html) {
+              parts.html = structure.part || '1';
+            }
+          }
+
+          if (structure.childNodes && Array.isArray(structure.childNodes)) {
+            for (const child of structure.childNodes) {
+              findBodyParts(child, parts);
+            }
+          }
+
+          return parts;
+        };
+
+        const bodyParts = findBodyParts(message.bodyStructure);
+
+        // Baixar conteúdo texto se disponível
+        if (bodyParts.text) {
+          try {
+            const downloadResult = await this.client.download(email.uid, bodyParts.text, { uid: true });
+            const chunks: Buffer[] = [];
+            for await (const chunk of downloadResult.content) {
+              chunks.push(chunk);
+            }
+            result.text = Buffer.concat(chunks).toString('utf8');
+          } catch (error) {
+            console.warn('Erro ao baixar conteúdo texto:', error);
           }
         }
 
-        if (htmlContent && typeof htmlContent === 'object' && 'bodyParts' in htmlContent) {
-          const bodyParts = htmlContent.bodyParts as Map<string, Buffer>;
-          if (bodyParts.get('HTML')) {
-            result.html = bodyParts.get('HTML')?.toString();
+        // Baixar conteúdo HTML se disponível
+        if (bodyParts.html) {
+          try {
+            const downloadResult = await this.client.download(email.uid, bodyParts.html, { uid: true });
+            const chunks: Buffer[] = [];
+            for await (const chunk of downloadResult.content) {
+              chunks.push(chunk);
+            }
+            result.html = Buffer.concat(chunks).toString('utf8');
+          } catch (error) {
+            console.warn('Erro ao baixar conteúdo HTML:', error);
           }
         }
+
+        // Se não conseguiu encontrar partes específicas, tenta baixar o email completo
+        if (!result.text && !result.html) {
+          try {
+            const downloadResult = await this.client.download(email.uid, 'TEXT', { uid: true });
+            const chunks: Buffer[] = [];
+            for await (const chunk of downloadResult.content) {
+              chunks.push(chunk);
+            }
+            const fullContent = Buffer.concat(chunks).toString('utf8');
+            
+            // Tenta extrair texto simples do conteúdo completo
+            result.text = fullContent;
+          } catch (error) {
+            console.warn('Erro ao baixar email completo:', error);
+          }
+        }
+
+        // Atualizar conteúdo no banco
+        await db.email.update({
+          where: { id: email.id },
+          data: {
+            textContent: result.text || null,
+            htmlContent: result.html || null
+          }
+        });
+
+        return result;
       } finally {
         lock.release();
       }
-
-      // Atualizar conteúdo no banco
-      await db.email.update({
-        where: { id: email.id },
-        data: {
-          textContent: emailContent.text || null,
-          htmlContent: emailContent.html || null
-        }
-      });
-
-      return emailContent;
 
     } catch (error) {
       console.error('Erro ao buscar conteúdo do email:', error);
@@ -674,6 +760,109 @@ export class ImapService {
 
     } catch (error) {
       console.error('Erro ao marcar email como lido:', error);
+      return false;
+    }
+  }
+
+  async markAsUnread(messageId: string): Promise<boolean> {
+    if (!this.client || !this.config) {
+      throw new Error('Cliente IMAP não conectado');
+    }
+
+    try {
+      const email = await db.email.findUnique({
+        where: {
+          emailConfigId_messageId: {
+            emailConfigId: this.config.id,
+            messageId: messageId
+          }
+        },
+        include: {
+          folder: true
+        }
+      });
+
+      if (!email) {
+        return false;
+      }
+
+      // Selecionar pasta
+      const lock = await this.client.getMailboxLock(email.folder.path);
+
+      try {
+        // Remover flag \Seen no servidor
+        await this.client.messageFlagsRemove(email.uid, ['\\Seen'], { uid: true });
+      } finally {
+        lock.release();
+      }
+
+      // Atualizar no banco
+      await db.email.update({
+        where: { id: email.id },
+        data: {
+          isRead: false,
+          updatedAt: new Date()
+        }
+      });
+
+      return true;
+
+    } catch (error) {
+      console.error('Erro ao marcar email como não lido:', error);
+      return false;
+    }
+  }
+
+  async toggleFlag(messageId: string, flagged: boolean): Promise<boolean> {
+    if (!this.client || !this.config) {
+      throw new Error('Cliente IMAP não conectado');
+    }
+
+    try {
+      const email = await db.email.findUnique({
+        where: {
+          emailConfigId_messageId: {
+            emailConfigId: this.config.id,
+            messageId: messageId
+          }
+        },
+        include: {
+          folder: true
+        }
+      });
+
+      if (!email) {
+        return false;
+      }
+
+      // Selecionar pasta
+      const lock = await this.client.getMailboxLock(email.folder.path);
+
+      try {
+        if (flagged) {
+          // Adicionar flag \Flagged
+          await this.client.messageFlagsAdd(email.uid, ['\\Flagged'], { uid: true });
+        } else {
+          // Remover flag \Flagged
+          await this.client.messageFlagsRemove(email.uid, ['\\Flagged'], { uid: true });
+        }
+      } finally {
+        lock.release();
+      }
+
+      // Atualizar no banco
+      await db.email.update({
+        where: { id: email.id },
+        data: {
+          isFlagged: flagged,
+          updatedAt: new Date()
+        }
+      });
+
+      return true;
+
+    } catch (error) {
+      console.error('Erro ao alterar flag do email:', error);
       return false;
     }
   }

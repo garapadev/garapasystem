@@ -53,6 +53,8 @@ interface Email {
   hasAttachments: boolean;
   preview: string;
   size: number;
+  body?: string;
+  bodyType?: 'html' | 'text';
 }
 
 interface EmailConfig {
@@ -71,6 +73,7 @@ export default function WebmailPage() {
   const [emails, setEmails] = useState<Email[]>([]);
   const [selectedFolder, setSelectedFolder] = useState<string>('');
   const [selectedEmail, setSelectedEmail] = useState<Email | null>(null);
+  const [loadingEmailContent, setLoadingEmailContent] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
   const [showConfig, setShowConfig] = useState(false);
@@ -355,10 +358,61 @@ export default function WebmailPage() {
         return <Archive className="h-4 w-4" />;
       case '\\Trash':
         return <Trash2 className="h-4 w-4" />;
+      case '\\Junk':
+        return <Mail className="h-4 w-4" />;
+      case '\\Drafts':
+        return <Edit className="h-4 w-4" />;
       default:
         return <Mail className="h-4 w-4" />;
     }
   };
+
+  const getFolderDisplayName = (folder: EmailFolder) => {
+    // Traduzir nomes das pastas para português brasileiro na UI
+    // mantendo os identificadores originais no sistema
+    switch (folder.specialUse) {
+      case '\\Inbox':
+        return 'Caixa de Entrada';
+      case '\\Sent':
+        return 'Enviados';
+      case '\\Archive':
+        return 'Arquivo';
+      case '\\Trash':
+        return 'Lixeira';
+      case '\\Junk':
+        return 'Spam';
+      case '\\Drafts':
+        return 'Rascunhos';
+      default:
+        // Para pastas personalizadas, verificar nomes comuns em inglês
+        const lowerName = folder.name.toLowerCase();
+        switch (lowerName) {
+          case 'inbox':
+            return 'Caixa de Entrada';
+          case 'sent':
+          case 'sent items':
+          case 'sent mail':
+            return 'Enviados';
+          case 'drafts':
+            return 'Rascunhos';
+          case 'trash':
+          case 'deleted':
+          case 'deleted items':
+            return 'Lixeira';
+          case 'archive':
+          case 'archived':
+            return 'Arquivo';
+          case 'spam':
+          case 'junk':
+          case 'junk mail':
+            return 'Spam';
+          case 'outbox':
+            return 'Caixa de Saída';
+          default:
+            return folder.name; // Manter nome original para pastas personalizadas
+        }
+    }
+  }
 
   if (loading) {
     return (
@@ -425,65 +479,116 @@ export default function WebmailPage() {
         {/* Folders */}
         <ScrollArea className="flex-1">
           <div className="p-2">
-            <div className="space-y-1">
-              {folders.map((folder) => (
-                <Button
-                  key={folder.id}
-                  onClick={() => setSelectedFolder(folder.id)}
-                  variant={selectedFolder === folder.id ? "secondary" : "ghost"}
-                  className="w-full justify-start h-auto p-3"
-                >
-                  <div className="flex items-center gap-3 w-full">
-                    {getFolderIcon(folder)}
-                    <div className="flex-1 text-left">
-                      <div className="font-medium">{folder.name}</div>
-                      <div className="text-xs text-muted-foreground">
-                        {folder.unreadCount > 0 && (
-                          <span className="font-semibold">{folder.unreadCount} não lidas • </span>
+            <div className="space-y-0.5">
+              {/* Inbox primeiro */}
+              {folders
+                .filter(folder => folder.specialUse === '\\Inbox')
+                .map((folder) => (
+                  <Button
+                    key={folder.id}
+                    onClick={() => setSelectedFolder(folder.id)}
+                    variant={selectedFolder === folder.id ? "secondary" : "ghost"}
+                    className="w-full justify-start h-auto p-2"
+                  >
+                    <div className="flex items-center gap-2 w-full">
+                      {getFolderIcon(folder)}
+                      <div className="flex-1 text-left">
+                        <div className="font-medium text-sm">{getFolderDisplayName(folder)}</div>
+                        {(folder.unreadCount > 0 || folder.totalCount > 0) && (
+                          <div className="text-xs text-muted-foreground">
+                            {folder.unreadCount > 0 && (
+                              <span className="font-semibold">{folder.unreadCount} não lidas</span>
+                            )}
+                            {folder.unreadCount > 0 && folder.totalCount > 0 && ' • '}
+                            {folder.totalCount > 0 && (
+                              <span>{folder.totalCount} total</span>
+                            )}
+                          </div>
                         )}
-                        {folder.totalCount} total
                       </div>
+                      {folder.unreadCount > 0 && (
+                        <Badge variant="secondary" className="ml-auto text-xs px-1.5 py-0.5">
+                          {folder.unreadCount}
+                        </Badge>
+                      )}
                     </div>
-                    {folder.unreadCount > 0 && (
-                      <Badge variant="secondary" className="ml-auto">
-                        {folder.unreadCount}
-                      </Badge>
-                    )}
-                  </div>
-                </Button>
-              ))}
+                  </Button>
+                ))
+              }
+              
+              {/* Outras pastas */}
+              {folders
+                .filter(folder => folder.specialUse !== '\\Inbox')
+                .sort((a, b) => {
+                  // Ordem: Sent, Archive, Trash, outras
+                  const order = { '\\Sent': 1, '\\Archive': 2, '\\Trash': 3 };
+                  const aOrder = order[a.specialUse as keyof typeof order] || 4;
+                  const bOrder = order[b.specialUse as keyof typeof order] || 4;
+                  if (aOrder !== bOrder) return aOrder - bOrder;
+                  return a.name.localeCompare(b.name);
+                })
+                .map((folder) => (
+                  <Button
+                    key={folder.id}
+                    onClick={() => setSelectedFolder(folder.id)}
+                    variant={selectedFolder === folder.id ? "secondary" : "ghost"}
+                    className="w-full justify-start h-auto p-2"
+                  >
+                    <div className="flex items-center gap-2 w-full">
+                      {getFolderIcon(folder)}
+                      <div className="flex-1 text-left">
+                        <div className="font-medium text-sm">{getFolderDisplayName(folder)}</div>
+                        {(folder.unreadCount > 0 || folder.totalCount > 0) && (
+                          <div className="text-xs text-muted-foreground">
+                            {folder.unreadCount > 0 && (
+                              <span className="font-semibold">{folder.unreadCount} não lidas</span>
+                            )}
+                            {folder.unreadCount > 0 && folder.totalCount > 0 && ' • '}
+                            {folder.totalCount > 0 && (
+                              <span>{folder.totalCount} total</span>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                      {folder.unreadCount > 0 && (
+                        <Badge variant="secondary" className="ml-auto text-xs px-1.5 py-0.5">
+                          {folder.unreadCount}
+                        </Badge>
+                      )}
+                    </div>
+                  </Button>
+                ))
+              }
             </div>
             
-            <Separator className="my-4" />
+            <Separator className="my-3" />
             
-            <div className="space-y-2">
+            <div className="space-y-1">
               {/* Administração */}
-              <div className="space-y-2">
-                <Button
-                  onClick={() => router.push('/webmail/admin')}
-                  size="sm"
-                  variant="outline"
-                  className="flex items-center gap-2 w-full"
-                  title="Administração do Webmail"
-                >
-                  <Settings className="h-4 w-4" />
-                  Administração
-                </Button>
-              </div>
+              <Button
+                onClick={() => router.push('/webmail/admin')}
+                size="sm"
+                variant="outline"
+                className="flex items-center gap-2 w-full h-8"
+                title="Administração do Webmail"
+              >
+                <Settings className="h-3 w-3" />
+                <span className="text-xs">Administração</span>
+              </Button>
             </div>
           </div>
         </ScrollArea>
 
         {/* User Info */}
-        <div className="p-4 border-t border-gray-200">
-          <div className="flex items-center gap-3">
-            <Avatar className="h-8 w-8">
-              <AvatarFallback>
+        <div className="p-3 border-t border-gray-200">
+          <div className="flex items-center gap-2">
+            <Avatar className="h-6 w-6">
+              <AvatarFallback className="text-xs">
                 {emailConfig?.displayName?.[0] || emailConfig?.email?.[0]?.toUpperCase() || 'U'}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
-              <div className="text-sm font-medium truncate">
+              <div className="text-xs font-medium truncate">
                 {emailConfig?.displayName || emailConfig?.email || 'Usuário'}
               </div>
               <div className="text-xs text-muted-foreground truncate">
@@ -497,21 +602,21 @@ export default function WebmailPage() {
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         {/* Search Bar */}
-        <div className="p-4 bg-white border-b border-gray-200">
+        <div className="p-3 bg-white border-b border-gray-200">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-gray-400" />
             <Input
               placeholder="Pesquisar emails..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
+              className="pl-8 h-8 text-sm"
             />
           </div>
         </div>
 
         <div className="flex-1 flex">
           {/* Email List */}
-          <div className="w-1/3 bg-white border-r border-gray-200">
+          <div className="w-80 bg-white border-r border-gray-200">
             <ScrollArea className="h-full">
               {loading ? (
                 <div className="p-4 text-center">
@@ -530,48 +635,65 @@ export default function WebmailPage() {
                   {emails.map((email) => (
                     <div
                       key={email.id}
-                      onClick={() => {
+                      onClick={async () => {
                         setSelectedEmail(email);
                         if (!email.isRead) {
                           markAsRead(email.id);
                         }
+                        
+                        // Carregar conteúdo completo do email
+                        setLoadingEmailContent(true);
+                        try {
+                          const response = await fetch(`/api/emails/${email.id}`);
+                          if (response.ok) {
+                            const fullEmail = await response.json();
+                            setSelectedEmail({
+                              ...email,
+                              body: fullEmail.body,
+                              bodyType: fullEmail.bodyType
+                            });
+                          }
+                        } catch (error) {
+                          console.error('Erro ao carregar conteúdo do email:', error);
+                        } finally {
+                          setLoadingEmailContent(false);
+                        }
                       }}
-                      className={`p-4 cursor-pointer hover:bg-gray-50 transition-colors ${
+                      className={`p-3 cursor-pointer hover:bg-gray-50 transition-colors ${
                         selectedEmail?.id === email.id ? 'bg-blue-50 border-r-2 border-blue-500' : ''
                       } ${!email.isRead ? 'bg-blue-50/30' : ''}`}
                     >
-                      <div className="flex items-start gap-3">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className={`text-sm truncate ${
-                              !email.isRead ? 'font-semibold' : 'font-medium'
-                            }`}>
-                              {getEmailSender(email)}
-                            </span>
-                            <div className="flex items-center gap-1 ml-auto">
-                              {email.hasAttachments && (
-                                <Paperclip className="h-3 w-3 text-gray-400" />
-                              )}
-                              {email.isFlagged && (
-                                <Star className="h-3 w-3 text-yellow-500 fill-current" />
-                              )}
-                              {!email.isRead && (
-                                <div className="w-2 h-2 bg-blue-500 rounded-full" />
-                              )}
-                            </div>
-                          </div>
-                          <div className={`text-sm mb-1 truncate ${
-                            !email.isRead ? 'font-semibold' : ''
+                      <div className="space-y-1">
+                        {/* Remetente e indicadores */}
+                        <div className="flex items-center justify-between">
+                          <span className={`text-sm truncate ${
+                            !email.isRead ? 'font-semibold' : 'font-medium'
                           }`}>
-                            {email.subject || '(sem assunto)'}
+                            {getEmailSender(email)}
+                          </span>
+                          <div className="flex items-center gap-1 ml-2">
+                            {email.hasAttachments && (
+                              <Paperclip className="h-3 w-3 text-gray-400" />
+                            )}
+                            {email.isFlagged && (
+                              <Star className="h-3 w-3 text-yellow-500 fill-current" />
+                            )}
+                            {!email.isRead && (
+                              <div className="w-2 h-2 bg-blue-500 rounded-full" />
+                            )}
                           </div>
-                          <div className="text-xs text-muted-foreground truncate mb-2">
-                            {email.preview}
-                          </div>
-                          <div className="flex items-center justify-between text-xs text-muted-foreground">
-                            <span>{formatDate(email.date)}</span>
-                            <span>{formatSize(email.size)}</span>
-                          </div>
+                        </div>
+                        
+                        {/* Assunto */}
+                        <div className={`text-sm truncate ${
+                          !email.isRead ? 'font-semibold text-gray-900' : 'text-gray-700'
+                        }`}>
+                          {email.subject || '(sem assunto)'}
+                        </div>
+                        
+                        {/* Data */}
+                        <div className="text-xs text-muted-foreground">
+                          {formatDate(email.date)}
                         </div>
                       </div>
                     </div>
@@ -582,19 +704,20 @@ export default function WebmailPage() {
             
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="p-4 border-t border-gray-200 bg-white">
+              <div className="p-2 border-t border-gray-200 bg-white">
                 <div className="flex items-center justify-between">
                   <Button
                     onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                     disabled={currentPage === 1}
                     variant="outline"
                     size="sm"
+                    className="h-7 px-2"
                   >
-                    <ChevronLeft className="h-4 w-4" />
-                    Anterior
+                    <ChevronLeft className="h-3 w-3" />
+                    <span className="text-xs">Anterior</span>
                   </Button>
                   
-                  <span className="text-sm text-muted-foreground">
+                  <span className="text-xs text-muted-foreground">
                     Página {currentPage} de {totalPages}
                   </span>
                   
@@ -603,9 +726,10 @@ export default function WebmailPage() {
                     disabled={currentPage === totalPages}
                     variant="outline"
                     size="sm"
+                    className="h-7 px-2"
                   >
-                    Próxima
-                    <ChevronRight className="h-4 w-4" />
+                    <span className="text-xs">Próxima</span>
+                    <ChevronRight className="h-3 w-3" />
                   </Button>
                 </div>
               </div>
@@ -617,13 +741,13 @@ export default function WebmailPage() {
             {selectedEmail ? (
               <div className="h-full flex flex-col">
                 {/* Email Header */}
-                <div className="p-6 border-b border-gray-200">
-                  <div className="flex items-start justify-between mb-4">
+                <div className="p-4 border-b border-gray-200">
+                  <div className="flex items-start justify-between mb-3">
                     <div className="flex-1">
-                      <h2 className="text-xl font-semibold mb-2">
+                      <h2 className="text-lg font-semibold mb-2">
                         {selectedEmail.subject || '(sem assunto)'}
                       </h2>
-                      <div className="space-y-1 text-sm text-muted-foreground">
+                      <div className="space-y-0.5 text-xs text-muted-foreground">
                         <div>
                           <strong>De:</strong> {getEmailSender(selectedEmail)}
                         </div>
@@ -637,71 +761,90 @@ export default function WebmailPage() {
                     </div>
                     
                     {/* Email Actions */}
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1">
                       <Button
                         onClick={() => toggleFlag(selectedEmail.id)}
                         variant="outline"
                         size="sm"
-                        className={selectedEmail.isFlagged ? 'text-yellow-600' : ''}
+                        className={`h-7 w-7 p-0 ${selectedEmail.isFlagged ? 'text-yellow-600' : ''}`}
                         title="Favoritar"
                       >
-                        <Star className={`h-4 w-4 ${selectedEmail.isFlagged ? 'fill-current' : ''}`} />
+                        <Star className={`h-3 w-3 ${selectedEmail.isFlagged ? 'fill-current' : ''}`} />
                       </Button>
                       
                       <Button
                         onClick={() => selectedEmail.isRead ? markAsUnread(selectedEmail.id) : markAsRead(selectedEmail.id)}
                         variant="outline"
                         size="sm"
+                        className="h-7 w-7 p-0"
                         title="Marcar como lido"
                       >
-                        <MailOpen className="h-4 w-4" />
+                        <MailOpen className="h-3 w-3" />
                       </Button>
                       
                       <Button
                         onClick={() => router.push(`/webmail/compose?reply=${selectedEmail.id}`)}
                         variant="outline"
                         size="sm"
+                        className="h-7 w-7 p-0"
                         title="Responder"
                       >
-                        <Reply className="h-4 w-4" />
+                        <Reply className="h-3 w-3" />
                       </Button>
                       
                       <Button
                         onClick={() => router.push(`/webmail/compose?replyAll=${selectedEmail.id}`)}
                         variant="outline"
                         size="sm"
+                        className="h-7 w-7 p-0"
                         title="Responder a todos"
                       >
-                        <ReplyAll className="h-4 w-4" />
+                        <ReplyAll className="h-3 w-3" />
                       </Button>
                       
                       <Button
                         onClick={() => router.push(`/webmail/compose?forward=${selectedEmail.id}`)}
                         variant="outline"
                         size="sm"
+                        className="h-7 w-7 p-0"
                         title="Encaminhar"
                       >
-                        <Forward className="h-4 w-4" />
+                        <Forward className="h-3 w-3" />
                       </Button>
                       
                       <Button
                         onClick={() => deleteEmail(selectedEmail.id)}
                         variant="outline"
                         size="sm"
-                        className="text-red-600 hover:text-red-700"
+                        className="h-7 w-7 p-0 text-red-600 hover:text-red-700"
                         title="Deletar"
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="h-3 w-3" />
                       </Button>
                     </div>
                   </div>
                 </div>
 
                 {/* Email Body */}
-                <ScrollArea className="flex-1 p-6">
-                  <div className="prose max-w-none">
-                    <div dangerouslySetInnerHTML={{ __html: selectedEmail.preview }} />
-                  </div>
+                <ScrollArea className="flex-1 p-4">
+                  {loadingEmailContent ? (
+                    <div className="flex items-center justify-center h-32">
+                      <RefreshCw className="h-6 w-6 animate-spin" />
+                      <span className="ml-2 text-sm text-muted-foreground">Carregando conteúdo...</span>
+                    </div>
+                  ) : (
+                    <div className="prose max-w-none text-sm">
+                      {selectedEmail.body ? (
+                        selectedEmail.bodyType === 'html' ? (
+                          <div dangerouslySetInnerHTML={{ __html: selectedEmail.body }} />
+                        ) : (
+                          <pre className="whitespace-pre-wrap font-sans">{selectedEmail.body}</pre>
+                        )
+                      ) : (
+                        <div className="text-muted-foreground italic">Conteúdo não disponível</div>
+                      )}
+                    </div>
+                  )}
                 </ScrollArea>
               </div>
             ) : (

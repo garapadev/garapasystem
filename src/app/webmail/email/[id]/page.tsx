@@ -64,6 +64,36 @@ export default function EmailViewPage() {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
 
+  const getFolderDisplayName = (folderName: string) => {
+    // Traduzir nomes das pastas para português brasileiro na UI
+    const lowerName = folderName.toLowerCase();
+    switch (lowerName) {
+      case 'inbox':
+        return 'Caixa de Entrada';
+      case 'sent':
+      case 'sent items':
+      case 'sent mail':
+        return 'Enviados';
+      case 'drafts':
+        return 'Rascunhos';
+      case 'trash':
+      case 'deleted':
+      case 'deleted items':
+        return 'Lixeira';
+      case 'archive':
+      case 'archived':
+        return 'Arquivo';
+      case 'spam':
+      case 'junk':
+      case 'junk mail':
+        return 'Spam';
+      case 'outbox':
+        return 'Caixa de Saída';
+      default:
+        return folderName; // Manter nome original para pastas personalizadas
+    }
+  };
+
   const emailId = params.id as string;
 
   useEffect(() => {
@@ -358,7 +388,7 @@ export default function EmailViewPage() {
                 {email.isImportant && (
                   <Badge variant="destructive">Importante</Badge>
                 )}
-                <Badge variant="outline">{email.folder.name}</Badge>
+                <Badge variant="outline">{getFolderDisplayName(email.folder.name)}</Badge>
               </div>
             </div>
             

@@ -16,8 +16,8 @@ const emailConfigSchema = z.object({
   smtpSecure: z.boolean(),
   email: z.string().email('Email inválido'),
   password: z.string().min(1, 'Senha é obrigatória'),
-  syncEnabled: z.boolean().optional(),
-  syncInterval: z.number().int().min(60).max(3600).optional(), // 1 minuto a 1 hora
+  syncEnabled: z.boolean().default(true), // Autosync ativado por padrão
+  syncInterval: z.number().int().min(60).max(3600).default(180), // Padrão: 3 minutos
 });
 
 // GET - Buscar configuração de email do colaborador
@@ -133,7 +133,9 @@ export async function POST(request: NextRequest) {
       create: {
         ...validatedData,
         password: encryptedPassword,
-        colaboradorId: colaborador.id
+        colaboradorId: colaborador.id,
+        syncEnabled: validatedData.syncEnabled ?? true, // Garantir autosync ativado por padrão
+        syncInterval: validatedData.syncInterval ?? 180 // Garantir intervalo padrão
       },
       update: {
         ...validatedData,

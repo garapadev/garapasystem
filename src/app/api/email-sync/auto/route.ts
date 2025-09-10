@@ -12,6 +12,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
     }
 
+    // Ler o body da requisição
+    const body = await request.json();
+    const { enabled } = body;
+
     // Buscar colaborador pelo email da sessão
     const colaborador = await prisma.colaborador.findFirst({
       where: {
@@ -42,22 +46,33 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Configuração de email desativada' }, { status: 400 });
     }
 
-    // Iniciar sincronização automática
-    const success = await emailSyncScheduler.startSyncForUser(colaborador.id);
+    let success = false;
+    let message = '';
+
+    if (enabled) {
+      // Iniciar sincronização automática
+      success = await emailSyncScheduler.startSyncForUser(colaborador.id);
+      message = success ? 'Sincronização automática iniciada' : 'Falha ao iniciar sincronização automática';
+    } else {
+      // Parar sincronização automática
+      success = await emailSyncScheduler.stopSyncForUser(colaborador.id);
+      message = success ? 'Sincronização automática parada' : 'Falha ao parar sincronização automática';
+    }
     
     if (success) {
       return NextResponse.json({ 
         success: true, 
-        message: 'Sincronização automática iniciada',
+        message,
+        enabled,
         syncInterval: emailConfig.syncInterval || 180
       });
     } else {
       return NextResponse.json({ 
-        error: 'Falha ao iniciar sincronização automática' 
+        error: message 
       }, { status: 500 });
     }
   } catch (error) {
-    console.error('Erro ao iniciar sincronização automática:', error);
+    console.error('Erro ao controlar sincronização automática:', error);
     return NextResponse.json(
       { 
         error: 'Erro interno do servidor', 
@@ -156,15 +171,31 @@ export async function GET(request: NextRequest) {
     }
 
     // Verificar status da sincronização
-    const status = emailSyncScheduler.getSyncStatus(emailConfig.id);
+    let status = emailSyncScheduler.getSyncStatus(emailConfig.id);
+    
+    // Se não há job registrado mas syncEnabled está ativo, recriar o job
+    if (!status && emailConfig.syncEnabled) {
+      console.log(`Recriando job de sincronização para emailConfig ${emailConfig.id}`);
+      try {
+        await emailSyncScheduler.startSyncForConfig(
+          emailConfig.id,
+          emailConfig.syncInterval || 180
+        );
+        status = emailSyncScheduler.getSyncStatus(emailConfig.id);
+      } catch (error) {
+        console.error('Erro ao recriar job de sincronização:', error);
+      }
+    }
+    
     const activeSyncs = emailSyncScheduler.getActiveSyncs();
     
     return NextResponse.json({ 
-      isActive: status?.isActive || false,
+      isActive: status?.isActive || emailConfig.syncEnabled || false,
       isRunning: status?.isRunning || false,
       syncInterval: emailConfig.syncInterval || 180,
       lastSync: emailConfig.lastSync,
-      totalActiveSyncs: activeSyncs.length
+      totalActiveSyncs: activeSyncs.length,
+      syncEnabled: emailConfig.syncEnabled
     });
   } catch (error) {
     console.error('Erro ao verificar status da sincronização:', error);

@@ -70,7 +70,7 @@ export default function WebmailAdminPage() {
       const response = await fetch('/api/email-sync/auto');
       if (response.ok) {
         const data = await response.json();
-        setAutoSyncEnabled(data.enabled);
+        setAutoSyncEnabled(data.isActive);
         setSyncStatus({
           isRunning: data.isRunning,
           lastSync: data.lastSync,
