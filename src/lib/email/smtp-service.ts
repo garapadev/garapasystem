@@ -59,7 +59,7 @@ export class SmtpService {
       // Descriptografar senha
       const password = decryptPassword(this.config.password);
       
-      this.transporter = nodemailer.createTransport({
+      this.transporter = nodemailer.createTransporter({
         host: this.config.smtpHost,
         port: this.config.smtpPort,
         secure: isSecure, // true apenas para porta 465
@@ -71,7 +71,10 @@ export class SmtpService {
           rejectUnauthorized: false // Para desenvolvimento, em produção configurar adequadamente
         },
         debug: true, // Habilitar logs de debug
-        logger: true // Habilitar logger
+        logger: true, // Habilitar logger
+        connectionTimeout: 30000, // 30 segundos para conectar
+        greetingTimeout: 30000, // 30 segundos para greeting
+        socketTimeout: 30000 // 30 segundos para socket
       });
 
       console.log('Tentando verificar conexão SMTP...');
@@ -307,7 +310,7 @@ export class SmtpService {
       await db.email.create({
         data: {
           messageId: messageId,
-          uid: 0, // Emails enviados não têm UID do IMAP
+          uid: Math.floor(Math.random() * 1000000), // UID único para emails enviados
           subject: options.subject,
           from: JSON.stringify([{ address: this.config.email, name: this.config.displayName }]),
           to: JSON.stringify(options.to),

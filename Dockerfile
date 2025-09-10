@@ -43,7 +43,8 @@ COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/server.ts ./server.ts
 COPY --from=builder /app/src ./src
 COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/scripts ./scripts
+COPY --from=builder /app/insert-webmail-permissions.js ./
+COPY --from=builder /app/migrate-email-password.js ./
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/tsconfig.json ./tsconfig.json
@@ -64,6 +65,10 @@ ENV TZ=America/Sao_Paulo
 # Configurações de segurança para webmail
 ENV WEBMAIL_SECURE=true
 ENV WEBMAIL_TLS_REJECT_UNAUTHORIZED=true
+ENV WEBMAIL_ENCRYPTION_KEY="default-encryption-key-change-in-production"
+ENV WEBMAIL_SYNC_INTERVAL=300
+ENV WEBMAIL_MAX_ATTACHMENTS_SIZE=25
+ENV WEBMAIL_ENABLE_NOTIFICATIONS=true
 
 # Script de inicialização otimizado com verificações de saúde
 RUN echo '#!/bin/sh' > /app/start.sh && \

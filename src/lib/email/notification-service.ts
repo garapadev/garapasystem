@@ -27,7 +27,7 @@ export class EmailNotificationService {
         include: {
           colaborador: {
             include: {
-              usuario: true
+              usuarios: true
             }
           }
         }
@@ -52,12 +52,12 @@ export class EmailNotificationService {
 
       // Enviar notificação via WebSocket
       const socketIO = getSocketIO();
-      if (socketIO && emailConfig.colaborador.usuario) {
-        const roomName = `user-${emailConfig.colaborador.usuario.id}`;
+      if (socketIO && emailConfig.colaborador?.usuarios?.[0]) {
+        const roomName = `user-${emailConfig.colaborador.usuarios[0].id}`;
         socketIO.to(roomName).emit('email-notification', notificationData);
       }
 
-      console.log(`Notificação de email enviada para colaborador ${emailConfig.colaborador.nome}`);
+      console.log(`Notificação de email enviada para colaborador ${emailConfig.colaborador?.nome}`);
     } catch (error) {
       console.error('Erro ao enviar notificação de novo email:', error);
     }
@@ -71,7 +71,7 @@ export class EmailNotificationService {
         include: {
           colaborador: {
             include: {
-              usuario: true
+              usuarios: true
             }
           }
         }
@@ -93,8 +93,8 @@ export class EmailNotificationService {
       };
 
       const socketIO = getSocketIO();
-      if (socketIO && emailConfig.colaborador.usuario) {
-        const roomName = `user-${emailConfig.colaborador.usuario.id}`;
+      if (socketIO && emailConfig.colaborador?.usuarios?.[0]) {
+        const roomName = `user-${emailConfig.colaborador.usuarios[0].id}`;
         socketIO.to(roomName).emit('email-notification', notificationData);
       }
     } catch (error) {
@@ -110,7 +110,7 @@ export class EmailNotificationService {
         include: {
           colaborador: {
             include: {
-              usuario: true
+              usuarios: true
             }
           }
         }
@@ -129,8 +129,8 @@ export class EmailNotificationService {
       };
 
       const socketIO = getSocketIO();
-      if (socketIO && emailConfig.colaborador.usuario) {
-        const roomName = `user-${emailConfig.colaborador.usuario.id}`;
+      if (socketIO && emailConfig.colaborador?.usuarios?.[0]) {
+        const roomName = `user-${emailConfig.colaborador.usuarios[0].id}`;
         socketIO.to(roomName).emit('email-notification', notificationData);
       }
     } catch (error) {

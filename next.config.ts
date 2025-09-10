@@ -6,6 +6,13 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  // Configurações de timeout para APIs
+  serverExternalPackages: ['nodemailer'],
+  // Aumentar timeout para requisições de API
+  serverRuntimeConfig: {
+    // Timeout de 60 segundos para APIs
+    apiTimeout: 60000,
+  },
   // 禁用 Next.js 热重载，由 nodemon 处理重编译
   reactStrictMode: false,
   webpack: (config, { dev }) => {

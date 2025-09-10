@@ -281,6 +281,7 @@ export default function EmailViewPage() {
             size="sm"
             onClick={() => handleAction('star')}
             disabled={actionLoading === 'star'}
+            title="Favoritar"
           >
             {email.isStarred ? (
               <StarOff className="h-4 w-4" />
@@ -326,6 +327,7 @@ export default function EmailViewPage() {
             size="sm"
             onClick={() => handleAction('archive')}
             disabled={actionLoading === 'archive'}
+            title="Arquivar"
           >
             <Archive className="h-4 w-4" />
           </Button>
@@ -335,6 +337,7 @@ export default function EmailViewPage() {
             size="sm"
             onClick={() => handleAction('delete')}
             disabled={actionLoading === 'delete'}
+            title="Deletar"
           >
             <Trash2 className="h-4 w-4" />
           </Button>

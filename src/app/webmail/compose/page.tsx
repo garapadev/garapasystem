@@ -67,7 +67,7 @@ function ComposePageContent() {
   const [showBcc, setShowBcc] = useState(false);
 
   // Parâmetros para resposta/encaminhamento
-  const replyId = searchParams.get('reply');
+  const replyId = searchParams.get('reply') || searchParams.get('replyTo');
   const replyAllId = searchParams.get('replyAll');
   const forwardId = searchParams.get('forward');
 
@@ -87,7 +87,17 @@ function ComposePageContent() {
         
         if (replyId) {
           // Responder apenas ao remetente
-          const fromAddresses = email.from.map(f => f.name || f.address).join(', ');
+          const fromAddresses = Array.isArray(email.from) 
+            ? email.from.map(f => {
+                if (typeof f === 'string') return f;
+                if (typeof f === 'object' && f !== null) {
+                  return f.address || '';
+                }
+                return '';
+              }).filter(addr => addr).join(', ')
+            : (typeof email.from === 'string' ? email.from : 
+               (typeof email.from === 'object' && email.from !== null ? 
+                (email.from.address || '') : ''));
           setFormData({
             to: fromAddresses,
             cc: '',
@@ -98,10 +108,30 @@ function ComposePageContent() {
           });
         } else if (replyAllId) {
           // Responder a todos
-          const fromAddresses = email.from.map(f => f.name || f.address).join(', ');
-          const ccAddresses = email.to.filter(t => 
-            (t.address || t.name) !== session?.user?.email
-          ).map(t => t.name || t.address).join(', ');
+          const fromAddresses = Array.isArray(email.from) 
+            ? email.from.map(f => {
+                if (typeof f === 'string') return f;
+                if (typeof f === 'object' && f !== null) {
+                  return f.address || '';
+                }
+                return '';
+              }).filter(addr => addr).join(', ')
+            : (typeof email.from === 'string' ? email.from : 
+               (typeof email.from === 'object' && email.from !== null ? 
+                (email.from.address || '') : ''));
+          const ccAddresses = Array.isArray(email.to) 
+            ? email.to.filter(t => {
+                const emailAddr = typeof t === 'string' ? t : 
+                  (typeof t === 'object' && t !== null ? t.address : '');
+                return emailAddr !== session?.user?.email;
+              }).map(t => {
+                if (typeof t === 'string') return t;
+                if (typeof t === 'object' && t !== null) {
+                  return t.address || '';
+                }
+                return '';
+              }).filter(addr => addr).join(', ')
+            : '';
           setFormData({
             to: fromAddresses,
             cc: ccAddresses,
@@ -379,6 +409,7 @@ function ComposePageContent() {
                   variant="outline"
                   size="sm"
                   onClick={() => setShowCc(true)}
+                  title="Adicionar cópia (CC) - Destinatários visíveis para todos"
                 >
                   + CC
                 </Button>
@@ -389,6 +420,7 @@ function ComposePageContent() {
                   variant="outline"
                   size="sm"
                   onClick={() => setShowBcc(true)}
+                  title="Adicionar cópia oculta (BCC) - Destinatários não visíveis para outros"
                 >
                   + BCC
                 </Button>

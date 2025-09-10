@@ -4,10 +4,15 @@ import { authOptions } from '@/lib/auth';
 import { db as prisma } from '@/lib/db';
 import { SmtpService } from '@/lib/email/smtp-service';
 import { EmailNotificationService } from '@/lib/email/notification-service';
+import { decryptPassword } from '@/lib/email/password-crypto';
 import { z } from 'zod';
 import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
 import { randomUUID } from 'crypto';
+import nodemailer from 'nodemailer';
+
+// Configuração de timeout para esta rota
+export const maxDuration = 60; // 60 segundos
 
 const sendEmailSchema = z.object({
   to: z.string().min(1, 'Destinatário é obrigatório'),
@@ -53,58 +58,161 @@ export async function POST(request: NextRequest) {
     // Validar dados
     const validatedData = sendEmailSchema.parse(emailData);
 
-    // Buscar colaborador e configuração de email
-    const user = await db.colaborador.findUnique({
-      where: { id: session.user.colaboradorId },
+    // Buscar usuário e configuração de email
+    const user = await prisma.usuario.findUnique({
+      where: { email: session.user.email },
       include: {
-        emailConfig: true
+        colaborador: {
+          include: {
+            emailConfig: true
+          }
+        }
       }
     });
 
-    if (!user || !user.emailConfig) {
+    if (!user || !user.colaborador || !user.colaborador.emailConfig) {
       return NextResponse.json(
-        { error: 'Colaborador não encontrado' },
+        { error: 'Configuração de email não encontrada' },
         { status: 404 }
       );
     }
 
+    const emailConfig = user.colaborador.emailConfig;
+
     // Processar anexos
     const attachments: EmailAttachment[] = [];
-    const uploadDir = join(process.cwd(), 'uploads', 'attachments');
+    const files = formData.getAll('attachments') as File[];
     
-    // Criar diretório se não existir
-    try {
-      await mkdir(uploadDir, { recursive: true });
-    } catch (error) {
-      // Diretório já existe
-    }
-
-    // Processar cada anexo
-    for (const [key, value] of formData.entries()) {
-      if (key.startsWith('attachment_') && value instanceof File) {
-        const file = value as File;
-        const fileExtension = file.name.split('.').pop() || '';
-        const fileName = `${randomUUID()}.${fileExtension}`;
-        const filePath = join(uploadDir, fileName);
+    for (const file of files) {
+      if (file && file.size > 0) {
+        const filename = `${randomUUID()}-${file.name}`;
+        const uploadDir = join(process.cwd(), 'uploads', 'email-attachments');
         
-        // Salvar arquivo
+        try {
+          await mkdir(uploadDir, { recursive: true });
+        } catch (error) {
+          // Diretório já existe
+        }
+        
+        const filepath = join(uploadDir, filename);
         const bytes = await file.arrayBuffer();
-        await writeFile(filePath, Buffer.from(bytes));
+        await writeFile(filepath, Buffer.from(bytes));
         
         attachments.push({
           filename: file.name,
-          path: filePath,
+          path: filepath,
           contentType: file.type || 'application/octet-stream',
           size: file.size
         });
       }
     }
 
-    // Preparar dados do email
+    // Se for rascunho, salvar e retornar
+    if (validatedData.isDraft) {
+      // Verificar se a pasta Drafts existe
+       let draftsFolder = await prisma.emailFolder.findFirst({
+         where: {
+           emailConfigId: emailConfig.id,
+           path: 'INBOX.Drafts'
+         }
+       });
+
+      if (!draftsFolder) {
+        draftsFolder = await prisma.emailFolder.create({
+           data: {
+             name: 'Drafts',
+             path: 'INBOX.Drafts',
+             specialUse: '\\Drafts',
+             emailConfigId: emailConfig.id
+           }
+         });
+      }
+
+      const messageId = `<${randomUUID()}@${emailConfig.email.split('@')[1]}>`;
+       
+       const draftEmail = await prisma.email.create({
+         data: {
+           messageId,
+           uid: Math.floor(Math.random() * 1000000),
+           from: JSON.stringify([session.user.email]),
+           to: JSON.stringify(validatedData.to.split(',').map(email => email.trim())),
+           cc: validatedData.cc ? JSON.stringify(validatedData.cc.split(',').map(email => email.trim())) : null,
+           bcc: validatedData.bcc ? JSON.stringify(validatedData.bcc.split(',').map(email => email.trim())) : null,
+           subject: validatedData.subject,
+           textContent: validatedData.isHtml ? null : validatedData.body,
+           htmlContent: validatedData.isHtml ? validatedData.body : null,
+           date: new Date(),
+           flags: JSON.stringify(['\\Draft']),
+           isRead: true,
+           folderId: draftsFolder.id,
+           emailConfigId: emailConfig.id
+         }
+       });
+
+      // Salvar anexos se houver
+      if (attachments.length > 0) {
+        await prisma.emailAttachment.createMany({
+          data: attachments.map(att => ({
+            emailId: draftEmail.id,
+            filename: att.filename,
+            contentType: att.contentType,
+            size: att.size,
+            path: att.path
+          }))
+        });
+      }
+
+      return NextResponse.json({
+        success: true,
+        message: 'Rascunho salvo com sucesso',
+        emailId: draftEmail.id
+      });
+    }
+
+    // Enviar email
+    // Descriptografar senha antes de usar
+    const decryptedPassword = decryptPassword(emailConfig.password);
+    
+    const transporter = nodemailer.createTransport({
+      host: emailConfig.smtpHost,
+      port: emailConfig.smtpPort,
+      secure: emailConfig.smtpPort === 465,
+      auth: {
+        user: emailConfig.email,
+        pass: decryptedPassword
+      },
+      // Configurações de timeout mais conservadoras
+      connectionTimeout: 30000, // 30 segundos para conexão TCP inicial
+      greetingTimeout: 15000,   // 15 segundos para greeting do servidor
+      socketTimeout: 60000,     // 60 segundos para timeout de socket idle
+      dnsTimeout: 15000,        // 15 segundos para lookup DNS
+      // Desabilitar pooling para evitar problemas de conexão
+      pool: false,
+      // Configurações de TLS
+      tls: {
+        rejectUnauthorized: false // Para evitar problemas com certificados
+      }
+    } as nodemailer.TransportOptions);
+
+    // Verificar conexão antes de enviar
+    try {
+      console.log('Verificando conexão SMTP...');
+      await transporter.verify();
+      console.log('Conexão SMTP verificada com sucesso');
+    } catch (verifyError) {
+      console.error('Erro na verificação SMTP:', verifyError);
+      const errorMessage = verifyError instanceof Error ? verifyError.message : 'Erro desconhecido';
+      return NextResponse.json(
+        { success: false, error: `Falha na conexão SMTP: ${errorMessage}` },
+        { status: 500 }
+      );
+    }
+    
     const emailToSend = {
-      to: validatedData.to.split(',').map(email => ({ address: email.trim() })),
-      cc: validatedData.cc ? validatedData.cc.split(',').map(email => ({ address: email.trim() })) : [],
-      bcc: validatedData.bcc ? validatedData.bcc.split(',').map(email => ({ address: email.trim() })) : [],
+      from: `"${session.user.name || 'Usuário'}" <${emailConfig.email}>`,
+      to: validatedData.to.split(',').map(email => email.trim()).join(', '),
+      cc: validatedData.cc ? validatedData.cc.split(',').map(email => email.trim()).join(', ') : undefined,
+      bcc: validatedData.bcc ? validatedData.bcc.split(',').map(email => email.trim()).join(', ') : undefined,
       subject: validatedData.subject,
       text: validatedData.isHtml ? undefined : validatedData.body,
       html: validatedData.isHtml ? validatedData.body : undefined,
@@ -115,36 +223,63 @@ export async function POST(request: NextRequest) {
       }))
     };
 
-    if (validatedData.isDraft) {
-      // Salvar como rascunho
-      const sentFolder = user.emailConfig.folders?.find(f => 
-        f.name.toLowerCase() === 'drafts' || f.name.toLowerCase() === 'rascunhos'
-      );
+    try {
+      const result = await transporter.sendMail(emailToSend);
+      const messageId = result.messageId;
 
-      // Salvar email no banco de dados
-      const savedEmail = await db.email.create({
-        data: {
-          messageId: `draft-${randomUUID()}@${session.user.email.split('@')[1]}`,
-          from: [session.user.email],
-          to: emailToSend.to,
-          cc: emailToSend.cc,
-          bcc: emailToSend.bcc,
-          subject: validatedData.subject,
-          body: validatedData.body,
-          isHtml: validatedData.isHtml,
-          date: new Date(),
-          flags: ['\\Draft'],
-          isDraft: true,
-          folderId: sentFolder?.id,
-          emailConfigId: user.emailConfig.id
-        }
-      });
+      // Verificar se a pasta Sent existe
+       let sentFolder = await prisma.emailFolder.findFirst({
+         where: {
+           emailConfigId: emailConfig.id,
+           path: 'INBOX.Sent'
+         }
+       });
+
+      if (!sentFolder) {
+         sentFolder = await prisma.emailFolder.create({
+           data: {
+             name: 'Sent',
+             path: 'INBOX.Sent',
+             specialUse: '\\Sent',
+             emailConfigId: emailConfig.id
+           }
+         });
+      }
+
+      // Verificar se o email já existe
+       let sentEmail = await prisma.email.findFirst({
+         where: {
+           messageId,
+           emailConfigId: emailConfig.id
+         }
+       });
+
+      if (!sentEmail) {
+        sentEmail = await prisma.email.create({
+           data: {
+             messageId,
+             uid: Math.floor(Math.random() * 1000000),
+             from: JSON.stringify([{ address: emailConfig.email, name: session.user.name || 'Usuário' }]),
+             to: JSON.stringify(validatedData.to.split(',').map(email => ({ address: email.trim() }))),
+             cc: validatedData.cc ? JSON.stringify(validatedData.cc.split(',').map(email => ({ address: email.trim() }))) : null,
+             bcc: validatedData.bcc ? JSON.stringify(validatedData.bcc.split(',').map(email => ({ address: email.trim() }))) : null,
+             subject: validatedData.subject,
+             textContent: validatedData.isHtml ? null : validatedData.body,
+             htmlContent: validatedData.isHtml ? validatedData.body : null,
+             date: new Date(),
+             flags: JSON.stringify(['\\Seen']),
+             isRead: true,
+             folderId: sentFolder.id,
+             emailConfigId: emailConfig.id
+           }
+         });
+      }
 
       // Salvar anexos se houver
       if (attachments.length > 0) {
-        await db.emailAttachment.createMany({
+        await prisma.emailAttachment.createMany({
           data: attachments.map(att => ({
-            emailId: savedEmail.id,
+            emailId: sentEmail.id,
             filename: att.filename,
             contentType: att.contentType,
             size: att.size,
@@ -154,100 +289,35 @@ export async function POST(request: NextRequest) {
       }
 
       // Notificar sucesso
-      await EmailNotificationService.notifyEmailSent({
-        id: savedEmail.id,
-        subject: savedEmail.subject || '',
-        to: savedEmail.to || '',
-        date: savedEmail.date,
-        emailConfigId: user.emailConfig.id
-      });
+       await EmailNotificationService.notifyEmailSent({
+         id: sentEmail.id,
+         subject: sentEmail.subject || '',
+         to: sentEmail.to || '',
+         date: sentEmail.date,
+         emailConfigId: emailConfig.id
+       });
 
       return NextResponse.json({
         success: true,
-        message: 'Rascunho salvo com sucesso',
-        emailId: savedEmail.id
+        message: 'Email enviado com sucesso',
+        messageId,
+        emailId: sentEmail.id
       });
-    } else {
-      // Enviar email
-      const smtpService = new SmtpService(user.emailConfig.id);
+    } catch (error) {
+      console.error('Erro ao enviar email:', error);
       
-      try {
-        await smtpService.connect();
-        const result = await smtpService.sendEmail(emailToSend);
-        
-        if (!result.success) {
-          throw new Error(result.error || 'Erro ao enviar email');
-        }
-        
-        const messageId = result.messageId;
-        
-        // Salvar na pasta "Enviados"
-        const sentFolder = user.emailConfig.folders?.find(f => 
-          f.name.toLowerCase() === 'sent' || f.name.toLowerCase() === 'enviados'
-        );
-
-        const sentEmail = await db.email.create({
-          data: {
-            messageId,
-            from: [session.user.email],
-            to: emailToSend.to,
-            cc: emailToSend.cc,
-            bcc: emailToSend.bcc,
-            subject: validatedData.subject,
-            body: validatedData.body,
-            isHtml: validatedData.isHtml,
-            date: new Date(),
-            flags: ['\\Seen'],
-            isDraft: false,
-            folderId: sentFolder?.id,
-            emailConfigId: user.emailConfig.id
-          }
-        });
-
-        // Salvar anexos se houver
-        if (attachments.length > 0) {
-          await db.emailAttachment.createMany({
-            data: attachments.map(att => ({
-              emailId: sentEmail.id,
-              filename: att.filename,
-              contentType: att.contentType,
-              size: att.size,
-              path: att.path
-            }))
-          });
-        }
-
-        // Notificar sucesso
-        await EmailNotificationService.notifyEmailSent({
-          id: sentEmail.id,
-          subject: sentEmail.subject || '',
-          to: sentEmail.to || '',
-          date: sentEmail.date,
-          emailConfigId: user.emailConfig.id
-        });
-
-        return NextResponse.json({
-          success: true,
-          message: 'Email enviado com sucesso',
-          messageId,
-          emailId: sentEmail.id
-        });
-      } catch (error) {
-        console.error('Erro ao enviar email:', error);
-        
-        // Notificar erro
-        if (user && user.emailConfig) {
-          await EmailNotificationService.notifyEmailError(
-            error instanceof Error ? error.message : 'Erro desconhecido ao enviar email',
-            user.emailConfig.id
-          );
-        }
-        
-        return NextResponse.json(
-          { error: 'Erro ao enviar email. Verifique suas configurações SMTP.' },
-          { status: 500 }
-        );
-      }
+      // Notificar erro
+       if (user && emailConfig) {
+         await EmailNotificationService.notifyEmailError(
+           error instanceof Error ? error.message : 'Erro desconhecido ao enviar email',
+           emailConfig.id
+         );
+       }
+      
+      return NextResponse.json(
+        { error: 'Erro ao enviar email. Verifique suas configurações SMTP.' },
+        { status: 500 }
+      );
     }
   } catch (error) {
     console.error('Erro na API de envio de email:', error);

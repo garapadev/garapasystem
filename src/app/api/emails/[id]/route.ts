@@ -73,30 +73,35 @@ export async function GET(
       );
     }
 
-    // Processar arrays de remetentes e destinatários
-    const fromArray = Array.isArray(email.from) 
-      ? email.from 
-      : typeof email.from === 'string' 
-        ? [email.from] 
-        : [];
+    // Converter campos de array se necessário e fazer parse de JSON strings
+    const parseEmailField = (field: any) => {
+      if (Array.isArray(field)) {
+        return field.map(item => {
+          if (typeof item === 'string') {
+            try {
+              return JSON.parse(item);
+            } catch {
+              return item;
+            }
+          }
+          return item;
+        }).flat();
+      }
+      if (typeof field === 'string') {
+        try {
+          const parsed = JSON.parse(field);
+          return Array.isArray(parsed) ? parsed : [parsed];
+        } catch {
+          return [field];
+        }
+      }
+      return [];
+    };
     
-    const toArray = Array.isArray(email.to) 
-      ? email.to 
-      : typeof email.to === 'string' 
-        ? [email.to] 
-        : [];
-    
-    const ccArray = Array.isArray(email.cc) 
-      ? email.cc 
-      : typeof email.cc === 'string' 
-        ? [email.cc] 
-        : email.cc ? [email.cc] : [];
-    
-    const bccArray = Array.isArray(email.bcc) 
-      ? email.bcc 
-      : typeof email.bcc === 'string' 
-        ? [email.bcc] 
-        : email.bcc ? [email.bcc] : [];
+    const fromArray = parseEmailField(email.from);
+    const toArray = parseEmailField(email.to);
+    const ccArray = parseEmailField(email.cc);
+    const bccArray = parseEmailField(email.bcc);
 
     const emailData = {
       id: email.id,
@@ -107,11 +112,9 @@ export async function GET(
       cc: ccArray.length > 0 ? ccArray : undefined,
       bcc: bccArray.length > 0 ? bccArray : undefined,
       date: email.date.toISOString(),
-      body: email.body || '',
-      bodyType: email.bodyType || 'text',
+      body: email.textContent || email.htmlContent || '',
+      bodyType: email.htmlContent ? 'html' : 'text',
       isRead: email.isRead,
-      isStarred: email.isStarred,
-      isImportant: email.isImportant,
       attachments: email.attachments || [],
       folder: email.folder
     };

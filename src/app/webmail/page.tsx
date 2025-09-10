@@ -643,6 +643,7 @@ export default function WebmailPage() {
                         variant="outline"
                         size="sm"
                         className={selectedEmail.isFlagged ? 'text-yellow-600' : ''}
+                        title="Favoritar"
                       >
                         <Star className={`h-4 w-4 ${selectedEmail.isFlagged ? 'fill-current' : ''}`} />
                       </Button>
@@ -651,6 +652,7 @@ export default function WebmailPage() {
                         onClick={() => selectedEmail.isRead ? markAsUnread(selectedEmail.id) : markAsRead(selectedEmail.id)}
                         variant="outline"
                         size="sm"
+                        title="Marcar como lido"
                       >
                         <MailOpen className="h-4 w-4" />
                       </Button>
@@ -659,6 +661,7 @@ export default function WebmailPage() {
                         onClick={() => router.push(`/webmail/compose?reply=${selectedEmail.id}`)}
                         variant="outline"
                         size="sm"
+                        title="Responder"
                       >
                         <Reply className="h-4 w-4" />
                       </Button>
@@ -667,6 +670,7 @@ export default function WebmailPage() {
                         onClick={() => router.push(`/webmail/compose?replyAll=${selectedEmail.id}`)}
                         variant="outline"
                         size="sm"
+                        title="Responder a todos"
                       >
                         <ReplyAll className="h-4 w-4" />
                       </Button>
@@ -675,6 +679,7 @@ export default function WebmailPage() {
                         onClick={() => router.push(`/webmail/compose?forward=${selectedEmail.id}`)}
                         variant="outline"
                         size="sm"
+                        title="Encaminhar"
                       >
                         <Forward className="h-4 w-4" />
                       </Button>
@@ -684,6 +689,7 @@ export default function WebmailPage() {
                         variant="outline"
                         size="sm"
                         className="text-red-600 hover:text-red-700"
+                        title="Deletar"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>

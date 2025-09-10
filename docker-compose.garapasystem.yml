@@ -50,6 +50,13 @@ services:
       NEXTAUTH_URL: "https://localhost:3000"
       NODE_ENV: "production"
       PORT: "3000"
+      # Configurações específicas do webmail
+      WEBMAIL_SECURE: "true"
+      WEBMAIL_TLS_REJECT_UNAUTHORIZED: "true"
+      WEBMAIL_ENCRYPTION_KEY: "${WEBMAIL_ENCRYPTION_KEY:-default-encryption-key-change-in-production}"
+      WEBMAIL_SYNC_INTERVAL: "300"
+      WEBMAIL_MAX_ATTACHMENTS_SIZE: "25"
+      WEBMAIL_ENABLE_NOTIFICATIONS: "true"
     # Removido depends_on que não funciona no Swarm mode
     # depends_on:
     #   - gaparasystem-postgres
