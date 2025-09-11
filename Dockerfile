@@ -43,8 +43,7 @@ COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/server.ts ./server.ts
 COPY --from=builder /app/src ./src
 COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/insert-webmail-permissions.js ./
-COPY --from=builder /app/migrate-email-password.js ./
+
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/tsconfig.json ./tsconfig.json

@@ -1,0 +1,73 @@
+2025-09-11T13:43:19: Iniciando Consolidated Helpdesk Worker...
+2025-09-11T13:43:19: Conexão com banco de dados estabelecida
+2025-09-11T13:43:19: prisma:query SELECT COUNT(*) AS "_count._all" FROM (SELECT "public"."helpdesk_departamentos"."id" FROM "public"."helpdesk_departamentos" WHERE ("public"."helpdesk_departamentos"."ativo" = $1 AND "public"."helpdesk_departamentos"."imapHost" IS NOT NULL AND "public"."helpdesk_departamentos"."imapEmail" IS NOT NULL AND "public"."helpdesk_departamentos"."imapPassword" IS NOT NULL) OFFSET $2) AS "sub"
+2025-09-11T13:43:19: Encontrados 1 departamentos configurados
+2025-09-11T13:43:19: Iniciando Consolidated Helpdesk Worker...
+2025-09-11T13:43:19: Worker iniciado com sucesso
+2025-09-11T13:43:19: Processando 1 departamentos
+2025-09-11T13:43:19: Processando emails do departamento: Suporte ti
+2025-09-11T13:43:19: Tentando conexão IMAP para Suporte ti
+2025-09-11T13:43:20: Conexão IMAP estabelecida para Suporte ti
+2025-09-11T13:43:21: Encontrados 2 emails não lidos em Suporte ti
+2025-09-11T13:43:21: Worker iniciado com sucesso
+2025-09-11T13:43:21: Worker em execução. Pressione Ctrl+C para parar.
+2025-09-11T13:44:21: Processando 1 departamentos
+2025-09-11T13:44:21: Processando emails do departamento: Suporte ti
+2025-09-11T13:44:21: Encontrados 2 emails não lidos em Suporte ti
+2025-09-11T13:44:45: Iniciando encerramento gracioso...
+2025-09-11T13:44:45: Parando Consolidated Helpdesk Worker...
+2025-09-11T13:44:45: Worker parado
+2025-09-11T13:44:45: Worker parado
+2025-09-11T13:44:45: Worker encerrado com sucesso
+2025-09-11T13:44:47: Iniciando Consolidated Helpdesk Worker...
+2025-09-11T13:44:47: Conexão com banco de dados estabelecida
+2025-09-11T13:44:47: prisma:query SELECT COUNT(*) AS "_count._all" FROM (SELECT "public"."helpdesk_departamentos"."id" FROM "public"."helpdesk_departamentos" WHERE ("public"."helpdesk_departamentos"."ativo" = $1 AND "public"."helpdesk_departamentos"."imapHost" IS NOT NULL AND "public"."helpdesk_departamentos"."imapEmail" IS NOT NULL AND "public"."helpdesk_departamentos"."imapPassword" IS NOT NULL) OFFSET $2) AS "sub"
+2025-09-11T13:44:47: Encontrados 1 departamentos configurados
+2025-09-11T13:44:47: Iniciando Consolidated Helpdesk Worker...
+2025-09-11T13:44:47: Worker iniciado com sucesso
+2025-09-11T13:44:47: Processando 1 departamentos
+2025-09-11T13:44:47: Processando emails do departamento: Suporte ti
+2025-09-11T13:44:47: Tentando conexão IMAP para Suporte ti
+2025-09-11T13:44:48: Conexão IMAP estabelecida para Suporte ti
+2025-09-11T13:44:48: Encontrados 2 emails não lidos em Suporte ti
+2025-09-11T13:44:48: Ticket criado para email: Novo chamado helpdesk
+2025-09-11T13:44:48: Novo ticket criado: Novo chamado helpdesk (Departamento: Suporte ti)
+2025-09-11T13:44:49: Ticket criado para email: Outro teste
+2025-09-11T13:44:49: Novo ticket criado: Outro teste (Departamento: Suporte ti)
+2025-09-11T13:44:49: Worker iniciado com sucesso
+2025-09-11T13:44:49: Worker em execução. Pressione Ctrl+C para parar.
+2025-09-11T13:45:49: Processando 1 departamentos
+2025-09-11T13:45:49: Processando emails do departamento: Suporte ti
+2025-09-11T13:45:49: Encontrados 0 emails não lidos em Suporte ti
+2025-09-11T13:46:49: Processando 1 departamentos
+2025-09-11T13:46:49: Processando emails do departamento: Suporte ti
+2025-09-11T13:46:49: Encontrados 0 emails não lidos em Suporte ti
+2025-09-11T13:47:49: Processando 1 departamentos
+2025-09-11T13:47:49: Processando emails do departamento: Suporte ti
+2025-09-11T13:47:49: Encontrados 0 emails não lidos em Suporte ti
+2025-09-11T13:47:59: Iniciando encerramento gracioso...
+2025-09-11T13:47:59: Parando Consolidated Helpdesk Worker...
+2025-09-11T13:47:59: Worker parado
+2025-09-11T13:47:59: Worker parado
+2025-09-11T13:47:59: Worker encerrado com sucesso
+2025-09-11T13:48:00: Iniciando Consolidated Helpdesk Worker...
+2025-09-11T13:48:00: Conexão com banco de dados estabelecida
+2025-09-11T13:48:00: prisma:query SELECT COUNT(*) AS "_count._all" FROM (SELECT "public"."helpdesk_departamentos"."id" FROM "public"."helpdesk_departamentos" WHERE ("public"."helpdesk_departamentos"."ativo" = $1 AND "public"."helpdesk_departamentos"."imapHost" IS NOT NULL AND "public"."helpdesk_departamentos"."imapEmail" IS NOT NULL AND "public"."helpdesk_departamentos"."imapPassword" IS NOT NULL) OFFSET $2) AS "sub"
+2025-09-11T13:48:00: Encontrados 1 departamentos configurados
+2025-09-11T13:48:00: Iniciando Consolidated Helpdesk Worker...
+2025-09-11T13:48:00: Worker iniciado com sucesso
+2025-09-11T13:48:00: Processando 1 departamentos
+2025-09-11T13:48:00: Processando emails do departamento: Suporte ti
+2025-09-11T13:48:00: Tentando conexão IMAP para Suporte ti
+2025-09-11T13:48:01: Conexão IMAP estabelecida para Suporte ti
+2025-09-11T13:48:02: Nenhum email não lido encontrado em Suporte ti
+2025-09-11T13:48:02: Worker iniciado com sucesso
+2025-09-11T13:48:02: Worker em execução. Pressione Ctrl+C para parar.
+2025-09-11T13:49:02: Processando 1 departamentos
+2025-09-11T13:49:02: Processando emails do departamento: Suporte ti
+2025-09-11T13:49:02: Nenhum email não lido encontrado em Suporte ti
+2025-09-11T13:49:50: Iniciando encerramento gracioso...
+2025-09-11T13:49:50: Parando Consolidated Helpdesk Worker...
+2025-09-11T13:49:50: Worker parado
+2025-09-11T13:49:50: Worker parado
+2025-09-11T13:49:50: Worker encerrado com sucesso

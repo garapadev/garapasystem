@@ -10,6 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useConfiguracoes } from '@/hooks/useConfiguracoes';
 import { Loader2, Settings, Info } from 'lucide-react';
 import SobreTab from '@/components/configuracoes/SobreTab';
+import HelpdeskTab from '@/components/configuracoes/HelpdeskTab';
 
 export default function ConfiguracoesPage() {
   const { toast } = useToast();
@@ -73,10 +74,14 @@ export default function ConfiguracoesPage() {
       </div>
 
       <Tabs defaultValue="geral" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="geral" className="flex items-center gap-2">
             <Settings className="h-4 w-4" />
             Configurações Gerais
+          </TabsTrigger>
+          <TabsTrigger value="helpdesk" className="flex items-center gap-2">
+            <Info className="h-4 w-4" />
+            Helpdesk
           </TabsTrigger>
           <TabsTrigger value="sobre" className="flex items-center gap-2">
             <Info className="h-4 w-4" />
@@ -121,6 +126,10 @@ export default function ConfiguracoesPage() {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="helpdesk">
+          <HelpdeskTab />
         </TabsContent>
 
         <TabsContent value="sobre">

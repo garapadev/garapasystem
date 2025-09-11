@@ -1,0 +1,392 @@
+2025-09-11T13:43:21: Erro ao processar email 1: PrismaClientValidationError: 
+2025-09-11T13:43:21: Invalid `this.db.helpdeskTicket.create()` invocation in
+2025-09-11T13:43:21: /app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:380:34
+2025-09-11T13:43:21: 
+2025-09-11T13:43:21:   377 private async createTicket(emailData: EmailMessage, department: DepartmentConfig): Promise<void> {
+2025-09-11T13:43:21:   378   const ticketNumber = await this.generateTicketNumber();
+2025-09-11T13:43:21:   379   
+2025-09-11T13:43:21: → 380   await this.db.helpdeskTicket.create({
+2025-09-11T13:43:21:           data: {
+2025-09-11T13:43:21:             numero: 7,
+2025-09-11T13:43:21:             assunto: "Novo chamado helpdesk",
+2025-09-11T13:43:21:             descricao: "um novo chamado para confirmar abertura automatica de chamados.\n\n-- \nAtenciosamente,\nRonaldo davi\n\nCTO - chief technical officer - ProtectIT,\nTecnologias Corporativas & software livre,\n*Consultor* *Dell Experts*\nFortaleza-CE\nFone: 85 9 8898.5206(oi) /  9 9622.6782(Tim)\n\n\nATENÇÃO !!!\n\nO conteudo deste e-mail e diretamente endereçado ao remetente caso\nrecebimento por enganos desconsiderar e apagar o email de acordo com o\nmarco civil da internet brasileira.\n\nSe houver documentos de escritório incluídos neste e-mail,\neles poderão estar no formato ODF, um padrão aberto,\ngratuito e homologado pela ISO e ABNT.\nPara visualizar ou editar, basta copiar e instalar o LibreOffice em\nhttp://www.documentfoundation.org/\n",
+2025-09-11T13:43:21:             prioridade: "MEDIA",
+2025-09-11T13:43:21:             status: "ABERTO",
+2025-09-11T13:43:21:             solicitanteNome: "Ronaldo Davi",
+2025-09-11T13:43:21:             solicitanteEmail: "ronaldodavi@gmail.com",
+2025-09-11T13:43:21:             departamentoId: "cmfee6p230001o0of71xpsksd",
+2025-09-11T13:43:21:             emailMessageId: "<CAB+DkvH1GdH4bL4aqQgoAGoQx0ow1NURRF8YZ=bGxYk3k=vmSA@mail.gmail.com>",
+2025-09-11T13:43:21:             conteudoOriginal: "{\"headers\":{\"from\":\"\\\"Ronaldo Davi\\\" <ronaldodavi@gmail.com>\",\"to\":\"suporteti@garapasystem.com\",\"subject\":\"Novo chamado helpdesk\",\"date\":\"2025-09-11T15:26:45.000Z\"},\"text\":\"um novo chamado para confirmar abertura automatica de chamados.\\n\\n-- \\nAtenciosamente,\\nRonaldo davi\\n\\nCTO - chief technical officer - ProtectIT,\\nTecnologias Corporativas & software livre,\\n*Consultor* *Dell Experts*\\nFortaleza-CE\\nFone: 85 9 8898.5206(oi) /  9 9622.6782(Tim)\\n\\n\\nATENÇÃO !!!\\n\\nO conteudo deste e-mail e diretamente endereçado ao remetente caso\\nrecebimento por enganos desconsiderar e apagar o email de acordo com o\\nmarco civil da internet brasileira.\\n\\nSe houver documentos de escritório incluídos neste e-mail,\\neles poderão estar no formato ODF, um padrão aberto,\\ngratuito e homologado pela ISO e ABNT.\\nPara visualizar ou editar, basta copiar e instalar o LibreOffice em\\nhttp://www.documentfoundation.org/\\n\",\"html\":\"<div dir=\\\"ltr\\\"><div>um novo chamado para confirmar abertura automatica de chamados.</div><div><br></div><span class=\\\"gmail_signature_prefix\\\">-- </span><br><div dir=\\\"ltr\\\" class=\\\"gmail_signature\\\" data-smartmail=\\\"gmail_signature\\\"><div dir=\\\"ltr\\\"><div><div>Atenciosamente,<br>Ronaldo davi<br><br>CTO - chief technical officer - ProtectIT,<br>Tecnologias Corporativas &amp; software livre,</div><div><b>Consultor</b> <font color=\\\"#333333\\\" face=\\\"arial, helvetica, freesans, sans-serif\\\"><span style=\\\"font-size:15px;line-height:21.899999618530273px\\\"><b>Dell Experts</b></span></font> <br>Fortaleza-CE<br>Fone: 85 9 8898.5206(oi) /  9 9622.6782(Tim)</div><div><br><br><div><span>ATENÇÃO !!! </span><div><br></div><div>O conteudo deste e-mail e diretamente endereçado ao remetente caso recebimento por enganos desconsiderar e apagar o email de acordo com o marco civil da internet brasileira.</div><div><br><div>Se houver documentos de escritório incluídos neste e-mail,<br>eles poderão estar no formato ODF, um padrão aberto, </div><div>gratuito e homologado pela ISO e ABNT.<br>Para visualizar ou editar, basta copiar e instalar o LibreOffice em<br><a href=\\\"http://www.documentfoundation.org/\\\" style=\\\"color:rgb(17,85,204)\\\" target=\\\"_blank\\\">http://www.documentfoundation.<u></u>org/</a></div></div></div></div></div></div></div></div>\\n\"}",
+2025-09-11T13:43:21:             ~~~~~~~~~~~~~~~~
+2025-09-11T13:43:21:             criadoEm: new Date("2025-09-11T16:43:21.242Z"),
+2025-09-11T13:43:21:             atualizadoEm: new Date("2025-09-11T16:43:21.242Z"),
+2025-09-11T13:43:21:         ?   id?: String,
+2025-09-11T13:43:21:         ?   solicitanteTelefone?: String | Null,
+2025-09-11T13:43:21:         ?   emailUid?: Int | Null,
+2025-09-11T13:43:21:         ?   dataAbertura?: DateTime,
+2025-09-11T13:43:21:         ?   dataFechamento?: DateTime | Null,
+2025-09-11T13:43:21:         ?   dataUltimaResposta?: DateTime | Null,
+2025-09-11T13:43:21:         ?   createdAt?: DateTime,
+2025-09-11T13:43:21:         ?   updatedAt?: DateTime,
+2025-09-11T13:43:21:         ?   clienteId?: String | Null,
+2025-09-11T13:43:21:         ?   responsavelId?: String | Null,
+2025-09-11T13:43:21:         ?   mensagens?: HelpdeskMensagemUncheckedCreateNestedManyWithoutTicketInput
+2025-09-11T13:43:21:           }
+2025-09-11T13:43:21:         })
+2025-09-11T13:43:21: 
+2025-09-11T13:43:21: Unknown argument `conteudoOriginal`. Available options are marked with ?.
+2025-09-11T13:43:21:     at throwValidationException (/app/node_modules/@prisma/client/src/runtime/core/errorRendering/throwValidationException.ts:45:9)
+2025-09-11T13:43:21:     at ei.handleRequestError (/app/node_modules/@prisma/client/src/runtime/RequestHandler.ts:202:7)
+2025-09-11T13:43:21:     at ei.handleAndLogRequestError (/app/node_modules/@prisma/client/src/runtime/RequestHandler.ts:174:12)
+2025-09-11T13:43:21:     at ei.request (/app/node_modules/@prisma/client/src/runtime/RequestHandler.ts:143:12)
+2025-09-11T13:43:21:     at async a (/app/node_modules/@prisma/client/src/runtime/getPrismaClient.ts:833:24)
+2025-09-11T13:43:21:     at async ConsolidatedHelpdeskWorker.createTicket (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:380:5)
+2025-09-11T13:43:21:     at async ConsolidatedHelpdeskWorker.processEmail (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:364:7)
+2025-09-11T13:43:21:     at async ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:223:11)
+2025-09-11T13:43:21:     at async ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:178:11)
+2025-09-11T13:43:21:     at async ConsolidatedHelpdeskWorker.start (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:112:5) {
+2025-09-11T13:43:21:   clientVersion: '6.15.0'
+2025-09-11T13:43:21: }
+2025-09-11T13:43:21: Erro ao processar email 1: PrismaClientValidationError: 
+2025-09-11T13:43:21: Invalid `this.db.helpdeskTicket.create()` invocation in
+2025-09-11T13:43:21: /app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:380:34
+2025-09-11T13:43:21: 
+2025-09-11T13:43:21:   377 private async createTicket(emailData: EmailMessage, department: DepartmentConfig): Promise<void> {
+2025-09-11T13:43:21:   378   const ticketNumber = await this.generateTicketNumber();
+2025-09-11T13:43:21:   379   
+2025-09-11T13:43:21: → 380   await this.db.helpdeskTicket.create({
+2025-09-11T13:43:21:           data: {
+2025-09-11T13:43:21:             numero: 7,
+2025-09-11T13:43:21:             assunto: "Novo chamado helpdesk",
+2025-09-11T13:43:21:             descricao: "um novo chamado para confirmar abertura automatica de chamados.\n\n-- \nAtenciosamente,\nRonaldo davi\n\nCTO - chief technical officer - ProtectIT,\nTecnologias Corporativas & software livre,\n*Consultor* *Dell Experts*\nFortaleza-CE\nFone: 85 9 8898.5206(oi) /  9 9622.6782(Tim)\n\n\nATENÇÃO !!!\n\nO conteudo deste e-mail e diretamente endereçado ao remetente caso\nrecebimento por enganos desconsiderar e apagar o email de acordo com o\nmarco civil da internet brasileira.\n\nSe houver documentos de escritório incluídos neste e-mail,\neles poderão estar no formato ODF, um padrão aberto,\ngratuito e homologado pela ISO e ABNT.\nPara visualizar ou editar, basta copiar e instalar o LibreOffice em\nhttp://www.documentfoundation.org/\n",
+2025-09-11T13:43:21:             prioridade: "MEDIA",
+2025-09-11T13:43:21:             status: "ABERTO",
+2025-09-11T13:43:21:             solicitanteNome: "Ronaldo Davi",
+2025-09-11T13:43:21:             solicitanteEmail: "ronaldodavi@gmail.com",
+2025-09-11T13:43:21:             departamentoId: "cmfee6p230001o0of71xpsksd",
+2025-09-11T13:43:21:             emailMessageId: "<CAB+DkvH1GdH4bL4aqQgoAGoQx0ow1NURRF8YZ=bGxYk3k=vmSA@mail.gmail.com>",
+2025-09-11T13:43:21:             conteudoOriginal: "{\"headers\":{\"from\":\"\\\"Ronaldo Davi\\\" <ronaldodavi@gmail.com>\",\"to\":\"suporteti@garapasystem.com\",\"subject\":\"Novo chamado helpdesk\",\"date\":\"2025-09-11T15:26:45.000Z\"},\"text\":\"um novo chamado para confirmar abertura automatica de chamados.\\n\\n-- \\nAtenciosamente,\\nRonaldo davi\\n\\nCTO - chief technical officer - ProtectIT,\\nTecnologias Corporativas & software livre,\\n*Consultor* *Dell Experts*\\nFortaleza-CE\\nFone: 85 9 8898.5206(oi) /  9 9622.6782(Tim)\\n\\n\\nATENÇÃO !!!\\n\\nO conteudo deste e-mail e diretamente endereçado ao remetente caso\\nrecebimento por enganos desconsiderar e apagar o email de acordo com o\\nmarco civil da internet brasileira.\\n\\nSe houver documentos de escritório incluídos neste e-mail,\\neles poderão estar no formato ODF, um padrão aberto,\\ngratuito e homologado pela ISO e ABNT.\\nPara visualizar ou editar, basta copiar e instalar o LibreOffice em\\nhttp://www.documentfoundation.org/\\n\",\"html\":\"<div dir=\\\"ltr\\\"><div>um novo chamado para confirmar abertura automatica de chamados.</div><div><br></div><span class=\\\"gmail_signature_prefix\\\">-- </span><br><div dir=\\\"ltr\\\" class=\\\"gmail_signature\\\" data-smartmail=\\\"gmail_signature\\\"><div dir=\\\"ltr\\\"><div><div>Atenciosamente,<br>Ronaldo davi<br><br>CTO - chief technical officer - ProtectIT,<br>Tecnologias Corporativas &amp; software livre,</div><div><b>Consultor</b> <font color=\\\"#333333\\\" face=\\\"arial, helvetica, freesans, sans-serif\\\"><span style=\\\"font-size:15px;line-height:21.899999618530273px\\\"><b>Dell Experts</b></span></font> <br>Fortaleza-CE<br>Fone: 85 9 8898.5206(oi) /  9 9622.6782(Tim)</div><div><br><br><div><span>ATENÇÃO !!! </span><div><br></div><div>O conteudo deste e-mail e diretamente endereçado ao remetente caso recebimento por enganos desconsiderar e apagar o email de acordo com o marco civil da internet brasileira.</div><div><br><div>Se houver documentos de escritório incluídos neste e-mail,<br>eles poderão estar no formato ODF, um padrão aberto, </div><div>gratuito e homologado pela ISO e ABNT.<br>Para visualizar ou editar, basta copiar e instalar o LibreOffice em<br><a href=\\\"http://www.documentfoundation.org/\\\" style=\\\"color:rgb(17,85,204)\\\" target=\\\"_blank\\\">http://www.documentfoundation.<u></u>org/</a></div></div></div></div></div></div></div></div>\\n\"}",
+2025-09-11T13:43:21:             ~~~~~~~~~~~~~~~~
+2025-09-11T13:43:21:             criadoEm: new Date("2025-09-11T16:43:21.242Z"),
+2025-09-11T13:43:21:             atualizadoEm: new Date("2025-09-11T16:43:21.242Z"),
+2025-09-11T13:43:21:         ?   id?: String,
+2025-09-11T13:43:21:         ?   solicitanteTelefone?: String | Null,
+2025-09-11T13:43:21:         ?   emailUid?: Int | Null,
+2025-09-11T13:43:21:         ?   dataAbertura?: DateTime,
+2025-09-11T13:43:21:         ?   dataFechamento?: DateTime | Null,
+2025-09-11T13:43:21:         ?   dataUltimaResposta?: DateTime | Null,
+2025-09-11T13:43:21:         ?   createdAt?: DateTime,
+2025-09-11T13:43:21:         ?   updatedAt?: DateTime,
+2025-09-11T13:43:21:         ?   clienteId?: String | Null,
+2025-09-11T13:43:21:         ?   responsavelId?: String | Null,
+2025-09-11T13:43:21:         ?   mensagens?: HelpdeskMensagemUncheckedCreateNestedManyWithoutTicketInput
+2025-09-11T13:43:21:           }
+2025-09-11T13:43:21:         })
+2025-09-11T13:43:21: 
+2025-09-11T13:43:21: Unknown argument `conteudoOriginal`. Available options are marked with ?.
+2025-09-11T13:43:21:     at throwValidationException (/app/node_modules/@prisma/client/src/runtime/core/errorRendering/throwValidationException.ts:45:9)
+2025-09-11T13:43:21:     at ei.handleRequestError (/app/node_modules/@prisma/client/src/runtime/RequestHandler.ts:202:7)
+2025-09-11T13:43:21:     at ei.handleAndLogRequestError (/app/node_modules/@prisma/client/src/runtime/RequestHandler.ts:174:12)
+2025-09-11T13:43:21:     at ei.request (/app/node_modules/@prisma/client/src/runtime/RequestHandler.ts:143:12)
+2025-09-11T13:43:21:     at async a (/app/node_modules/@prisma/client/src/runtime/getPrismaClient.ts:833:24)
+2025-09-11T13:43:21:     at async ConsolidatedHelpdeskWorker.createTicket (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:380:5)
+2025-09-11T13:43:21:     at async ConsolidatedHelpdeskWorker.processEmail (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:364:7)
+2025-09-11T13:43:21:     at async ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:223:11)
+2025-09-11T13:43:21:     at async ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:178:11)
+2025-09-11T13:43:21:     at async ConsolidatedHelpdeskWorker.start (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:112:5) {
+2025-09-11T13:43:21:   clientVersion: '6.15.0'
+2025-09-11T13:43:21: }
+2025-09-11T13:43:21: Erro ao processar email 2: PrismaClientValidationError: 
+2025-09-11T13:43:21: Invalid `this.db.helpdeskTicket.create()` invocation in
+2025-09-11T13:43:21: /app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:380:34
+2025-09-11T13:43:21: 
+2025-09-11T13:43:21:   377 private async createTicket(emailData: EmailMessage, department: DepartmentConfig): Promise<void> {
+2025-09-11T13:43:21:   378   const ticketNumber = await this.generateTicketNumber();
+2025-09-11T13:43:21:   379   
+2025-09-11T13:43:21: → 380   await this.db.helpdeskTicket.create({
+2025-09-11T13:43:21:           data: {
+2025-09-11T13:43:21:             numero: 7,
+2025-09-11T13:43:21:             assunto: "Outro teste",
+2025-09-11T13:43:21:             descricao: "mais um teste de abetura de chamado automatica\n\n-- \nAtenciosamente,\nRonaldo davi\n\nCTO - chief technical officer - ProtectIT,\nTecnologias Corporativas & software livre,\n*Consultor* *Dell Experts*\nFortaleza-CE\n*Fone:/ Whatsapp 85998490991(Tim) *\n",
+2025-09-11T13:43:21:             prioridade: "MEDIA",
+2025-09-11T13:43:21:             status: "ABERTO",
+2025-09-11T13:43:21:             solicitanteNome: "Ronaldo davi - ProtectIT",
+2025-09-11T13:43:21:             solicitanteEmail: "ronaldodavi@protectit.com.br",
+2025-09-11T13:43:21:             departamentoId: "cmfee6p230001o0of71xpsksd",
+2025-09-11T13:43:21:             emailMessageId: "<CALdD9fJQt0Efv_SANPiE0v2ZDwxTkEC=U6bvo-S8U1Zb6HZ6gw@mail.gmail.com>",
+2025-09-11T13:43:21:             conteudoOriginal: "{\"headers\":{\"from\":\"\\\"Ronaldo davi - ProtectIT\\\" <ronaldodavi@protectit.com.br>\",\"to\":\"suporteti@garapasystem.com\",\"subject\":\"Outro teste\",\"date\":\"2025-09-11T15:27:59.000Z\"},\"text\":\"mais um teste de abetura de chamado automatica\\n\\n-- \\nAtenciosamente,\\nRonaldo davi\\n\\nCTO - chief technical officer - ProtectIT,\\nTecnologias Corporativas & software livre,\\n*Consultor* *Dell Experts*\\nFortaleza-CE\\n*Fone:/ Whatsapp 85998490991(Tim) *\\n\",\"html\":\"<div dir=\\\"ltr\\\"><div>mais um teste de abetura de chamado automatica</div><div><br></div><span class=\\\"gmail_signature_prefix\\\">-- </span><br><div dir=\\\"ltr\\\" class=\\\"gmail_signature\\\" data-smartmail=\\\"gmail_signature\\\"><div dir=\\\"ltr\\\"><div><div dir=\\\"ltr\\\"><div dir=\\\"ltr\\\"><div dir=\\\"ltr\\\">Atenciosamente,<br>Ronaldo davi<br><br>CTO - chief technical officer - ProtectIT,<br>Tecnologias Corporativas &amp; software livre,<div><b>Consultor</b> <font color=\\\"#333333\\\" face=\\\"arial, helvetica, freesans, sans-serif\\\"><span style=\\\"font-size:15px;line-height:21.9px\\\"><b>Dell Experts</b></span></font><br>Fortaleza-CE<br><b>Fone:/ Whatsapp 859<font size=\\\"2\\\">98490991(Tim)</font> </b></div><div><br></div><div><br></div><div><br><div></div><div><br></div></div></div></div></div></div></div></div></div>\\n\"}",
+2025-09-11T13:43:21:             ~~~~~~~~~~~~~~~~
+2025-09-11T13:43:21:             criadoEm: new Date("2025-09-11T16:43:21.386Z"),
+2025-09-11T13:43:21:             atualizadoEm: new Date("2025-09-11T16:43:21.386Z"),
+2025-09-11T13:43:21:         ?   id?: String,
+2025-09-11T13:43:21:         ?   solicitanteTelefone?: String | Null,
+2025-09-11T13:43:21:         ?   emailUid?: Int | Null,
+2025-09-11T13:43:21:         ?   dataAbertura?: DateTime,
+2025-09-11T13:43:21:         ?   dataFechamento?: DateTime | Null,
+2025-09-11T13:43:21:         ?   dataUltimaResposta?: DateTime | Null,
+2025-09-11T13:43:21:         ?   createdAt?: DateTime,
+2025-09-11T13:43:21:         ?   updatedAt?: DateTime,
+2025-09-11T13:43:21:         ?   clienteId?: String | Null,
+2025-09-11T13:43:21:         ?   responsavelId?: String | Null,
+2025-09-11T13:43:21:         ?   mensagens?: HelpdeskMensagemUncheckedCreateNestedManyWithoutTicketInput
+2025-09-11T13:43:21:           }
+2025-09-11T13:43:21:         })
+2025-09-11T13:43:21: 
+2025-09-11T13:43:21: Unknown argument `conteudoOriginal`. Available options are marked with ?.
+2025-09-11T13:43:21:     at throwValidationException (/app/node_modules/@prisma/client/src/runtime/core/errorRendering/throwValidationException.ts:45:9)
+2025-09-11T13:43:21:     at ei.handleRequestError (/app/node_modules/@prisma/client/src/runtime/RequestHandler.ts:202:7)
+2025-09-11T13:43:21:     at ei.handleAndLogRequestError (/app/node_modules/@prisma/client/src/runtime/RequestHandler.ts:174:12)
+2025-09-11T13:43:21:     at ei.request (/app/node_modules/@prisma/client/src/runtime/RequestHandler.ts:143:12)
+2025-09-11T13:43:21:     at async a (/app/node_modules/@prisma/client/src/runtime/getPrismaClient.ts:833:24)
+2025-09-11T13:43:21:     at async ConsolidatedHelpdeskWorker.createTicket (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:380:5)
+2025-09-11T13:43:21:     at async ConsolidatedHelpdeskWorker.processEmail (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:364:7)
+2025-09-11T13:43:21:     at async ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:223:11)
+2025-09-11T13:43:21:     at async ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:178:11)
+2025-09-11T13:43:21:     at async ConsolidatedHelpdeskWorker.start (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:112:5) {
+2025-09-11T13:43:21:   clientVersion: '6.15.0'
+2025-09-11T13:43:21: }
+2025-09-11T13:43:21: Erro ao processar email 2: PrismaClientValidationError: 
+2025-09-11T13:43:21: Invalid `this.db.helpdeskTicket.create()` invocation in
+2025-09-11T13:43:21: /app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:380:34
+2025-09-11T13:43:21: 
+2025-09-11T13:43:21:   377 private async createTicket(emailData: EmailMessage, department: DepartmentConfig): Promise<void> {
+2025-09-11T13:43:21:   378   const ticketNumber = await this.generateTicketNumber();
+2025-09-11T13:43:21:   379   
+2025-09-11T13:43:21: → 380   await this.db.helpdeskTicket.create({
+2025-09-11T13:43:21:           data: {
+2025-09-11T13:43:21:             numero: 7,
+2025-09-11T13:43:21:             assunto: "Outro teste",
+2025-09-11T13:43:21:             descricao: "mais um teste de abetura de chamado automatica\n\n-- \nAtenciosamente,\nRonaldo davi\n\nCTO - chief technical officer - ProtectIT,\nTecnologias Corporativas & software livre,\n*Consultor* *Dell Experts*\nFortaleza-CE\n*Fone:/ Whatsapp 85998490991(Tim) *\n",
+2025-09-11T13:43:21:             prioridade: "MEDIA",
+2025-09-11T13:43:21:             status: "ABERTO",
+2025-09-11T13:43:21:             solicitanteNome: "Ronaldo davi - ProtectIT",
+2025-09-11T13:43:21:             solicitanteEmail: "ronaldodavi@protectit.com.br",
+2025-09-11T13:43:21:             departamentoId: "cmfee6p230001o0of71xpsksd",
+2025-09-11T13:43:21:             emailMessageId: "<CALdD9fJQt0Efv_SANPiE0v2ZDwxTkEC=U6bvo-S8U1Zb6HZ6gw@mail.gmail.com>",
+2025-09-11T13:43:21:             conteudoOriginal: "{\"headers\":{\"from\":\"\\\"Ronaldo davi - ProtectIT\\\" <ronaldodavi@protectit.com.br>\",\"to\":\"suporteti@garapasystem.com\",\"subject\":\"Outro teste\",\"date\":\"2025-09-11T15:27:59.000Z\"},\"text\":\"mais um teste de abetura de chamado automatica\\n\\n-- \\nAtenciosamente,\\nRonaldo davi\\n\\nCTO - chief technical officer - ProtectIT,\\nTecnologias Corporativas & software livre,\\n*Consultor* *Dell Experts*\\nFortaleza-CE\\n*Fone:/ Whatsapp 85998490991(Tim) *\\n\",\"html\":\"<div dir=\\\"ltr\\\"><div>mais um teste de abetura de chamado automatica</div><div><br></div><span class=\\\"gmail_signature_prefix\\\">-- </span><br><div dir=\\\"ltr\\\" class=\\\"gmail_signature\\\" data-smartmail=\\\"gmail_signature\\\"><div dir=\\\"ltr\\\"><div><div dir=\\\"ltr\\\"><div dir=\\\"ltr\\\"><div dir=\\\"ltr\\\">Atenciosamente,<br>Ronaldo davi<br><br>CTO - chief technical officer - ProtectIT,<br>Tecnologias Corporativas &amp; software livre,<div><b>Consultor</b> <font color=\\\"#333333\\\" face=\\\"arial, helvetica, freesans, sans-serif\\\"><span style=\\\"font-size:15px;line-height:21.9px\\\"><b>Dell Experts</b></span></font><br>Fortaleza-CE<br><b>Fone:/ Whatsapp 859<font size=\\\"2\\\">98490991(Tim)</font> </b></div><div><br></div><div><br></div><div><br><div></div><div><br></div></div></div></div></div></div></div></div></div>\\n\"}",
+2025-09-11T13:43:21:             ~~~~~~~~~~~~~~~~
+2025-09-11T13:43:21:             criadoEm: new Date("2025-09-11T16:43:21.386Z"),
+2025-09-11T13:43:21:             atualizadoEm: new Date("2025-09-11T16:43:21.386Z"),
+2025-09-11T13:43:21:         ?   id?: String,
+2025-09-11T13:43:21:         ?   solicitanteTelefone?: String | Null,
+2025-09-11T13:43:21:         ?   emailUid?: Int | Null,
+2025-09-11T13:43:21:         ?   dataAbertura?: DateTime,
+2025-09-11T13:43:21:         ?   dataFechamento?: DateTime | Null,
+2025-09-11T13:43:21:         ?   dataUltimaResposta?: DateTime | Null,
+2025-09-11T13:43:21:         ?   createdAt?: DateTime,
+2025-09-11T13:43:21:         ?   updatedAt?: DateTime,
+2025-09-11T13:43:21:         ?   clienteId?: String | Null,
+2025-09-11T13:43:21:         ?   responsavelId?: String | Null,
+2025-09-11T13:43:21:         ?   mensagens?: HelpdeskMensagemUncheckedCreateNestedManyWithoutTicketInput
+2025-09-11T13:43:21:           }
+2025-09-11T13:43:21:         })
+2025-09-11T13:43:21: 
+2025-09-11T13:43:21: Unknown argument `conteudoOriginal`. Available options are marked with ?.
+2025-09-11T13:43:21:     at throwValidationException (/app/node_modules/@prisma/client/src/runtime/core/errorRendering/throwValidationException.ts:45:9)
+2025-09-11T13:43:21:     at ei.handleRequestError (/app/node_modules/@prisma/client/src/runtime/RequestHandler.ts:202:7)
+2025-09-11T13:43:21:     at ei.handleAndLogRequestError (/app/node_modules/@prisma/client/src/runtime/RequestHandler.ts:174:12)
+2025-09-11T13:43:21:     at ei.request (/app/node_modules/@prisma/client/src/runtime/RequestHandler.ts:143:12)
+2025-09-11T13:43:21:     at async a (/app/node_modules/@prisma/client/src/runtime/getPrismaClient.ts:833:24)
+2025-09-11T13:43:21:     at async ConsolidatedHelpdeskWorker.createTicket (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:380:5)
+2025-09-11T13:43:21:     at async ConsolidatedHelpdeskWorker.processEmail (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:364:7)
+2025-09-11T13:43:21:     at async ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:223:11)
+2025-09-11T13:43:21:     at async ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:178:11)
+2025-09-11T13:43:21:     at async ConsolidatedHelpdeskWorker.start (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:112:5) {
+2025-09-11T13:43:21:   clientVersion: '6.15.0'
+2025-09-11T13:43:21: }
+2025-09-11T13:44:21: Erro ao processar email 1: PrismaClientValidationError: 
+2025-09-11T13:44:21: Invalid `this.db.helpdeskTicket.create()` invocation in
+2025-09-11T13:44:21: /app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:380:34
+2025-09-11T13:44:21: 
+2025-09-11T13:44:21:   377 private async createTicket(emailData: EmailMessage, department: DepartmentConfig): Promise<void> {
+2025-09-11T13:44:21:   378   const ticketNumber = await this.generateTicketNumber();
+2025-09-11T13:44:21:   379   
+2025-09-11T13:44:21: → 380   await this.db.helpdeskTicket.create({
+2025-09-11T13:44:21:           data: {
+2025-09-11T13:44:21:             numero: 7,
+2025-09-11T13:44:21:             assunto: "Novo chamado helpdesk",
+2025-09-11T13:44:21:             descricao: "um novo chamado para confirmar abertura automatica de chamados.\n\n-- \nAtenciosamente,\nRonaldo davi\n\nCTO - chief technical officer - ProtectIT,\nTecnologias Corporativas & software livre,\n*Consultor* *Dell Experts*\nFortaleza-CE\nFone: 85 9 8898.5206(oi) /  9 9622.6782(Tim)\n\n\nATENÇÃO !!!\n\nO conteudo deste e-mail e diretamente endereçado ao remetente caso\nrecebimento por enganos desconsiderar e apagar o email de acordo com o\nmarco civil da internet brasileira.\n\nSe houver documentos de escritório incluídos neste e-mail,\neles poderão estar no formato ODF, um padrão aberto,\ngratuito e homologado pela ISO e ABNT.\nPara visualizar ou editar, basta copiar e instalar o LibreOffice em\nhttp://www.documentfoundation.org/\n",
+2025-09-11T13:44:21:             prioridade: "MEDIA",
+2025-09-11T13:44:21:             status: "ABERTO",
+2025-09-11T13:44:21:             solicitanteNome: "Ronaldo Davi",
+2025-09-11T13:44:21:             solicitanteEmail: "ronaldodavi@gmail.com",
+2025-09-11T13:44:21:             departamentoId: "cmfee6p230001o0of71xpsksd",
+2025-09-11T13:44:21:             emailMessageId: "<CAB+DkvH1GdH4bL4aqQgoAGoQx0ow1NURRF8YZ=bGxYk3k=vmSA@mail.gmail.com>",
+2025-09-11T13:44:21:             conteudoOriginal: "{\"headers\":{\"from\":\"\\\"Ronaldo Davi\\\" <ronaldodavi@gmail.com>\",\"to\":\"suporteti@garapasystem.com\",\"subject\":\"Novo chamado helpdesk\",\"date\":\"2025-09-11T15:26:45.000Z\"},\"text\":\"um novo chamado para confirmar abertura automatica de chamados.\\n\\n-- \\nAtenciosamente,\\nRonaldo davi\\n\\nCTO - chief technical officer - ProtectIT,\\nTecnologias Corporativas & software livre,\\n*Consultor* *Dell Experts*\\nFortaleza-CE\\nFone: 85 9 8898.5206(oi) /  9 9622.6782(Tim)\\n\\n\\nATENÇÃO !!!\\n\\nO conteudo deste e-mail e diretamente endereçado ao remetente caso\\nrecebimento por enganos desconsiderar e apagar o email de acordo com o\\nmarco civil da internet brasileira.\\n\\nSe houver documentos de escritório incluídos neste e-mail,\\neles poderão estar no formato ODF, um padrão aberto,\\ngratuito e homologado pela ISO e ABNT.\\nPara visualizar ou editar, basta copiar e instalar o LibreOffice em\\nhttp://www.documentfoundation.org/\\n\",\"html\":\"<div dir=\\\"ltr\\\"><div>um novo chamado para confirmar abertura automatica de chamados.</div><div><br></div><span class=\\\"gmail_signature_prefix\\\">-- </span><br><div dir=\\\"ltr\\\" class=\\\"gmail_signature\\\" data-smartmail=\\\"gmail_signature\\\"><div dir=\\\"ltr\\\"><div><div>Atenciosamente,<br>Ronaldo davi<br><br>CTO - chief technical officer - ProtectIT,<br>Tecnologias Corporativas &amp; software livre,</div><div><b>Consultor</b> <font color=\\\"#333333\\\" face=\\\"arial, helvetica, freesans, sans-serif\\\"><span style=\\\"font-size:15px;line-height:21.899999618530273px\\\"><b>Dell Experts</b></span></font> <br>Fortaleza-CE<br>Fone: 85 9 8898.5206(oi) /  9 9622.6782(Tim)</div><div><br><br><div><span>ATENÇÃO !!! </span><div><br></div><div>O conteudo deste e-mail e diretamente endereçado ao remetente caso recebimento por enganos desconsiderar e apagar o email de acordo com o marco civil da internet brasileira.</div><div><br><div>Se houver documentos de escritório incluídos neste e-mail,<br>eles poderão estar no formato ODF, um padrão aberto, </div><div>gratuito e homologado pela ISO e ABNT.<br>Para visualizar ou editar, basta copiar e instalar o LibreOffice em<br><a href=\\\"http://www.documentfoundation.org/\\\" style=\\\"color:rgb(17,85,204)\\\" target=\\\"_blank\\\">http://www.documentfoundation.<u></u>org/</a></div></div></div></div></div></div></div></div>\\n\"}",
+2025-09-11T13:44:21:             ~~~~~~~~~~~~~~~~
+2025-09-11T13:44:21:             criadoEm: new Date("2025-09-11T16:44:21.756Z"),
+2025-09-11T13:44:21:             atualizadoEm: new Date("2025-09-11T16:44:21.756Z"),
+2025-09-11T13:44:21:         ?   id?: String,
+2025-09-11T13:44:21:         ?   solicitanteTelefone?: String | Null,
+2025-09-11T13:44:21:         ?   emailUid?: Int | Null,
+2025-09-11T13:44:21:         ?   dataAbertura?: DateTime,
+2025-09-11T13:44:21:         ?   dataFechamento?: DateTime | Null,
+2025-09-11T13:44:21:         ?   dataUltimaResposta?: DateTime | Null,
+2025-09-11T13:44:21:         ?   createdAt?: DateTime,
+2025-09-11T13:44:21:         ?   updatedAt?: DateTime,
+2025-09-11T13:44:21:         ?   clienteId?: String | Null,
+2025-09-11T13:44:21:         ?   responsavelId?: String | Null,
+2025-09-11T13:44:21:         ?   mensagens?: HelpdeskMensagemUncheckedCreateNestedManyWithoutTicketInput
+2025-09-11T13:44:21:           }
+2025-09-11T13:44:21:         })
+2025-09-11T13:44:21: 
+2025-09-11T13:44:21: Unknown argument `conteudoOriginal`. Available options are marked with ?.
+2025-09-11T13:44:21:     at throwValidationException (/app/node_modules/@prisma/client/src/runtime/core/errorRendering/throwValidationException.ts:45:9)
+2025-09-11T13:44:21:     at ei.handleRequestError (/app/node_modules/@prisma/client/src/runtime/RequestHandler.ts:202:7)
+2025-09-11T13:44:21:     at ei.handleAndLogRequestError (/app/node_modules/@prisma/client/src/runtime/RequestHandler.ts:174:12)
+2025-09-11T13:44:21:     at ei.request (/app/node_modules/@prisma/client/src/runtime/RequestHandler.ts:143:12)
+2025-09-11T13:44:21:     at async a (/app/node_modules/@prisma/client/src/runtime/getPrismaClient.ts:833:24)
+2025-09-11T13:44:21:     at async ConsolidatedHelpdeskWorker.createTicket (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:380:5)
+2025-09-11T13:44:21:     at async ConsolidatedHelpdeskWorker.processEmail (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:364:7)
+2025-09-11T13:44:21:     at async ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:223:11)
+2025-09-11T13:44:21:     at async ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:178:11)
+2025-09-11T13:44:21:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:117:9) {
+2025-09-11T13:44:21:   clientVersion: '6.15.0'
+2025-09-11T13:44:21: }
+2025-09-11T13:44:21: Erro ao processar email 1: PrismaClientValidationError: 
+2025-09-11T13:44:21: Invalid `this.db.helpdeskTicket.create()` invocation in
+2025-09-11T13:44:21: /app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:380:34
+2025-09-11T13:44:21: 
+2025-09-11T13:44:21:   377 private async createTicket(emailData: EmailMessage, department: DepartmentConfig): Promise<void> {
+2025-09-11T13:44:21:   378   const ticketNumber = await this.generateTicketNumber();
+2025-09-11T13:44:21:   379   
+2025-09-11T13:44:21: → 380   await this.db.helpdeskTicket.create({
+2025-09-11T13:44:21:           data: {
+2025-09-11T13:44:21:             numero: 7,
+2025-09-11T13:44:21:             assunto: "Novo chamado helpdesk",
+2025-09-11T13:44:21:             descricao: "um novo chamado para confirmar abertura automatica de chamados.\n\n-- \nAtenciosamente,\nRonaldo davi\n\nCTO - chief technical officer - ProtectIT,\nTecnologias Corporativas & software livre,\n*Consultor* *Dell Experts*\nFortaleza-CE\nFone: 85 9 8898.5206(oi) /  9 9622.6782(Tim)\n\n\nATENÇÃO !!!\n\nO conteudo deste e-mail e diretamente endereçado ao remetente caso\nrecebimento por enganos desconsiderar e apagar o email de acordo com o\nmarco civil da internet brasileira.\n\nSe houver documentos de escritório incluídos neste e-mail,\neles poderão estar no formato ODF, um padrão aberto,\ngratuito e homologado pela ISO e ABNT.\nPara visualizar ou editar, basta copiar e instalar o LibreOffice em\nhttp://www.documentfoundation.org/\n",
+2025-09-11T13:44:21:             prioridade: "MEDIA",
+2025-09-11T13:44:21:             status: "ABERTO",
+2025-09-11T13:44:21:             solicitanteNome: "Ronaldo Davi",
+2025-09-11T13:44:21:             solicitanteEmail: "ronaldodavi@gmail.com",
+2025-09-11T13:44:21:             departamentoId: "cmfee6p230001o0of71xpsksd",
+2025-09-11T13:44:21:             emailMessageId: "<CAB+DkvH1GdH4bL4aqQgoAGoQx0ow1NURRF8YZ=bGxYk3k=vmSA@mail.gmail.com>",
+2025-09-11T13:44:21:             conteudoOriginal: "{\"headers\":{\"from\":\"\\\"Ronaldo Davi\\\" <ronaldodavi@gmail.com>\",\"to\":\"suporteti@garapasystem.com\",\"subject\":\"Novo chamado helpdesk\",\"date\":\"2025-09-11T15:26:45.000Z\"},\"text\":\"um novo chamado para confirmar abertura automatica de chamados.\\n\\n-- \\nAtenciosamente,\\nRonaldo davi\\n\\nCTO - chief technical officer - ProtectIT,\\nTecnologias Corporativas & software livre,\\n*Consultor* *Dell Experts*\\nFortaleza-CE\\nFone: 85 9 8898.5206(oi) /  9 9622.6782(Tim)\\n\\n\\nATENÇÃO !!!\\n\\nO conteudo deste e-mail e diretamente endereçado ao remetente caso\\nrecebimento por enganos desconsiderar e apagar o email de acordo com o\\nmarco civil da internet brasileira.\\n\\nSe houver documentos de escritório incluídos neste e-mail,\\neles poderão estar no formato ODF, um padrão aberto,\\ngratuito e homologado pela ISO e ABNT.\\nPara visualizar ou editar, basta copiar e instalar o LibreOffice em\\nhttp://www.documentfoundation.org/\\n\",\"html\":\"<div dir=\\\"ltr\\\"><div>um novo chamado para confirmar abertura automatica de chamados.</div><div><br></div><span class=\\\"gmail_signature_prefix\\\">-- </span><br><div dir=\\\"ltr\\\" class=\\\"gmail_signature\\\" data-smartmail=\\\"gmail_signature\\\"><div dir=\\\"ltr\\\"><div><div>Atenciosamente,<br>Ronaldo davi<br><br>CTO - chief technical officer - ProtectIT,<br>Tecnologias Corporativas &amp; software livre,</div><div><b>Consultor</b> <font color=\\\"#333333\\\" face=\\\"arial, helvetica, freesans, sans-serif\\\"><span style=\\\"font-size:15px;line-height:21.899999618530273px\\\"><b>Dell Experts</b></span></font> <br>Fortaleza-CE<br>Fone: 85 9 8898.5206(oi) /  9 9622.6782(Tim)</div><div><br><br><div><span>ATENÇÃO !!! </span><div><br></div><div>O conteudo deste e-mail e diretamente endereçado ao remetente caso recebimento por enganos desconsiderar e apagar o email de acordo com o marco civil da internet brasileira.</div><div><br><div>Se houver documentos de escritório incluídos neste e-mail,<br>eles poderão estar no formato ODF, um padrão aberto, </div><div>gratuito e homologado pela ISO e ABNT.<br>Para visualizar ou editar, basta copiar e instalar o LibreOffice em<br><a href=\\\"http://www.documentfoundation.org/\\\" style=\\\"color:rgb(17,85,204)\\\" target=\\\"_blank\\\">http://www.documentfoundation.<u></u>org/</a></div></div></div></div></div></div></div></div>\\n\"}",
+2025-09-11T13:44:21:             ~~~~~~~~~~~~~~~~
+2025-09-11T13:44:21:             criadoEm: new Date("2025-09-11T16:44:21.756Z"),
+2025-09-11T13:44:21:             atualizadoEm: new Date("2025-09-11T16:44:21.756Z"),
+2025-09-11T13:44:21:         ?   id?: String,
+2025-09-11T13:44:21:         ?   solicitanteTelefone?: String | Null,
+2025-09-11T13:44:21:         ?   emailUid?: Int | Null,
+2025-09-11T13:44:21:         ?   dataAbertura?: DateTime,
+2025-09-11T13:44:21:         ?   dataFechamento?: DateTime | Null,
+2025-09-11T13:44:21:         ?   dataUltimaResposta?: DateTime | Null,
+2025-09-11T13:44:21:         ?   createdAt?: DateTime,
+2025-09-11T13:44:21:         ?   updatedAt?: DateTime,
+2025-09-11T13:44:21:         ?   clienteId?: String | Null,
+2025-09-11T13:44:21:         ?   responsavelId?: String | Null,
+2025-09-11T13:44:21:         ?   mensagens?: HelpdeskMensagemUncheckedCreateNestedManyWithoutTicketInput
+2025-09-11T13:44:21:           }
+2025-09-11T13:44:21:         })
+2025-09-11T13:44:21: 
+2025-09-11T13:44:21: Unknown argument `conteudoOriginal`. Available options are marked with ?.
+2025-09-11T13:44:21:     at throwValidationException (/app/node_modules/@prisma/client/src/runtime/core/errorRendering/throwValidationException.ts:45:9)
+2025-09-11T13:44:21:     at ei.handleRequestError (/app/node_modules/@prisma/client/src/runtime/RequestHandler.ts:202:7)
+2025-09-11T13:44:21:     at ei.handleAndLogRequestError (/app/node_modules/@prisma/client/src/runtime/RequestHandler.ts:174:12)
+2025-09-11T13:44:21:     at ei.request (/app/node_modules/@prisma/client/src/runtime/RequestHandler.ts:143:12)
+2025-09-11T13:44:21:     at async a (/app/node_modules/@prisma/client/src/runtime/getPrismaClient.ts:833:24)
+2025-09-11T13:44:21:     at async ConsolidatedHelpdeskWorker.createTicket (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:380:5)
+2025-09-11T13:44:21:     at async ConsolidatedHelpdeskWorker.processEmail (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:364:7)
+2025-09-11T13:44:21:     at async ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:223:11)
+2025-09-11T13:44:21:     at async ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:178:11)
+2025-09-11T13:44:21:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:117:9) {
+2025-09-11T13:44:21:   clientVersion: '6.15.0'
+2025-09-11T13:44:21: }
+2025-09-11T13:44:21: Erro ao processar email 2: PrismaClientValidationError: 
+2025-09-11T13:44:21: Invalid `this.db.helpdeskTicket.create()` invocation in
+2025-09-11T13:44:21: /app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:380:34
+2025-09-11T13:44:21: 
+2025-09-11T13:44:21:   377 private async createTicket(emailData: EmailMessage, department: DepartmentConfig): Promise<void> {
+2025-09-11T13:44:21:   378   const ticketNumber = await this.generateTicketNumber();
+2025-09-11T13:44:21:   379   
+2025-09-11T13:44:21: → 380   await this.db.helpdeskTicket.create({
+2025-09-11T13:44:21:           data: {
+2025-09-11T13:44:21:             numero: 7,
+2025-09-11T13:44:21:             assunto: "Outro teste",
+2025-09-11T13:44:21:             descricao: "mais um teste de abetura de chamado automatica\n\n-- \nAtenciosamente,\nRonaldo davi\n\nCTO - chief technical officer - ProtectIT,\nTecnologias Corporativas & software livre,\n*Consultor* *Dell Experts*\nFortaleza-CE\n*Fone:/ Whatsapp 85998490991(Tim) *\n",
+2025-09-11T13:44:21:             prioridade: "MEDIA",
+2025-09-11T13:44:21:             status: "ABERTO",
+2025-09-11T13:44:21:             solicitanteNome: "Ronaldo davi - ProtectIT",
+2025-09-11T13:44:21:             solicitanteEmail: "ronaldodavi@protectit.com.br",
+2025-09-11T13:44:21:             departamentoId: "cmfee6p230001o0of71xpsksd",
+2025-09-11T13:44:21:             emailMessageId: "<CALdD9fJQt0Efv_SANPiE0v2ZDwxTkEC=U6bvo-S8U1Zb6HZ6gw@mail.gmail.com>",
+2025-09-11T13:44:21:             conteudoOriginal: "{\"headers\":{\"from\":\"\\\"Ronaldo davi - ProtectIT\\\" <ronaldodavi@protectit.com.br>\",\"to\":\"suporteti@garapasystem.com\",\"subject\":\"Outro teste\",\"date\":\"2025-09-11T15:27:59.000Z\"},\"text\":\"mais um teste de abetura de chamado automatica\\n\\n-- \\nAtenciosamente,\\nRonaldo davi\\n\\nCTO - chief technical officer - ProtectIT,\\nTecnologias Corporativas & software livre,\\n*Consultor* *Dell Experts*\\nFortaleza-CE\\n*Fone:/ Whatsapp 85998490991(Tim) *\\n\",\"html\":\"<div dir=\\\"ltr\\\"><div>mais um teste de abetura de chamado automatica</div><div><br></div><span class=\\\"gmail_signature_prefix\\\">-- </span><br><div dir=\\\"ltr\\\" class=\\\"gmail_signature\\\" data-smartmail=\\\"gmail_signature\\\"><div dir=\\\"ltr\\\"><div><div dir=\\\"ltr\\\"><div dir=\\\"ltr\\\"><div dir=\\\"ltr\\\">Atenciosamente,<br>Ronaldo davi<br><br>CTO - chief technical officer - ProtectIT,<br>Tecnologias Corporativas &amp; software livre,<div><b>Consultor</b> <font color=\\\"#333333\\\" face=\\\"arial, helvetica, freesans, sans-serif\\\"><span style=\\\"font-size:15px;line-height:21.9px\\\"><b>Dell Experts</b></span></font><br>Fortaleza-CE<br><b>Fone:/ Whatsapp 859<font size=\\\"2\\\">98490991(Tim)</font> </b></div><div><br></div><div><br></div><div><br><div></div><div><br></div></div></div></div></div></div></div></div></div>\\n\"}",
+2025-09-11T13:44:21:             ~~~~~~~~~~~~~~~~
+2025-09-11T13:44:21:             criadoEm: new Date("2025-09-11T16:44:21.852Z"),
+2025-09-11T13:44:21:             atualizadoEm: new Date("2025-09-11T16:44:21.852Z"),
+2025-09-11T13:44:21:         ?   id?: String,
+2025-09-11T13:44:21:         ?   solicitanteTelefone?: String | Null,
+2025-09-11T13:44:21:         ?   emailUid?: Int | Null,
+2025-09-11T13:44:21:         ?   dataAbertura?: DateTime,
+2025-09-11T13:44:21:         ?   dataFechamento?: DateTime | Null,
+2025-09-11T13:44:21:         ?   dataUltimaResposta?: DateTime | Null,
+2025-09-11T13:44:21:         ?   createdAt?: DateTime,
+2025-09-11T13:44:21:         ?   updatedAt?: DateTime,
+2025-09-11T13:44:21:         ?   clienteId?: String | Null,
+2025-09-11T13:44:21:         ?   responsavelId?: String | Null,
+2025-09-11T13:44:21:         ?   mensagens?: HelpdeskMensagemUncheckedCreateNestedManyWithoutTicketInput
+2025-09-11T13:44:21:           }
+2025-09-11T13:44:21:         })
+2025-09-11T13:44:21: 
+2025-09-11T13:44:21: Unknown argument `conteudoOriginal`. Available options are marked with ?.
+2025-09-11T13:44:21:     at throwValidationException (/app/node_modules/@prisma/client/src/runtime/core/errorRendering/throwValidationException.ts:45:9)
+2025-09-11T13:44:21:     at ei.handleRequestError (/app/node_modules/@prisma/client/src/runtime/RequestHandler.ts:202:7)
+2025-09-11T13:44:21:     at ei.handleAndLogRequestError (/app/node_modules/@prisma/client/src/runtime/RequestHandler.ts:174:12)
+2025-09-11T13:44:21:     at ei.request (/app/node_modules/@prisma/client/src/runtime/RequestHandler.ts:143:12)
+2025-09-11T13:44:21:     at async a (/app/node_modules/@prisma/client/src/runtime/getPrismaClient.ts:833:24)
+2025-09-11T13:44:21:     at async ConsolidatedHelpdeskWorker.createTicket (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:380:5)
+2025-09-11T13:44:21:     at async ConsolidatedHelpdeskWorker.processEmail (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:364:7)
+2025-09-11T13:44:21:     at async ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:223:11)
+2025-09-11T13:44:21:     at async ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:178:11)
+2025-09-11T13:44:21:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:117:9) {
+2025-09-11T13:44:21:   clientVersion: '6.15.0'
+2025-09-11T13:44:21: }
+2025-09-11T13:44:21: Erro ao processar email 2: PrismaClientValidationError: 
+2025-09-11T13:44:21: Invalid `this.db.helpdeskTicket.create()` invocation in
+2025-09-11T13:44:21: /app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:380:34
+2025-09-11T13:44:21: 
+2025-09-11T13:44:21:   377 private async createTicket(emailData: EmailMessage, department: DepartmentConfig): Promise<void> {
+2025-09-11T13:44:21:   378   const ticketNumber = await this.generateTicketNumber();
+2025-09-11T13:44:21:   379   
+2025-09-11T13:44:21: → 380   await this.db.helpdeskTicket.create({
+2025-09-11T13:44:21:           data: {
+2025-09-11T13:44:21:             numero: 7,
+2025-09-11T13:44:21:             assunto: "Outro teste",
+2025-09-11T13:44:21:             descricao: "mais um teste de abetura de chamado automatica\n\n-- \nAtenciosamente,\nRonaldo davi\n\nCTO - chief technical officer - ProtectIT,\nTecnologias Corporativas & software livre,\n*Consultor* *Dell Experts*\nFortaleza-CE\n*Fone:/ Whatsapp 85998490991(Tim) *\n",
+2025-09-11T13:44:21:             prioridade: "MEDIA",
+2025-09-11T13:44:21:             status: "ABERTO",
+2025-09-11T13:44:21:             solicitanteNome: "Ronaldo davi - ProtectIT",
+2025-09-11T13:44:21:             solicitanteEmail: "ronaldodavi@protectit.com.br",
+2025-09-11T13:44:21:             departamentoId: "cmfee6p230001o0of71xpsksd",
+2025-09-11T13:44:21:             emailMessageId: "<CALdD9fJQt0Efv_SANPiE0v2ZDwxTkEC=U6bvo-S8U1Zb6HZ6gw@mail.gmail.com>",
+2025-09-11T13:44:21:             conteudoOriginal: "{\"headers\":{\"from\":\"\\\"Ronaldo davi - ProtectIT\\\" <ronaldodavi@protectit.com.br>\",\"to\":\"suporteti@garapasystem.com\",\"subject\":\"Outro teste\",\"date\":\"2025-09-11T15:27:59.000Z\"},\"text\":\"mais um teste de abetura de chamado automatica\\n\\n-- \\nAtenciosamente,\\nRonaldo davi\\n\\nCTO - chief technical officer - ProtectIT,\\nTecnologias Corporativas & software livre,\\n*Consultor* *Dell Experts*\\nFortaleza-CE\\n*Fone:/ Whatsapp 85998490991(Tim) *\\n\",\"html\":\"<div dir=\\\"ltr\\\"><div>mais um teste de abetura de chamado automatica</div><div><br></div><span class=\\\"gmail_signature_prefix\\\">-- </span><br><div dir=\\\"ltr\\\" class=\\\"gmail_signature\\\" data-smartmail=\\\"gmail_signature\\\"><div dir=\\\"ltr\\\"><div><div dir=\\\"ltr\\\"><div dir=\\\"ltr\\\"><div dir=\\\"ltr\\\">Atenciosamente,<br>Ronaldo davi<br><br>CTO - chief technical officer - ProtectIT,<br>Tecnologias Corporativas &amp; software livre,<div><b>Consultor</b> <font color=\\\"#333333\\\" face=\\\"arial, helvetica, freesans, sans-serif\\\"><span style=\\\"font-size:15px;line-height:21.9px\\\"><b>Dell Experts</b></span></font><br>Fortaleza-CE<br><b>Fone:/ Whatsapp 859<font size=\\\"2\\\">98490991(Tim)</font> </b></div><div><br></div><div><br></div><div><br><div></div><div><br></div></div></div></div></div></div></div></div></div>\\n\"}",
+2025-09-11T13:44:21:             ~~~~~~~~~~~~~~~~
+2025-09-11T13:44:21:             criadoEm: new Date("2025-09-11T16:44:21.852Z"),
+2025-09-11T13:44:21:             atualizadoEm: new Date("2025-09-11T16:44:21.852Z"),
+2025-09-11T13:44:21:         ?   id?: String,
+2025-09-11T13:44:21:         ?   solicitanteTelefone?: String | Null,
+2025-09-11T13:44:21:         ?   emailUid?: Int | Null,
+2025-09-11T13:44:21:         ?   dataAbertura?: DateTime,
+2025-09-11T13:44:21:         ?   dataFechamento?: DateTime | Null,
+2025-09-11T13:44:21:         ?   dataUltimaResposta?: DateTime | Null,
+2025-09-11T13:44:21:         ?   createdAt?: DateTime,
+2025-09-11T13:44:21:         ?   updatedAt?: DateTime,
+2025-09-11T13:44:21:         ?   clienteId?: String | Null,
+2025-09-11T13:44:21:         ?   responsavelId?: String | Null,
+2025-09-11T13:44:21:         ?   mensagens?: HelpdeskMensagemUncheckedCreateNestedManyWithoutTicketInput
+2025-09-11T13:44:21:           }
+2025-09-11T13:44:21:         })
+2025-09-11T13:44:21: 
+2025-09-11T13:44:21: Unknown argument `conteudoOriginal`. Available options are marked with ?.
+2025-09-11T13:44:21:     at throwValidationException (/app/node_modules/@prisma/client/src/runtime/core/errorRendering/throwValidationException.ts:45:9)
+2025-09-11T13:44:21:     at ei.handleRequestError (/app/node_modules/@prisma/client/src/runtime/RequestHandler.ts:202:7)
+2025-09-11T13:44:21:     at ei.handleAndLogRequestError (/app/node_modules/@prisma/client/src/runtime/RequestHandler.ts:174:12)
+2025-09-11T13:44:21:     at ei.request (/app/node_modules/@prisma/client/src/runtime/RequestHandler.ts:143:12)
+2025-09-11T13:44:21:     at async a (/app/node_modules/@prisma/client/src/runtime/getPrismaClient.ts:833:24)
+2025-09-11T13:44:21:     at async ConsolidatedHelpdeskWorker.createTicket (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:380:5)
+2025-09-11T13:44:21:     at async ConsolidatedHelpdeskWorker.processEmail (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:364:7)
+2025-09-11T13:44:21:     at async ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:223:11)
+2025-09-11T13:44:21:     at async ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:178:11)
+2025-09-11T13:44:21:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:117:9) {
+2025-09-11T13:44:21:   clientVersion: '6.15.0'
+2025-09-11T13:44:21: }

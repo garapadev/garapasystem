@@ -1,0 +1,801 @@
+2025-09-11T10:01:02:  ⨯ uncaughtException: Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
+2025-09-11T10:01:02:     at <unknown> (Error: listen EADDRINUSE: address already in use 0.0.0.0:3000) {
+2025-09-11T10:01:02:   code: 'EADDRINUSE',
+2025-09-11T10:01:02:   errno: -98,
+2025-09-11T10:01:02:   syscall: 'listen',
+2025-09-11T10:01:02:   address: '0.0.0.0',
+2025-09-11T10:01:02:   port: 3000
+2025-09-11T10:01:02: }
+2025-09-11T10:01:02:  ⨯ uncaughtException:  Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
+2025-09-11T10:01:02:     at <unknown> (Error: listen EADDRINUSE: address already in use 0.0.0.0:3000) {
+2025-09-11T10:01:02:   code: 'EADDRINUSE',
+2025-09-11T10:01:02:   errno: -98,
+2025-09-11T10:01:02:   syscall: 'listen',
+2025-09-11T10:01:02:   address: '0.0.0.0',
+2025-09-11T10:01:02:   port: 3000
+2025-09-11T10:01:02: }
+2025-09-11T10:02:41:  ⨯ uncaughtException: Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
+2025-09-11T10:02:41:     at <unknown> (Error: listen EADDRINUSE: address already in use 0.0.0.0:3000) {
+2025-09-11T10:02:41:   code: 'EADDRINUSE',
+2025-09-11T10:02:41:   errno: -98,
+2025-09-11T10:02:41:   syscall: 'listen',
+2025-09-11T10:02:41:   address: '0.0.0.0',
+2025-09-11T10:02:41:   port: 3000
+2025-09-11T10:02:41: }
+2025-09-11T10:02:41:  ⨯ uncaughtException:  Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
+2025-09-11T10:02:41:     at <unknown> (Error: listen EADDRINUSE: address already in use 0.0.0.0:3000) {
+2025-09-11T10:02:41:   code: 'EADDRINUSE',
+2025-09-11T10:02:41:   errno: -98,
+2025-09-11T10:02:41:   syscall: 'listen',
+2025-09-11T10:02:41:   address: '0.0.0.0',
+2025-09-11T10:02:41:   port: 3000
+2025-09-11T10:02:41: }
+2025-09-11T10:04:09:  ⨯ uncaughtException: Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
+2025-09-11T10:04:09:     at <unknown> (Error: listen EADDRINUSE: address already in use 0.0.0.0:3000) {
+2025-09-11T10:04:09:   code: 'EADDRINUSE',
+2025-09-11T10:04:09:   errno: -98,
+2025-09-11T10:04:09:   syscall: 'listen',
+2025-09-11T10:04:09:   address: '0.0.0.0',
+2025-09-11T10:04:09:   port: 3000
+2025-09-11T10:04:09: }
+2025-09-11T10:04:09:  ⨯ uncaughtException:  Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
+2025-09-11T10:04:09:     at <unknown> (Error: listen EADDRINUSE: address already in use 0.0.0.0:3000) {
+2025-09-11T10:04:09:   code: 'EADDRINUSE',
+2025-09-11T10:04:09:   errno: -98,
+2025-09-11T10:04:09:   syscall: 'listen',
+2025-09-11T10:04:09:   address: '0.0.0.0',
+2025-09-11T10:04:09:   port: 3000
+2025-09-11T10:04:09: }
+2025-09-11T10:09:22:  ⨯ uncaughtException: Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
+2025-09-11T10:09:22:     at <unknown> (Error: listen EADDRINUSE: address already in use 0.0.0.0:3000) {
+2025-09-11T10:09:22:   code: 'EADDRINUSE',
+2025-09-11T10:09:22:   errno: -98,
+2025-09-11T10:09:22:   syscall: 'listen',
+2025-09-11T10:09:22:   address: '0.0.0.0',
+2025-09-11T10:09:22:   port: 3000
+2025-09-11T10:09:22: }
+2025-09-11T10:09:22:  ⨯ uncaughtException:  Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
+2025-09-11T10:09:22:     at <unknown> (Error: listen EADDRINUSE: address already in use 0.0.0.0:3000) {
+2025-09-11T10:09:22:   code: 'EADDRINUSE',
+2025-09-11T10:09:22:   errno: -98,
+2025-09-11T10:09:22:   syscall: 'listen',
+2025-09-11T10:09:22:   address: '0.0.0.0',
+2025-09-11T10:09:22:   port: 3000
+2025-09-11T10:09:22: }
+2025-09-11T11:01:41:  ⨯ uncaughtException: Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
+2025-09-11T11:01:41:     at <unknown> (Error: listen EADDRINUSE: address already in use 0.0.0.0:3000) {
+2025-09-11T11:01:41:   code: 'EADDRINUSE',
+2025-09-11T11:01:41:   errno: -98,
+2025-09-11T11:01:41:   syscall: 'listen',
+2025-09-11T11:01:41:   address: '0.0.0.0',
+2025-09-11T11:01:41:   port: 3000
+2025-09-11T11:01:41: }
+2025-09-11T11:01:41:  ⨯ uncaughtException:  Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
+2025-09-11T11:01:41:     at <unknown> (Error: listen EADDRINUSE: address already in use 0.0.0.0:3000) {
+2025-09-11T11:01:41:   code: 'EADDRINUSE',
+2025-09-11T11:01:41:   errno: -98,
+2025-09-11T11:01:41:   syscall: 'listen',
+2025-09-11T11:01:41:   address: '0.0.0.0',
+2025-09-11T11:01:41:   port: 3000
+2025-09-11T11:01:41: }
+2025-09-11T11:06:23:  ⨯ SyntaxError: Unexpected end of JSON input
+2025-09-11T11:06:23:     at JSON.parse (<anonymous>)
+2025-09-11T11:06:23:  ⨯ SyntaxError: Unexpected end of JSON input
+2025-09-11T11:06:23:     at JSON.parse (<anonymous>)
+2025-09-11T11:09:09:  ⨯ SyntaxError: Unexpected end of JSON input
+2025-09-11T11:09:09:     at JSON.parse (<anonymous>)
+2025-09-11T11:09:09:  ⨯ SyntaxError: Unexpected end of JSON input
+2025-09-11T11:09:09:     at JSON.parse (<anonymous>)
+2025-09-11T11:11:03: Erro ao listar tickets: TypeError: Cannot read properties of null (reading 'perfil')
+2025-09-11T11:11:03:     at HelpdeskMiddleware.isHelpdeskAdmin (src/lib/helpdesk/helpdesk-middleware.ts:207:40)
+2025-09-11T11:11:03:     at GET (src/app/api/helpdesk/tickets/route.ts:129:41)
+2025-09-11T11:11:03:   205 |    */
+2025-09-11T11:11:03:   206 |   static isHelpdeskAdmin(colaborador: any): boolean {
+2025-09-11T11:11:03: > 207 |     const userPermissions = colaborador.perfil?.permissoes.map((p: any) => p.permissao?.nome).filter(Boolean) || [];
+2025-09-11T11:11:03:       |                                        ^
+2025-09-11T11:11:03:   208 |     
+2025-09-11T11:11:03:   209 |     return (
+2025-09-11T11:11:03:   210 |       userPermissions.includes('admin') ||
+2025-09-11T11:20:24: Error: Route "/api/perfis/[id]" used `params.id`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+2025-09-11T11:20:24:     at GET (src/app/api/perfis/[id]/route.ts:10:26)
+2025-09-11T11:20:24:    8 |   try {
+2025-09-11T11:20:24:    9 |     const perfil = await db.perfil.findUnique({
+2025-09-11T11:20:24: > 10 |       where: { id: params.id },
+2025-09-11T11:20:24:      |                          ^
+2025-09-11T11:20:24:   11 |       include: {
+2025-09-11T11:20:24:   12 |         permissoes: {
+2025-09-11T11:20:24:   13 |           include: {
+2025-09-11T11:22:05: Error: Route "/api/colaboradores/[id]" used `params.id`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+2025-09-11T11:22:05:     at GET (src/app/api/colaboradores/[id]/route.ts:10:26)
+2025-09-11T11:22:05:    8 |   try {
+2025-09-11T11:22:05:    9 |     const colaborador = await db.colaborador.findUnique({
+2025-09-11T11:22:05: > 10 |       where: { id: params.id },
+2025-09-11T11:22:05:      |                          ^
+2025-09-11T11:22:05:   11 |       include: {
+2025-09-11T11:22:05:   12 |         perfil: {
+2025-09-11T11:22:05:   13 |           select: {
+2025-09-11T11:37:21: Error: Route "/api/colaboradores/[id]" used `params.id`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+2025-09-11T11:37:21:     at GET (src/app/api/colaboradores/[id]/route.ts:10:26)
+2025-09-11T11:37:21:    8 |   try {
+2025-09-11T11:37:21:    9 |     const colaborador = await db.colaborador.findUnique({
+2025-09-11T11:37:21: > 10 |       where: { id: params.id },
+2025-09-11T11:37:21:      |                          ^
+2025-09-11T11:37:21:   11 |       include: {
+2025-09-11T11:37:21:   12 |         perfil: {
+2025-09-11T11:37:21:   13 |           select: {
+2025-09-11T11:37:32: Error: Route "/api/colaboradores/[id]" used `params.id`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+2025-09-11T11:37:32:     at PUT (src/app/api/colaboradores/[id]/route.ts:70:26)
+2025-09-11T11:37:32:   68 |     // Verificar se colaborador existe
+2025-09-11T11:37:32:   69 |     const existingColaborador = await db.colaborador.findUnique({
+2025-09-11T11:37:32: > 70 |       where: { id: params.id }
+2025-09-11T11:37:32:      |                          ^
+2025-09-11T11:37:32:   71 |     });
+2025-09-11T11:37:32:   72 |
+2025-09-11T11:37:32:   73 |     if (!existingColaborador) {
+2025-09-11T11:37:32: Error: Route "/api/colaboradores/[id]" used `params.id`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+2025-09-11T11:37:32:     at PUT (src/app/api/colaboradores/[id]/route.ts:137:26)
+2025-09-11T11:37:32:   135 |     // Atualizar colaborador
+2025-09-11T11:37:32:   136 |     const colaborador = await db.colaborador.update({
+2025-09-11T11:37:32: > 137 |       where: { id: params.id },
+2025-09-11T11:37:32:       |                          ^
+2025-09-11T11:37:32:   138 |       data: {
+2025-09-11T11:37:32:   139 |         nome: body.nome,
+2025-09-11T11:37:32:   140 |         email: body.email,
+2025-09-11T12:21:46:  ⨯ Failed to generate static paths for /api/auth/[...nextauth]:
+2025-09-11T12:21:46: TypeError: Cannot read properties of undefined (reading 'call')
+2025-09-11T12:21:46:     at __webpack_require__ (.next/server/webpack-runtime.js:33:43)
+2025-09-11T12:21:46:     at eval (webpack-internal:///(rsc)/./src/app/api/auth/[...nextauth]/route.ts:6:67)
+2025-09-11T12:21:46:     at <unknown> (rsc)/./src/app/api/auth/[...nextauth]/route.ts (/app/.next/server/app/api/auth/[...nextauth]/route.js:43:1)
+2025-09-11T12:21:46:     at __webpack_require__ (.next/server/webpack-runtime.js:33:43)
+2025-09-11T12:21:46:     at __webpack_require__ (.next/server/webpack-runtime.js:33:43)
+2025-09-11T12:21:46:     at __webpack_exec__ (.next/server/app/api/auth/[...nextauth]/route.js:250:39)
+2025-09-11T12:21:46:     at <unknown> (.next/server/app/api/auth/[...nextauth]/route.js:251:449)
+2025-09-11T12:21:46:     at __webpack_require__.X (.next/server/webpack-runtime.js:163:21) {
+2025-09-11T12:21:46:   type: 'TypeError'
+2025-09-11T12:21:46: }
+2025-09-11T12:21:46:  ⨯ Failed to generate static paths for /api/auth/[...nextauth]:
+2025-09-11T12:21:46: TypeError: Cannot read properties of undefined (reading 'call')
+2025-09-11T12:21:46:     at __webpack_require__ (.next/server/webpack-runtime.js:33:43)
+2025-09-11T12:21:46:     at eval (webpack-internal:///(rsc)/./src/app/api/auth/[...nextauth]/route.ts:6:67)
+2025-09-11T12:21:46:     at <unknown> (rsc)/./src/app/api/auth/[...nextauth]/route.ts (/app/.next/server/app/api/auth/[...nextauth]/route.js:43:1)
+2025-09-11T12:21:46:     at __webpack_require__ (.next/server/webpack-runtime.js:33:43)
+2025-09-11T12:21:46:     at __webpack_require__ (.next/server/webpack-runtime.js:33:43)
+2025-09-11T12:21:46:     at __webpack_exec__ (.next/server/app/api/auth/[...nextauth]/route.js:250:39)
+2025-09-11T12:21:46:     at <unknown> (.next/server/app/api/auth/[...nextauth]/route.js:251:449)
+2025-09-11T12:21:46:     at __webpack_require__.X (.next/server/webpack-runtime.js:163:21) {
+2025-09-11T12:21:46:   type: 'TypeError'
+2025-09-11T12:21:46: }
+2025-09-11T12:28:19:  ⨯ [TypeError: Cannot read properties of undefined (reading 'clientModules')] {
+2025-09-11T12:28:19:   page: '/'
+2025-09-11T12:28:19: }
+2025-09-11T12:30:41:  ⨯ Failed to generate static paths for /api/auth/[...nextauth]:
+2025-09-11T12:30:41: [Error: Cannot find module './vendor-chunks/next-auth.js'
+2025-09-11T12:30:41: Require stack:
+2025-09-11T12:30:41: - /app/.next/server/webpack-runtime.js
+2025-09-11T12:30:41: - /app/.next/server/app/api/auth/[...nextauth]/route.js
+2025-09-11T12:30:41: - /app/node_modules/next/dist/server/require.js
+2025-09-11T12:30:41: - /app/node_modules/next/dist/server/load-components.js
+2025-09-11T12:30:41: - /app/node_modules/next/dist/build/utils.js
+2025-09-11T12:30:41: - /app/node_modules/next/dist/server/dev/static-paths-worker.js
+2025-09-11T12:30:41: - /app/node_modules/next/dist/compiled/jest-worker/processChild.js] {
+2025-09-11T12:30:41:   type: 'Error',
+2025-09-11T12:30:41:   code: 'MODULE_NOT_FOUND',
+2025-09-11T12:30:41:   requireStack: [Array]
+2025-09-11T12:30:41: }
+2025-09-11T12:30:41:  ⨯ Failed to generate static paths for /api/auth/[...nextauth]:
+2025-09-11T12:30:41: [Error: Cannot find module './vendor-chunks/next-auth.js'
+2025-09-11T12:30:41: Require stack:
+2025-09-11T12:30:41: - /app/.next/server/webpack-runtime.js
+2025-09-11T12:30:41: - /app/.next/server/app/api/auth/[...nextauth]/route.js
+2025-09-11T12:30:41: - /app/node_modules/next/dist/server/require.js
+2025-09-11T12:30:41: - /app/node_modules/next/dist/server/load-components.js
+2025-09-11T12:30:41: - /app/node_modules/next/dist/build/utils.js
+2025-09-11T12:30:41: - /app/node_modules/next/dist/server/dev/static-paths-worker.js
+2025-09-11T12:30:41: - /app/node_modules/next/dist/compiled/jest-worker/processChild.js] {
+2025-09-11T12:30:41:   type: 'Error',
+2025-09-11T12:30:41:   code: 'MODULE_NOT_FOUND',
+2025-09-11T12:30:41:   requireStack: [Array]
+2025-09-11T12:30:41: }
+2025-09-11T12:36:11:  ⨯ Error: ENOENT: no such file or directory, open '/app/.next/server/vendor-chunks/@swc.js'
+2025-09-11T12:36:11:     at __webpack_require__.f.require (.next/server/webpack-runtime.js:208:28)
+2025-09-11T12:36:11:     at <unknown> (.next/server/webpack-runtime.js:116:40)
+2025-09-11T12:36:11:     at Array.reduce (<anonymous>)
+2025-09-11T12:36:11:     at __webpack_require__.e (.next/server/webpack-runtime.js:115:67)
+2025-09-11T12:36:11:     at Array.map (<anonymous>)
+2025-09-11T12:36:11:     at __webpack_require__.X (.next/server/webpack-runtime.js:167:22)
+2025-09-11T12:36:11:     at <unknown> (.next/server/app/_not-found/page.js:687:47)
+2025-09-11T12:36:11:     at Object.<anonymous> (.next/server/app/_not-found/page.js:690:3) {
+2025-09-11T12:36:11:   errno: -2,
+2025-09-11T12:36:11:   code: 'ENOENT',
+2025-09-11T12:36:11:   syscall: 'open',
+2025-09-11T12:36:11:   path: '/app/.next/server/vendor-chunks/@swc.js'
+2025-09-11T12:36:11: }
+2025-09-11T13:00:06: Error: Route "/api/emails/[id]" used `params.id`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+2025-09-11T13:00:06:     at GET (src/app/api/emails/[id]/route.ts:21:27)
+2025-09-11T13:00:06:   19 |     }
+2025-09-11T13:00:06:   20 |
+2025-09-11T13:00:06: > 21 |     const emailId = params.id;
+2025-09-11T13:00:06:      |                           ^
+2025-09-11T13:00:06:   22 |
+2025-09-11T13:00:06:   23 |     // Buscar colaborador pelo email da sessão
+2025-09-11T13:00:06:   24 |     const colaborador = await db.colaborador.findFirst({
+2025-09-11T13:00:28: Error: Route "/api/emails/[id]" used `params.id`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+2025-09-11T13:00:28:     at GET (src/app/api/emails/[id]/route.ts:21:27)
+2025-09-11T13:00:28:   19 |     }
+2025-09-11T13:00:28:   20 |
+2025-09-11T13:00:28: > 21 |     const emailId = params.id;
+2025-09-11T13:00:28:      |                           ^
+2025-09-11T13:00:28:   22 |
+2025-09-11T13:00:28:   23 |     // Buscar colaborador pelo email da sessão
+2025-09-11T13:00:28:   24 |     const colaborador = await db.colaborador.findFirst({
+2025-09-11T13:00:31: Error: Route "/api/emails/[id]" used `params.id`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+2025-09-11T13:00:31:     at GET (src/app/api/emails/[id]/route.ts:21:27)
+2025-09-11T13:00:31:   19 |     }
+2025-09-11T13:00:31:   20 |
+2025-09-11T13:00:31: > 21 |     const emailId = params.id;
+2025-09-11T13:00:31:      |                           ^
+2025-09-11T13:00:31:   22 |
+2025-09-11T13:00:31:   23 |     // Buscar colaborador pelo email da sessão
+2025-09-11T13:00:31:   24 |     const colaborador = await db.colaborador.findFirst({
+2025-09-11T13:01:41:  ⨯ uncaughtException: [Error: Socket timeout] {
+2025-09-11T13:01:41:   code: 'ETIMEOUT',
+2025-09-11T13:01:41:   _connId: 'tvzoaka8xawl35oiyf07'
+2025-09-11T13:01:41: }
+2025-09-11T13:01:41:  ⨯ uncaughtException:  [Error: Socket timeout] {
+2025-09-11T13:01:41:   code: 'ETIMEOUT',
+2025-09-11T13:01:41:   _connId: 'tvzoaka8xawl35oiyf07'
+2025-09-11T13:01:41: }
+2025-09-11T13:01:41: Erro ao buscar conteúdo do email <a2e5f279-0ae6-e101-7f7a-585b5d445992@alltomatos.com.br>: [Error: Connection not available] { code: 'NoConnection' }
+2025-09-11T13:01:41: Erro ao sincronizar emails da pasta INBOX: [Error: Connection not available] { code: 'NoConnection' }
+2025-09-11T13:01:41: Erro na sincronização: [Error: Connection not available] { code: 'NoConnection' }
+2025-09-11T13:08:23:  ⨯ Failed to generate static paths for /api/auth/[...nextauth]:
+2025-09-11T13:08:23: [Error: Cannot find module './vendor-chunks/next-auth.js'
+2025-09-11T13:08:23: Require stack:
+2025-09-11T13:08:23: - /app/.next/server/webpack-runtime.js
+2025-09-11T13:08:23: - /app/.next/server/app/api/auth/[...nextauth]/route.js
+2025-09-11T13:08:23: - /app/node_modules/next/dist/server/require.js
+2025-09-11T13:08:23: - /app/node_modules/next/dist/server/load-components.js
+2025-09-11T13:08:23: - /app/node_modules/next/dist/build/utils.js
+2025-09-11T13:08:23: - /app/node_modules/next/dist/server/dev/static-paths-worker.js
+2025-09-11T13:08:23: - /app/node_modules/next/dist/compiled/jest-worker/processChild.js] {
+2025-09-11T13:08:23:   type: 'Error',
+2025-09-11T13:08:23:   code: 'MODULE_NOT_FOUND',
+2025-09-11T13:08:23:   requireStack: [Array]
+2025-09-11T13:08:23: }
+2025-09-11T13:08:23:  ⨯ Failed to generate static paths for /api/auth/[...nextauth]:
+2025-09-11T13:08:23: [Error: Cannot find module './vendor-chunks/next-auth.js'
+2025-09-11T13:08:23: Require stack:
+2025-09-11T13:08:23: - /app/.next/server/webpack-runtime.js
+2025-09-11T13:08:23: - /app/.next/server/app/api/auth/[...nextauth]/route.js
+2025-09-11T13:08:23: - /app/node_modules/next/dist/server/require.js
+2025-09-11T13:08:23: - /app/node_modules/next/dist/server/load-components.js
+2025-09-11T13:08:23: - /app/node_modules/next/dist/build/utils.js
+2025-09-11T13:08:23: - /app/node_modules/next/dist/server/dev/static-paths-worker.js
+2025-09-11T13:08:23: - /app/node_modules/next/dist/compiled/jest-worker/processChild.js] {
+2025-09-11T13:08:23:   type: 'Error',
+2025-09-11T13:08:23:   code: 'MODULE_NOT_FOUND',
+2025-09-11T13:08:23:   requireStack: [Array]
+2025-09-11T13:08:23: }
+2025-09-11T13:08:24:  ⨯ Error: Cannot find module './4243.js'
+2025-09-11T13:08:24: Require stack:
+2025-09-11T13:08:24: - /app/.next/server/webpack-runtime.js
+2025-09-11T13:08:24: - /app/.next/server/app/api/email-sync/consistency/route.js
+2025-09-11T13:08:24: - /app/node_modules/next/dist/server/require.js
+2025-09-11T13:08:24: - /app/node_modules/next/dist/server/load-components.js
+2025-09-11T13:08:24: - /app/node_modules/next/dist/build/utils.js
+2025-09-11T13:08:24: - /app/node_modules/next/dist/build/swc/options.js
+2025-09-11T13:08:24: - /app/node_modules/next/dist/build/swc/index.js
+2025-09-11T13:08:24: - /app/node_modules/next/dist/build/next-config-ts/transpile-config.js
+2025-09-11T13:08:24: - /app/node_modules/next/dist/server/config.js
+2025-09-11T13:08:24: - /app/node_modules/next/dist/server/next.js
+2025-09-11T13:08:24: - /app/server.ts
+2025-09-11T13:08:24:     at __webpack_require__.f.require (.next/server/webpack-runtime.js:208:28)
+2025-09-11T13:08:24:     at <unknown> (.next/server/webpack-runtime.js:116:40)
+2025-09-11T13:08:24:     at Array.reduce (<anonymous>)
+2025-09-11T13:08:24:     at __webpack_require__.e (.next/server/webpack-runtime.js:115:67)
+2025-09-11T13:08:24:     at Array.map (<anonymous>)
+2025-09-11T13:08:24:     at __webpack_require__.X (.next/server/webpack-runtime.js:167:22)
+2025-09-11T13:08:24:     at <unknown> (.next/server/app/api/email-sync/consistency/route.js:1:11108)
+2025-09-11T13:08:24:     at Object.<anonymous> (.next/server/app/api/email-sync/consistency/route.js:1:11170) {
+2025-09-11T13:08:24:   code: 'MODULE_NOT_FOUND',
+2025-09-11T13:08:24:   requireStack: [Array],
+2025-09-11T13:08:24:   page: '/api/email-sync/consistency'
+2025-09-11T13:08:24: }
+2025-09-11T13:54:54:  ⚠ ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T13:54:54: Attempted import error: 'auth' is not exported from '@/lib/auth' (imported as 'auth').
+2025-09-11T13:54:54: 
+2025-09-11T13:54:54: Import trace for requested module:
+2025-09-11T13:54:54: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T13:54:54: 
+2025-09-11T13:54:54: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T13:54:54: Attempted import error: 'auth' is not exported from '@/lib/auth' (imported as 'auth').
+2025-09-11T13:54:54: 
+2025-09-11T13:54:54: Import trace for requested module:
+2025-09-11T13:54:54: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T13:54:54: 
+2025-09-11T13:54:54: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T13:54:54: Attempted import error: 'auth' is not exported from '@/lib/auth' (imported as 'auth').
+2025-09-11T13:54:54: 
+2025-09-11T13:54:54: Import trace for requested module:
+2025-09-11T13:54:54: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T13:54:54: 
+2025-09-11T13:54:54: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T13:54:54: Attempted import error: 'auth' is not exported from '@/lib/auth' (imported as 'auth').
+2025-09-11T13:54:54: 
+2025-09-11T13:54:54: Import trace for requested module:
+2025-09-11T13:54:54: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T13:54:55: Erro ao buscar departamentos: TypeError: (0 , _lib_auth__WEBPACK_IMPORTED_MODULE_2__.auth) is not a function
+2025-09-11T13:54:55:     at GET (src/app/api/helpdesk/departments/route.ts:32:30)
+2025-09-11T13:54:55:   30 | export async function GET(request: NextRequest) {
+2025-09-11T13:54:55:   31 |   try {
+2025-09-11T13:54:55: > 32 |     const session = await auth();
+2025-09-11T13:54:55:      |                              ^
+2025-09-11T13:54:55:   33 |     if (!session?.user) {
+2025-09-11T13:54:55:   34 |       return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+2025-09-11T13:54:55:   35 |     }
+2025-09-11T13:54:56:  ⚠ ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T13:54:56: Attempted import error: 'auth' is not exported from '@/lib/auth' (imported as 'auth').
+2025-09-11T13:54:56: 
+2025-09-11T13:54:56: Import trace for requested module:
+2025-09-11T13:54:56: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T13:54:56: 
+2025-09-11T13:54:56: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T13:54:56: Attempted import error: 'auth' is not exported from '@/lib/auth' (imported as 'auth').
+2025-09-11T13:54:56: 
+2025-09-11T13:54:56: Import trace for requested module:
+2025-09-11T13:54:56: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T13:54:56: 
+2025-09-11T13:54:56: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T13:54:56: Attempted import error: 'auth' is not exported from '@/lib/auth' (imported as 'auth').
+2025-09-11T13:54:56: 
+2025-09-11T13:54:56: Import trace for requested module:
+2025-09-11T13:54:56: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T13:54:56: 
+2025-09-11T13:54:56: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T13:54:56: Attempted import error: 'auth' is not exported from '@/lib/auth' (imported as 'auth').
+2025-09-11T13:54:56: 
+2025-09-11T13:54:56: Import trace for requested module:
+2025-09-11T13:54:56: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T13:54:57:  ⚠ ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T13:54:57: Attempted import error: 'auth' is not exported from '@/lib/auth' (imported as 'auth').
+2025-09-11T13:54:57: 
+2025-09-11T13:54:57: Import trace for requested module:
+2025-09-11T13:54:57: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T13:54:57: 
+2025-09-11T13:54:57: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T13:54:57: Attempted import error: 'auth' is not exported from '@/lib/auth' (imported as 'auth').
+2025-09-11T13:54:57: 
+2025-09-11T13:54:57: Import trace for requested module:
+2025-09-11T13:54:57: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T13:54:57: 
+2025-09-11T13:54:57: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T13:54:57: Attempted import error: 'auth' is not exported from '@/lib/auth' (imported as 'auth').
+2025-09-11T13:54:57: 
+2025-09-11T13:54:57: Import trace for requested module:
+2025-09-11T13:54:57: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T13:54:57: 
+2025-09-11T13:54:57: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T13:54:57: Attempted import error: 'auth' is not exported from '@/lib/auth' (imported as 'auth').
+2025-09-11T13:54:57: 
+2025-09-11T13:54:57: Import trace for requested module:
+2025-09-11T13:54:57: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T13:54:57: Erro ao buscar departamentos: TypeError: (0 , _lib_auth__WEBPACK_IMPORTED_MODULE_2__.auth) is not a function
+2025-09-11T13:54:57:     at GET (src/app/api/helpdesk/departments/route.ts:32:30)
+2025-09-11T13:54:57:   30 | export async function GET(request: NextRequest) {
+2025-09-11T13:54:57:   31 |   try {
+2025-09-11T13:54:57: > 32 |     const session = await auth();
+2025-09-11T13:54:57:      |                              ^
+2025-09-11T13:54:57:   33 |     if (!session?.user) {
+2025-09-11T13:54:57:   34 |       return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+2025-09-11T13:54:57:   35 |     }
+2025-09-11T13:57:00:  ⚠ ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T13:57:00: Attempted import error: 'auth' is not exported from '@/lib/auth' (imported as 'auth').
+2025-09-11T13:57:00: 
+2025-09-11T13:57:00: Import trace for requested module:
+2025-09-11T13:57:00: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T13:57:00: 
+2025-09-11T13:57:00: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T13:57:00: Attempted import error: 'auth' is not exported from '@/lib/auth' (imported as 'auth').
+2025-09-11T13:57:00: 
+2025-09-11T13:57:00: Import trace for requested module:
+2025-09-11T13:57:00: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T13:57:00: 
+2025-09-11T13:57:00: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T13:57:00: Attempted import error: 'auth' is not exported from '@/lib/auth' (imported as 'auth').
+2025-09-11T13:57:00: 
+2025-09-11T13:57:00: Import trace for requested module:
+2025-09-11T13:57:00: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T13:57:00: 
+2025-09-11T13:57:00: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T13:57:00: Attempted import error: 'auth' is not exported from '@/lib/auth' (imported as 'auth').
+2025-09-11T13:57:00: 
+2025-09-11T13:57:00: Import trace for requested module:
+2025-09-11T13:57:00: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T13:59:11:  ⚠ ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T13:59:11: Attempted import error: 'auth' is not exported from '@/lib/auth' (imported as 'auth').
+2025-09-11T13:59:11: 
+2025-09-11T13:59:11: Import trace for requested module:
+2025-09-11T13:59:11: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T13:59:11: 
+2025-09-11T13:59:11: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T13:59:11: Attempted import error: 'auth' is not exported from '@/lib/auth' (imported as 'auth').
+2025-09-11T13:59:11: 
+2025-09-11T13:59:11: Import trace for requested module:
+2025-09-11T13:59:11: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T13:59:11: 
+2025-09-11T13:59:11: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T13:59:11: Attempted import error: 'auth' is not exported from '@/lib/auth' (imported as 'auth').
+2025-09-11T13:59:11: 
+2025-09-11T13:59:11: Import trace for requested module:
+2025-09-11T13:59:11: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T13:59:11: 
+2025-09-11T13:59:11: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T13:59:11: Attempted import error: 'auth' is not exported from '@/lib/auth' (imported as 'auth').
+2025-09-11T13:59:11: 
+2025-09-11T13:59:11: Import trace for requested module:
+2025-09-11T13:59:11: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T13:59:11: Erro ao buscar departamentos: TypeError: (0 , _lib_auth__WEBPACK_IMPORTED_MODULE_2__.auth) is not a function
+2025-09-11T13:59:11:     at GET (src/app/api/helpdesk/departments/route.ts:32:30)
+2025-09-11T13:59:11:   30 | export async function GET(request: NextRequest) {
+2025-09-11T13:59:11:   31 |   try {
+2025-09-11T13:59:11: > 32 |     const session = await auth();
+2025-09-11T13:59:11:      |                              ^
+2025-09-11T13:59:11:   33 |     if (!session?.user) {
+2025-09-11T13:59:11:   34 |       return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+2025-09-11T13:59:11:   35 |     }
+2025-09-11T13:59:26: Erro ao buscar departamentos: TypeError: (0 , _lib_auth__WEBPACK_IMPORTED_MODULE_2__.auth) is not a function
+2025-09-11T13:59:26:     at GET (src/app/api/helpdesk/departments/route.ts:32:30)
+2025-09-11T13:59:26:   30 | export async function GET(request: NextRequest) {
+2025-09-11T13:59:26:   31 |   try {
+2025-09-11T13:59:26: > 32 |     const session = await auth();
+2025-09-11T13:59:26:      |                              ^
+2025-09-11T13:59:26:   33 |     if (!session?.user) {
+2025-09-11T13:59:26:   34 |       return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+2025-09-11T13:59:26:   35 |     }
+2025-09-11T14:00:09: Erro ao buscar departamentos: TypeError: (0 , _lib_auth__WEBPACK_IMPORTED_MODULE_2__.auth) is not a function
+2025-09-11T14:00:09:     at GET (src/app/api/helpdesk/departments/route.ts:32:30)
+2025-09-11T14:00:09:   30 | export async function GET(request: NextRequest) {
+2025-09-11T14:00:09:   31 |   try {
+2025-09-11T14:00:09: > 32 |     const session = await auth();
+2025-09-11T14:00:09:      |                              ^
+2025-09-11T14:00:09:   33 |     if (!session?.user) {
+2025-09-11T14:00:09:   34 |       return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+2025-09-11T14:00:09:   35 |     }
+2025-09-11T14:00:23: Erro ao buscar departamentos: TypeError: (0 , _lib_auth__WEBPACK_IMPORTED_MODULE_2__.auth) is not a function
+2025-09-11T14:00:23:     at GET (src/app/api/helpdesk/departments/route.ts:32:30)
+2025-09-11T14:00:23:   30 | export async function GET(request: NextRequest) {
+2025-09-11T14:00:23:   31 |   try {
+2025-09-11T14:00:23: > 32 |     const session = await auth();
+2025-09-11T14:00:23:      |                              ^
+2025-09-11T14:00:23:   33 |     if (!session?.user) {
+2025-09-11T14:00:23:   34 |       return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+2025-09-11T14:00:23:   35 |     }
+2025-09-11T14:00:43: Erro ao buscar departamentos: TypeError: (0 , _lib_auth__WEBPACK_IMPORTED_MODULE_2__.auth) is not a function
+2025-09-11T14:00:43:     at GET (src/app/api/helpdesk/departments/route.ts:32:30)
+2025-09-11T14:00:43:   30 | export async function GET(request: NextRequest) {
+2025-09-11T14:00:43:   31 |   try {
+2025-09-11T14:00:43: > 32 |     const session = await auth();
+2025-09-11T14:00:43:      |                              ^
+2025-09-11T14:00:43:   33 |     if (!session?.user) {
+2025-09-11T14:00:43:   34 |       return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+2025-09-11T14:00:43:   35 |     }
+2025-09-11T14:01:15:  ⚠ ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:15: Attempted import error: 'auth' is not exported from '@/lib/auth' (imported as 'auth').
+2025-09-11T14:01:15: 
+2025-09-11T14:01:15: Import trace for requested module:
+2025-09-11T14:01:15: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:15: 
+2025-09-11T14:01:15: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:15: Attempted import error: 'auth' is not exported from '@/lib/auth' (imported as 'auth').
+2025-09-11T14:01:15: 
+2025-09-11T14:01:15: Import trace for requested module:
+2025-09-11T14:01:15: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:15: 
+2025-09-11T14:01:15: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:15: Attempted import error: 'auth' is not exported from '@/lib/auth' (imported as 'auth').
+2025-09-11T14:01:15: 
+2025-09-11T14:01:15: Import trace for requested module:
+2025-09-11T14:01:15: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:15: 
+2025-09-11T14:01:15: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:15: Attempted import error: 'auth' is not exported from '@/lib/auth' (imported as 'auth').
+2025-09-11T14:01:15: 
+2025-09-11T14:01:15: Import trace for requested module:
+2025-09-11T14:01:15: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:20:  ⚠ ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:20: Attempted import error: 'auth' is not exported from '@/lib/auth' (imported as 'auth').
+2025-09-11T14:01:20: 
+2025-09-11T14:01:20: Import trace for requested module:
+2025-09-11T14:01:20: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:20: 
+2025-09-11T14:01:20: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:20: Attempted import error: 'auth' is not exported from '@/lib/auth' (imported as 'auth').
+2025-09-11T14:01:20: 
+2025-09-11T14:01:20: Import trace for requested module:
+2025-09-11T14:01:20: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:20: 
+2025-09-11T14:01:20: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:20: Attempted import error: 'auth' is not exported from '@/lib/auth' (imported as 'auth').
+2025-09-11T14:01:20: 
+2025-09-11T14:01:20: Import trace for requested module:
+2025-09-11T14:01:20: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:20: 
+2025-09-11T14:01:20: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:20: Attempted import error: 'auth' is not exported from '@/lib/auth' (imported as 'auth').
+2025-09-11T14:01:20: 
+2025-09-11T14:01:20: Import trace for requested module:
+2025-09-11T14:01:20: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:21:  ⚠ ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:21: Attempted import error: 'auth' is not exported from '@/lib/auth' (imported as 'auth').
+2025-09-11T14:01:21: 
+2025-09-11T14:01:21: Import trace for requested module:
+2025-09-11T14:01:21: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:21: 
+2025-09-11T14:01:21: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:21: Attempted import error: 'auth' is not exported from '@/lib/auth' (imported as 'auth').
+2025-09-11T14:01:21: 
+2025-09-11T14:01:21: Import trace for requested module:
+2025-09-11T14:01:21: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:21: 
+2025-09-11T14:01:21: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:21: Attempted import error: 'auth' is not exported from '@/lib/auth' (imported as 'auth').
+2025-09-11T14:01:21: 
+2025-09-11T14:01:21: Import trace for requested module:
+2025-09-11T14:01:21: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:21: 
+2025-09-11T14:01:21: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:21: Attempted import error: 'auth' is not exported from '@/lib/auth' (imported as 'auth').
+2025-09-11T14:01:21: 
+2025-09-11T14:01:21: Import trace for requested module:
+2025-09-11T14:01:21: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:22:  ⚠ ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:22: Attempted import error: 'auth' is not exported from '@/lib/auth' (imported as 'auth').
+2025-09-11T14:01:22: 
+2025-09-11T14:01:22: Import trace for requested module:
+2025-09-11T14:01:22: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:22: 
+2025-09-11T14:01:22: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:22: Attempted import error: 'auth' is not exported from '@/lib/auth' (imported as 'auth').
+2025-09-11T14:01:22: 
+2025-09-11T14:01:22: Import trace for requested module:
+2025-09-11T14:01:22: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:22: 
+2025-09-11T14:01:22: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:22: Attempted import error: 'auth' is not exported from '@/lib/auth' (imported as 'auth').
+2025-09-11T14:01:22: 
+2025-09-11T14:01:22: Import trace for requested module:
+2025-09-11T14:01:22: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:22: 
+2025-09-11T14:01:22: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:22: Attempted import error: 'auth' is not exported from '@/lib/auth' (imported as 'auth').
+2025-09-11T14:01:22: 
+2025-09-11T14:01:22: Import trace for requested module:
+2025-09-11T14:01:22: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:22:  ⚠ ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:22: Attempted import error: 'auth' is not exported from '@/lib/auth' (imported as 'auth').
+2025-09-11T14:01:22: 
+2025-09-11T14:01:22: Import trace for requested module:
+2025-09-11T14:01:22: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:22: 
+2025-09-11T14:01:22: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:22: Attempted import error: 'auth' is not exported from '@/lib/auth' (imported as 'auth').
+2025-09-11T14:01:22: 
+2025-09-11T14:01:22: Import trace for requested module:
+2025-09-11T14:01:22: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:22: 
+2025-09-11T14:01:22: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:22: Attempted import error: 'auth' is not exported from '@/lib/auth' (imported as 'auth').
+2025-09-11T14:01:22: 
+2025-09-11T14:01:22: Import trace for requested module:
+2025-09-11T14:01:22: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:22: 
+2025-09-11T14:01:22: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:22: Attempted import error: 'auth' is not exported from '@/lib/auth' (imported as 'auth').
+2025-09-11T14:01:22: 
+2025-09-11T14:01:22: Import trace for requested module:
+2025-09-11T14:01:22: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:22:  ⚠ ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:22: Attempted import error: 'auth' is not exported from '@/lib/auth' (imported as 'auth').
+2025-09-11T14:01:22: 
+2025-09-11T14:01:22: Import trace for requested module:
+2025-09-11T14:01:22: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:22: 
+2025-09-11T14:01:22: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:22: Attempted import error: 'auth' is not exported from '@/lib/auth' (imported as 'auth').
+2025-09-11T14:01:22: 
+2025-09-11T14:01:22: Import trace for requested module:
+2025-09-11T14:01:22: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:22: 
+2025-09-11T14:01:22: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:22: Attempted import error: 'auth' is not exported from '@/lib/auth' (imported as 'auth').
+2025-09-11T14:01:22: 
+2025-09-11T14:01:22: Import trace for requested module:
+2025-09-11T14:01:22: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:22: 
+2025-09-11T14:01:22: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:22: Attempted import error: 'auth' is not exported from '@/lib/auth' (imported as 'auth').
+2025-09-11T14:01:22: 
+2025-09-11T14:01:22: Import trace for requested module:
+2025-09-11T14:01:22: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:28:  ⚠ ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:28: Attempted import error: 'auth' is not exported from '@/lib/auth' (imported as 'auth').
+2025-09-11T14:01:28: 
+2025-09-11T14:01:28: Import trace for requested module:
+2025-09-11T14:01:28: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:28: 
+2025-09-11T14:01:28: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:28: Attempted import error: 'auth' is not exported from '@/lib/auth' (imported as 'auth').
+2025-09-11T14:01:28: 
+2025-09-11T14:01:28: Import trace for requested module:
+2025-09-11T14:01:28: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:28: 
+2025-09-11T14:01:28: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:28: Attempted import error: 'auth' is not exported from '@/lib/auth' (imported as 'auth').
+2025-09-11T14:01:28: 
+2025-09-11T14:01:28: Import trace for requested module:
+2025-09-11T14:01:28: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:28: 
+2025-09-11T14:01:28: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:28: Attempted import error: 'auth' is not exported from '@/lib/auth' (imported as 'auth').
+2025-09-11T14:01:28: 
+2025-09-11T14:01:28: Import trace for requested module:
+2025-09-11T14:01:28: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:29:  ⚠ ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:29: Attempted import error: 'auth' is not exported from '@/lib/auth' (imported as 'auth').
+2025-09-11T14:01:29: 
+2025-09-11T14:01:29: Import trace for requested module:
+2025-09-11T14:01:29: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:29: 
+2025-09-11T14:01:29: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:29: Attempted import error: 'auth' is not exported from '@/lib/auth' (imported as 'auth').
+2025-09-11T14:01:29: 
+2025-09-11T14:01:29: Import trace for requested module:
+2025-09-11T14:01:29: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:29: 
+2025-09-11T14:01:29: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:29: Attempted import error: 'auth' is not exported from '@/lib/auth' (imported as 'auth').
+2025-09-11T14:01:29: 
+2025-09-11T14:01:29: Import trace for requested module:
+2025-09-11T14:01:29: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:29: 
+2025-09-11T14:01:29: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:01:29: Attempted import error: 'auth' is not exported from '@/lib/auth' (imported as 'auth').
+2025-09-11T14:01:29: 
+2025-09-11T14:01:29: Import trace for requested module:
+2025-09-11T14:01:29: ./src/app/api/helpdesk/departments/route.ts
+2025-09-11T14:03:12: Erro ao buscar departamentos: TypeError: (0 , _lib_auth__WEBPACK_IMPORTED_MODULE_2__.auth) is not a function
+2025-09-11T14:03:12:     at GET (src/app/api/helpdesk/departments/route.ts:32:30)
+2025-09-11T14:03:12:   30 | export async function GET(request: NextRequest) {
+2025-09-11T14:03:12:   31 |   try {
+2025-09-11T14:03:12: > 32 |     const session = await auth();
+2025-09-11T14:03:12:      |                              ^
+2025-09-11T14:03:12:   33 |     if (!session?.user) {
+2025-09-11T14:03:12:   34 |       return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+2025-09-11T14:03:12:   35 |     }
+2025-09-11T14:05:41:  ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+2025-09-11T14:05:41:  ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+2025-09-11T14:05:43:  ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+2025-09-11T14:05:43:  ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+2025-09-11T14:05:45:  ⨯ ReferenceError: BarChart3 is not defined
+2025-09-11T14:05:45:     at HelpdeskDashboard (src/components/helpdesk/HelpdeskDashboard.tsx:107:19)
+2025-09-11T14:05:45:   105 |               <CardHeader>
+2025-09-11T14:05:45:   106 |                 <CardTitle className="flex items-center gap-2">
+2025-09-11T14:05:45: > 107 |                   <BarChart3 className="h-5 w-5" />
+2025-09-11T14:05:45:       |                   ^
+2025-09-11T14:05:45:   108 |                   Tickets por Status
+2025-09-11T14:05:45:   109 |                 </CardTitle>
+2025-09-11T14:05:45:   110 |               </CardHeader> {
+2025-09-11T14:05:45:   digest: '3250527602'
+2025-09-11T14:05:45: }
+2025-09-11T14:05:45:  ⨯ ReferenceError: BarChart3 is not defined
+2025-09-11T14:05:45:     at HelpdeskDashboard (src/components/helpdesk/HelpdeskDashboard.tsx:107:19)
+2025-09-11T14:05:45:   105 |               <CardHeader>
+2025-09-11T14:05:45:   106 |                 <CardTitle className="flex items-center gap-2">
+2025-09-11T14:05:45: > 107 |                   <BarChart3 className="h-5 w-5" />
+2025-09-11T14:05:45:       |                   ^
+2025-09-11T14:05:45:   108 |                   Tickets por Status
+2025-09-11T14:05:45:   109 |                 </CardTitle>
+2025-09-11T14:05:45:   110 |               </CardHeader> {
+2025-09-11T14:05:45:   digest: '3250527602'
+2025-09-11T14:05:45: }
+2025-09-11T14:06:17:  ⨯ SyntaxError: Unexpected end of JSON input
+2025-09-11T14:06:17:     at JSON.parse (<anonymous>) {
+2025-09-11T14:06:17:   page: '/helpdesk'
+2025-09-11T14:06:17: }
+2025-09-11T14:06:17:  ⨯ SyntaxError: Unexpected end of JSON input
+2025-09-11T14:06:17:     at JSON.parse (<anonymous>) {
+2025-09-11T14:06:17:   page: '/helpdesk'
+2025-09-11T14:06:17: }
+2025-09-11T14:06:21:  ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+2025-09-11T14:06:21:  ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+2025-09-11T14:06:24:  ⨯ ReferenceError: BarChart3 is not defined
+2025-09-11T14:06:24:     at HelpdeskDashboard (src/components/helpdesk/HelpdeskDashboard.tsx:107:19)
+2025-09-11T14:06:24:   105 |               <CardHeader>
+2025-09-11T14:06:24:   106 |                 <CardTitle className="flex items-center gap-2">
+2025-09-11T14:06:24: > 107 |                   <BarChart3 className="h-5 w-5" />
+2025-09-11T14:06:24:       |                   ^
+2025-09-11T14:06:24:   108 |                   Tickets por Status
+2025-09-11T14:06:24:   109 |                 </CardTitle>
+2025-09-11T14:06:24:   110 |               </CardHeader> {
+2025-09-11T14:06:24:   digest: '3250527602'
+2025-09-11T14:06:24: }
+2025-09-11T14:06:25:  ⨯ ReferenceError: BarChart3 is not defined
+2025-09-11T14:06:25:     at HelpdeskDashboard (src/components/helpdesk/HelpdeskDashboard.tsx:107:19)
+2025-09-11T14:06:25:   105 |               <CardHeader>
+2025-09-11T14:06:25:   106 |                 <CardTitle className="flex items-center gap-2">
+2025-09-11T14:06:25: > 107 |                   <BarChart3 className="h-5 w-5" />
+2025-09-11T14:06:25:       |                   ^
+2025-09-11T14:06:25:   108 |                   Tickets por Status
+2025-09-11T14:06:25:   109 |                 </CardTitle>
+2025-09-11T14:06:25:   110 |               </CardHeader> {
+2025-09-11T14:06:25:   digest: '3250527602'
+2025-09-11T14:06:25: }
+2025-09-11T14:07:03:  ⨯ ReferenceError: BarChart3 is not defined
+2025-09-11T14:07:03:     at HelpdeskDashboard (src/components/helpdesk/HelpdeskDashboard.tsx:107:19)
+2025-09-11T14:07:03:   105 |               <CardHeader>
+2025-09-11T14:07:03:   106 |                 <CardTitle className="flex items-center gap-2">
+2025-09-11T14:07:03: > 107 |                   <BarChart3 className="h-5 w-5" />
+2025-09-11T14:07:03:       |                   ^
+2025-09-11T14:07:03:   108 |                   Tickets por Status
+2025-09-11T14:07:03:   109 |                 </CardTitle>
+2025-09-11T14:07:03:   110 |               </CardHeader> {
+2025-09-11T14:07:03:   digest: '3250527602'
+2025-09-11T14:07:03: }
+2025-09-11T14:07:44:  ⨯ ReferenceError: BarChart3 is not defined
+2025-09-11T14:07:44:     at HelpdeskDashboard (src/components/helpdesk/HelpdeskDashboard.tsx:107:19)
+2025-09-11T14:07:44:   105 |               <CardHeader>
+2025-09-11T14:07:44:   106 |                 <CardTitle className="flex items-center gap-2">
+2025-09-11T14:07:44: > 107 |                   <BarChart3 className="h-5 w-5" />
+2025-09-11T14:07:44:       |                   ^
+2025-09-11T14:07:44:   108 |                   Tickets por Status
+2025-09-11T14:07:44:   109 |                 </CardTitle>
+2025-09-11T14:07:44:   110 |               </CardHeader> {
+2025-09-11T14:07:44:   digest: '3250527602'
+2025-09-11T14:07:44: }
+2025-09-11T14:08:17:  ⨯ ReferenceError: BarChart3 is not defined
+2025-09-11T14:08:17:     at HelpdeskDashboard (src/components/helpdesk/HelpdeskDashboard.tsx:107:19)
+2025-09-11T14:08:17:   105 |               <CardHeader>
+2025-09-11T14:08:17:   106 |                 <CardTitle className="flex items-center gap-2">
+2025-09-11T14:08:17: > 107 |                   <BarChart3 className="h-5 w-5" />
+2025-09-11T14:08:17:       |                   ^
+2025-09-11T14:08:17:   108 |                   Tickets por Status
+2025-09-11T14:08:17:   109 |                 </CardTitle>
+2025-09-11T14:08:17:   110 |               </CardHeader> {
+2025-09-11T14:08:17:   digest: '3250527602'
+2025-09-11T14:08:17: }
+2025-09-11T14:10:24: Error: Route "/api/colaboradores/[id]" used `params.id`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+2025-09-11T14:10:24:     at GET (src/app/api/colaboradores/[id]/route.ts:10:26)
+2025-09-11T14:10:24:    8 |   try {
+2025-09-11T14:10:24:    9 |     const colaborador = await db.colaborador.findUnique({
+2025-09-11T14:10:24: > 10 |       where: { id: params.id },
+2025-09-11T14:10:24:      |                          ^
+2025-09-11T14:10:24:   11 |       include: {
+2025-09-11T14:10:24:   12 |         perfil: {
+2025-09-11T14:10:24:   13 |           select: {
+2025-09-11T14:10:37: Error: Route "/api/colaboradores/[id]" used `params.id`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+2025-09-11T14:10:37:     at PUT (src/app/api/colaboradores/[id]/route.ts:70:26)
+2025-09-11T14:10:37:   68 |     // Verificar se colaborador existe
+2025-09-11T14:10:37:   69 |     const existingColaborador = await db.colaborador.findUnique({
+2025-09-11T14:10:37: > 70 |       where: { id: params.id }
+2025-09-11T14:10:37:      |                          ^
+2025-09-11T14:10:37:   71 |     });
+2025-09-11T14:10:37:   72 |
+2025-09-11T14:10:37:   73 |     if (!existingColaborador) {
+2025-09-11T14:10:37: Error: Route "/api/colaboradores/[id]" used `params.id`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+2025-09-11T14:10:37:     at PUT (src/app/api/colaboradores/[id]/route.ts:137:26)
+2025-09-11T14:10:37:   135 |     // Atualizar colaborador
+2025-09-11T14:10:37:   136 |     const colaborador = await db.colaborador.update({
+2025-09-11T14:10:37: > 137 |       where: { id: params.id },
+2025-09-11T14:10:37:       |                          ^
+2025-09-11T14:10:37:   138 |       data: {
+2025-09-11T14:10:37:   139 |         nome: body.nome,
+2025-09-11T14:10:37:   140 |         email: body.email,
+2025-09-11T14:11:13: Error: Route "/api/colaboradores/[id]" used `params.id`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+2025-09-11T14:11:13:     at GET (src/app/api/colaboradores/[id]/route.ts:10:26)
+2025-09-11T14:11:13:    8 |   try {
+2025-09-11T14:11:13:    9 |     const colaborador = await db.colaborador.findUnique({
+2025-09-11T14:11:13: > 10 |       where: { id: params.id },
+2025-09-11T14:11:13:      |                          ^
+2025-09-11T14:11:13:   11 |       include: {
+2025-09-11T14:11:13:   12 |         perfil: {
+2025-09-11T14:11:13:   13 |           select: {

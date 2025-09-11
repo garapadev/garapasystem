@@ -483,52 +483,41 @@ export default function WebmailPage() {
         <ScrollArea className="flex-1">
           <div className="p-2">
             <div className="space-y-0.5">
-              {/* Inbox primeiro */}
+              {/* Filtrar e exibir apenas as pastas essenciais */}
               {folders
-                .filter(folder => folder.specialUse === '\\Inbox')
-                .map((folder) => (
-                  <Button
-                    key={folder.id}
-                    onClick={() => setSelectedFolder(folder.id)}
-                    variant={selectedFolder === folder.id ? "secondary" : "ghost"}
-                    className="w-full justify-start h-auto p-2"
-                  >
-                    <div className="flex items-center gap-2 w-full">
-                      {getFolderIcon(folder)}
-                      <div className="flex-1 text-left">
-                        <div className="font-medium text-sm">{getFolderDisplayName(folder)}</div>
-                        {(folder.unreadCount > 0 || folder.totalCount > 0) && (
-                          <div className="text-xs text-muted-foreground">
-                            {folder.unreadCount > 0 && (
-                              <span className="font-semibold">{folder.unreadCount} não lidas</span>
-                            )}
-                            {folder.unreadCount > 0 && folder.totalCount > 0 && ' • '}
-                            {folder.totalCount > 0 && (
-                              <span>{folder.totalCount} total</span>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                      {folder.unreadCount > 0 && (
-                        <Badge variant="secondary" className="ml-auto text-xs px-1.5 py-0.5">
-                          {folder.unreadCount}
-                        </Badge>
-                      )}
-                    </div>
-                  </Button>
-                ))
-              }
-              
-              {/* Outras pastas */}
-              {folders
-                .filter(folder => folder.specialUse !== '\\Inbox')
+                .filter(folder => {
+                  // Filtrar apenas pastas essenciais
+                  const essentialFolders = ['\\Inbox', '\\Sent', '\\Drafts', '\\Trash', '\\Junk'];
+                  if (folder.specialUse && essentialFolders.includes(folder.specialUse)) {
+                    return true;
+                  }
+                  // Verificar por nomes comuns para pastas sem specialUse
+                  const lowerName = folder.name.toLowerCase();
+                  return (
+                    lowerName === 'inbox' ||
+                    lowerName === 'sent' ||
+                    lowerName === 'sent items' ||
+                    lowerName === 'sent mail' ||
+                    lowerName === 'drafts' ||
+                    lowerName === 'trash' ||
+                    lowerName === 'deleted' ||
+                    lowerName === 'deleted items' ||
+                    lowerName === 'spam' ||
+                    lowerName === 'junk' ||
+                    lowerName === 'junk mail'
+                  );
+                })
                 .sort((a, b) => {
-                  // Ordem: Sent, Archive, Trash, outras
-                  const order = { '\\Sent': 1, '\\Archive': 2, '\\Trash': 3 };
-                  const aOrder = order[a.specialUse as keyof typeof order] || 4;
-                  const bOrder = order[b.specialUse as keyof typeof order] || 4;
-                  if (aOrder !== bOrder) return aOrder - bOrder;
-                  return a.name.localeCompare(b.name);
+                  // Ordem específica: Inbox, Sent, Drafts, Trash, Spam
+                  const getOrder = (folder: EmailFolder) => {
+                    if (folder.specialUse === '\\Inbox' || folder.name.toLowerCase() === 'inbox') return 1;
+                    if (folder.specialUse === '\\Sent' || ['sent', 'sent items', 'sent mail'].includes(folder.name.toLowerCase())) return 2;
+                    if (folder.specialUse === '\\Drafts' || folder.name.toLowerCase() === 'drafts') return 3;
+                    if (folder.specialUse === '\\Trash' || ['trash', 'deleted', 'deleted items'].includes(folder.name.toLowerCase())) return 4;
+                    if (folder.specialUse === '\\Junk' || ['spam', 'junk', 'junk mail'].includes(folder.name.toLowerCase())) return 5;
+                    return 6;
+                  };
+                  return getOrder(a) - getOrder(b);
                 })
                 .map((folder) => (
                   <Button

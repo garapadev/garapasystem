@@ -18,7 +18,8 @@ import {
   TrendingUp,
   Webhook,
   KeyRound,
-  Mail
+  Mail,
+  Headphones
 } from 'lucide-react';
 
 interface NavigationItem {
@@ -39,6 +40,12 @@ const navigation: NavigationItem[] = [
     href: '/webmail', 
     icon: Mail,
     requiredPermission: { recurso: 'emails', acao: 'ler' }
+  },
+  { 
+    name: 'Helpdesk', 
+    href: '/helpdesk', 
+    icon: Headphones,
+    requiredPermission: { recurso: 'helpdesk', acao: 'ler' }
   },
   { 
     name: 'Clientes', 

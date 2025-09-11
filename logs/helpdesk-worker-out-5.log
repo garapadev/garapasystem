@@ -1,0 +1,431 @@
+2025-09-11T13:50:05: Iniciando Consolidated Helpdesk Worker...
+2025-09-11T13:50:05: Conexão com banco de dados estabelecida
+2025-09-11T13:50:05: prisma:query SELECT COUNT(*) AS "_count._all" FROM (SELECT "public"."helpdesk_departamentos"."id" FROM "public"."helpdesk_departamentos" WHERE ("public"."helpdesk_departamentos"."ativo" = $1 AND "public"."helpdesk_departamentos"."imapHost" IS NOT NULL AND "public"."helpdesk_departamentos"."imapEmail" IS NOT NULL AND "public"."helpdesk_departamentos"."imapPassword" IS NOT NULL) OFFSET $2) AS "sub"
+2025-09-11T13:50:05: Encontrados 1 departamentos configurados
+2025-09-11T13:50:05: Iniciando Consolidated Helpdesk Worker...
+2025-09-11T13:50:05: Worker iniciado com sucesso
+2025-09-11T13:50:05: Processando 1 departamentos
+2025-09-11T13:50:05: Processando emails do departamento: Suporte ti
+2025-09-11T13:50:05: Tentando conexão IMAP para Suporte ti
+2025-09-11T13:50:07: Conexão IMAP estabelecida para Suporte ti
+2025-09-11T13:50:07: Nenhum email não lido encontrado em Suporte ti
+2025-09-11T13:50:07: Worker iniciado com sucesso
+2025-09-11T13:50:07: Worker em execução. Pressione Ctrl+C para parar.
+2025-09-11T13:51:07: Processando 1 departamentos
+2025-09-11T13:51:07: Processando emails do departamento: Suporte ti
+2025-09-11T13:51:07: Nenhum email não lido encontrado em Suporte ti
+2025-09-11T13:52:07: Processando 1 departamentos
+2025-09-11T13:52:07: Processando emails do departamento: Suporte ti
+2025-09-11T13:52:07: Nenhum email não lido encontrado em Suporte ti
+2025-09-11T13:53:07: Processando 1 departamentos
+2025-09-11T13:53:07: Processando emails do departamento: Suporte ti
+2025-09-11T13:53:07: Nenhum email não lido encontrado em Suporte ti
+2025-09-11T13:54:07: Processando 1 departamentos
+2025-09-11T13:54:07: Processando emails do departamento: Suporte ti
+2025-09-11T13:54:07: Nenhum email não lido encontrado em Suporte ti
+2025-09-11T13:55:07: Status do worker: {
+2025-09-11T13:55:07:   "isRunning": true,
+2025-09-11T13:55:07:   "poolStats": {
+2025-09-11T13:55:07:     "totalConnections": 1,
+2025-09-11T13:55:07:     "activeConnections": 1,
+2025-09-11T13:55:07:     "failedConnections": 0,
+2025-09-11T13:55:07:     "circuitBreakerOpen": 0,
+2025-09-11T13:55:07:     "averageResponseTime": 159.23736572265625
+2025-09-11T13:55:07:   },
+2025-09-11T13:55:07:   "connectionPool": {
+2025-09-11T13:55:07:     "cmfee6p230001o0of71xpsksd": {
+2025-09-11T13:55:07:       "isActive": true,
+2025-09-11T13:55:07:       "lastUsed": "2025-09-11T16:55:06.118Z",
+2025-09-11T13:55:07:       "retryCount": 0,
+2025-09-11T13:55:07:       "healthCheckCount": 14,
+2025-09-11T13:55:07:       "circuitBreakerState": "CLOSED",
+2025-09-11T13:55:07:       "consecutiveFailures": 0
+2025-09-11T13:55:07:     }
+2025-09-11T13:55:07:   },
+2025-09-11T13:55:07:   "healthMetrics": {
+2025-09-11T13:55:07:     "totalHealthChecks": 14,
+2025-09-11T13:55:07:     "averageResponseTime": 159.23736572265625,
+2025-09-11T13:55:07:     "circuitBreakersOpen": 0
+2025-09-11T13:55:07:   },
+2025-09-11T13:55:07:   "retryStats": {
+2025-09-11T13:55:07:     "imap-connection-cmfee6p230001o0of71xpsksd": {
+2025-09-11T13:55:07:       "totalAttempts": 0,
+2025-09-11T13:55:07:       "consecutiveFailures": 0,
+2025-09-11T13:55:07:       "isBlocked": false,
+2025-09-11T13:55:07:       "averageDelay": 0
+2025-09-11T13:55:07:     }
+2025-09-11T13:55:07:   }
+2025-09-11T13:55:07: }
+2025-09-11T13:55:07: Processando 1 departamentos
+2025-09-11T13:55:07: Processando emails do departamento: Suporte ti
+2025-09-11T13:55:07: Nenhum email não lido encontrado em Suporte ti
+2025-09-11T13:56:07: Processando 1 departamentos
+2025-09-11T13:56:07: Processando emails do departamento: Suporte ti
+2025-09-11T13:56:07: Nenhum email não lido encontrado em Suporte ti
+2025-09-11T13:57:07: Processando 1 departamentos
+2025-09-11T13:57:07: Processando emails do departamento: Suporte ti
+2025-09-11T13:57:07: Nenhum email não lido encontrado em Suporte ti
+2025-09-11T13:58:07: Processando 1 departamentos
+2025-09-11T13:58:07: Processando emails do departamento: Suporte ti
+2025-09-11T13:58:07: Nenhum email não lido encontrado em Suporte ti
+2025-09-11T13:59:07: Processando 1 departamentos
+2025-09-11T13:59:07: Processando emails do departamento: Suporte ti
+2025-09-11T13:59:07: Nenhum email não lido encontrado em Suporte ti
+2025-09-11T14:00:07: Status do worker: {
+2025-09-11T14:00:07:   "isRunning": true,
+2025-09-11T14:00:07:   "poolStats": {
+2025-09-11T14:00:07:     "totalConnections": 1,
+2025-09-11T14:00:07:     "activeConnections": 1,
+2025-09-11T14:00:07:     "failedConnections": 0,
+2025-09-11T14:00:07:     "circuitBreakerOpen": 0,
+2025-09-11T14:00:07:     "averageResponseTime": 165.01044425554574
+2025-09-11T14:00:07:   },
+2025-09-11T14:00:07:   "connectionPool": {
+2025-09-11T14:00:07:     "cmfee6p230001o0of71xpsksd": {
+2025-09-11T14:00:07:       "isActive": true,
+2025-09-11T14:00:07:       "lastUsed": "2025-09-11T17:00:06.205Z",
+2025-09-11T14:00:07:       "retryCount": 0,
+2025-09-11T14:00:07:       "healthCheckCount": 29,
+2025-09-11T14:00:07:       "circuitBreakerState": "CLOSED",
+2025-09-11T14:00:07:       "consecutiveFailures": 0
+2025-09-11T14:00:07:     }
+2025-09-11T14:00:07:   },
+2025-09-11T14:00:07:   "healthMetrics": {
+2025-09-11T14:00:07:     "totalHealthChecks": 29,
+2025-09-11T14:00:07:     "averageResponseTime": 165.01044425554574,
+2025-09-11T14:00:07:     "circuitBreakersOpen": 0
+2025-09-11T14:00:07:   },
+2025-09-11T14:00:07:   "retryStats": {
+2025-09-11T14:00:07:     "imap-connection-cmfee6p230001o0of71xpsksd": {
+2025-09-11T14:00:07:       "totalAttempts": 0,
+2025-09-11T14:00:07:       "consecutiveFailures": 0,
+2025-09-11T14:00:07:       "isBlocked": false,
+2025-09-11T14:00:07:       "averageDelay": 0
+2025-09-11T14:00:07:     }
+2025-09-11T14:00:07:   }
+2025-09-11T14:00:07: }
+2025-09-11T14:00:07: Processando 1 departamentos
+2025-09-11T14:00:07: Processando emails do departamento: Suporte ti
+2025-09-11T14:00:07: Nenhum email não lido encontrado em Suporte ti
+2025-09-11T14:01:07: Processando 1 departamentos
+2025-09-11T14:01:07: Processando emails do departamento: Suporte ti
+2025-09-11T14:01:07: Nenhum email não lido encontrado em Suporte ti
+2025-09-11T14:02:07: Processando 1 departamentos
+2025-09-11T14:02:07: Processando emails do departamento: Suporte ti
+2025-09-11T14:02:07: Nenhum email não lido encontrado em Suporte ti
+2025-09-11T14:03:07: Processando 1 departamentos
+2025-09-11T14:03:07: Processando emails do departamento: Suporte ti
+2025-09-11T14:03:07: Nenhum email não lido encontrado em Suporte ti
+2025-09-11T14:04:07: Processando 1 departamentos
+2025-09-11T14:04:07: Processando emails do departamento: Suporte ti
+2025-09-11T14:04:07: Nenhum email não lido encontrado em Suporte ti
+2025-09-11T14:05:07: Status do worker: {
+2025-09-11T14:05:07:   "isRunning": true,
+2025-09-11T14:05:07:   "poolStats": {
+2025-09-11T14:05:07:     "totalConnections": 1,
+2025-09-11T14:05:07:     "activeConnections": 1,
+2025-09-11T14:05:07:     "failedConnections": 0,
+2025-09-11T14:05:07:     "circuitBreakerOpen": 0,
+2025-09-11T14:05:07:     "averageResponseTime": 159.1120913831865
+2025-09-11T14:05:07:   },
+2025-09-11T14:05:07:   "connectionPool": {
+2025-09-11T14:05:07:     "cmfee6p230001o0of71xpsksd": {
+2025-09-11T14:05:07:       "isActive": true,
+2025-09-11T14:05:07:       "lastUsed": "2025-09-11T17:05:06.246Z",
+2025-09-11T14:05:07:       "retryCount": 0,
+2025-09-11T14:05:07:       "healthCheckCount": 44,
+2025-09-11T14:05:07:       "circuitBreakerState": "CLOSED",
+2025-09-11T14:05:07:       "consecutiveFailures": 0
+2025-09-11T14:05:07:     }
+2025-09-11T14:05:07:   },
+2025-09-11T14:05:07:   "healthMetrics": {
+2025-09-11T14:05:07:     "totalHealthChecks": 44,
+2025-09-11T14:05:07:     "averageResponseTime": 159.1120913831865,
+2025-09-11T14:05:07:     "circuitBreakersOpen": 0
+2025-09-11T14:05:07:   },
+2025-09-11T14:05:07:   "retryStats": {
+2025-09-11T14:05:07:     "imap-connection-cmfee6p230001o0of71xpsksd": {
+2025-09-11T14:05:07:       "totalAttempts": 0,
+2025-09-11T14:05:07:       "consecutiveFailures": 0,
+2025-09-11T14:05:07:       "isBlocked": false,
+2025-09-11T14:05:07:       "averageDelay": 0
+2025-09-11T14:05:07:     }
+2025-09-11T14:05:07:   }
+2025-09-11T14:05:07: }
+2025-09-11T14:05:07: Processando 1 departamentos
+2025-09-11T14:05:07: Processando emails do departamento: Suporte ti
+2025-09-11T14:05:07: Nenhum email não lido encontrado em Suporte ti
+2025-09-11T14:06:07: Processando 1 departamentos
+2025-09-11T14:06:07: Processando emails do departamento: Suporte ti
+2025-09-11T14:06:07: Nenhum email não lido encontrado em Suporte ti
+2025-09-11T14:07:07: Processando 1 departamentos
+2025-09-11T14:07:07: Processando emails do departamento: Suporte ti
+2025-09-11T14:07:07: Nenhum email não lido encontrado em Suporte ti
+2025-09-11T14:08:07: Processando 1 departamentos
+2025-09-11T14:08:07: Processando emails do departamento: Suporte ti
+2025-09-11T14:08:07: Nenhum email não lido encontrado em Suporte ti
+2025-09-11T14:09:07: Processando 1 departamentos
+2025-09-11T14:09:07: Processando emails do departamento: Suporte ti
+2025-09-11T14:09:07: Nenhum email não lido encontrado em Suporte ti
+2025-09-11T14:10:07: Status do worker: {
+2025-09-11T14:10:07:   "isRunning": true,
+2025-09-11T14:10:07:   "poolStats": {
+2025-09-11T14:10:07:     "totalConnections": 1,
+2025-09-11T14:10:07:     "activeConnections": 1,
+2025-09-11T14:10:07:     "failedConnections": 0,
+2025-09-11T14:10:07:     "circuitBreakerOpen": 0,
+2025-09-11T14:10:07:     "averageResponseTime": 168.3263889188044
+2025-09-11T14:10:07:   },
+2025-09-11T14:10:07:   "connectionPool": {
+2025-09-11T14:10:07:     "cmfee6p230001o0of71xpsksd": {
+2025-09-11T14:10:07:       "isActive": true,
+2025-09-11T14:10:07:       "lastUsed": "2025-09-11T17:10:06.346Z",
+2025-09-11T14:10:07:       "retryCount": 0,
+2025-09-11T14:10:07:       "healthCheckCount": 59,
+2025-09-11T14:10:07:       "circuitBreakerState": "CLOSED",
+2025-09-11T14:10:07:       "consecutiveFailures": 0
+2025-09-11T14:10:07:     }
+2025-09-11T14:10:07:   },
+2025-09-11T14:10:07:   "healthMetrics": {
+2025-09-11T14:10:07:     "totalHealthChecks": 59,
+2025-09-11T14:10:07:     "averageResponseTime": 168.3263889188044,
+2025-09-11T14:10:07:     "circuitBreakersOpen": 0
+2025-09-11T14:10:07:   },
+2025-09-11T14:10:07:   "retryStats": {
+2025-09-11T14:10:07:     "imap-connection-cmfee6p230001o0of71xpsksd": {
+2025-09-11T14:10:07:       "totalAttempts": 0,
+2025-09-11T14:10:07:       "consecutiveFailures": 0,
+2025-09-11T14:10:07:       "isBlocked": false,
+2025-09-11T14:10:07:       "averageDelay": 0
+2025-09-11T14:10:07:     }
+2025-09-11T14:10:07:   }
+2025-09-11T14:10:07: }
+2025-09-11T14:10:07: Processando 1 departamentos
+2025-09-11T14:10:07: Processando emails do departamento: Suporte ti
+2025-09-11T14:10:07: Nenhum email não lido encontrado em Suporte ti
+2025-09-11T14:11:07: Processando 1 departamentos
+2025-09-11T14:11:07: Processando emails do departamento: Suporte ti
+2025-09-11T14:11:07: Nenhum email não lido encontrado em Suporte ti
+2025-09-11T17:24:42: Processando 1 departamentos
+2025-09-11T17:24:42: Processando emails do departamento: Suporte ti
+2025-09-11T17:25:41: Processando 1 departamentos
+2025-09-11T17:25:41: Processando emails do departamento: Suporte ti
+2025-09-11T17:26:41: Processando 1 departamentos
+2025-09-11T17:26:41: Processando emails do departamento: Suporte ti
+2025-09-11T17:27:40: Limpando conexão inativa para departamento cmfee6p230001o0of71xpsksd
+2025-09-11T17:27:41: Status do worker: {
+2025-09-11T17:27:41:   "isRunning": true,
+2025-09-11T17:27:41:   "poolStats": {
+2025-09-11T17:27:41:     "totalConnections": 1,
+2025-09-11T17:27:41:     "activeConnections": 1,
+2025-09-11T17:27:41:     "failedConnections": 0,
+2025-09-11T17:27:41:     "circuitBreakerOpen": 0,
+2025-09-11T17:27:41:     "averageResponseTime": 150.35394965371265
+2025-09-11T17:27:41:   },
+2025-09-11T17:27:41:   "connectionPool": {
+2025-09-11T17:27:41:     "cmfee6p230001o0of71xpsksd": {
+2025-09-11T17:27:41:       "isActive": true,
+2025-09-11T17:27:41:       "lastUsed": "2025-09-11T17:11:36.369Z",
+2025-09-11T17:27:41:       "retryCount": 0,
+2025-09-11T17:27:41:       "healthCheckCount": 64,
+2025-09-11T17:27:41:       "circuitBreakerState": "CLOSED",
+2025-09-11T17:27:41:       "consecutiveFailures": 0
+2025-09-11T17:27:41:     }
+2025-09-11T17:27:41:   },
+2025-09-11T17:27:41:   "healthMetrics": {
+2025-09-11T17:27:41:     "totalHealthChecks": 64,
+2025-09-11T17:27:41:     "averageResponseTime": 150.35394965371265,
+2025-09-11T17:27:41:     "circuitBreakersOpen": 0
+2025-09-11T17:27:41:   },
+2025-09-11T17:27:41:   "retryStats": {
+2025-09-11T17:27:41:     "imap-connection-cmfee6p230001o0of71xpsksd": {
+2025-09-11T17:27:41:       "totalAttempts": 0,
+2025-09-11T17:27:41:       "consecutiveFailures": 0,
+2025-09-11T17:27:41:       "isBlocked": false,
+2025-09-11T17:27:41:       "averageDelay": 0
+2025-09-11T17:27:41:     }
+2025-09-11T17:27:41:   }
+2025-09-11T17:27:41: }
+2025-09-11T17:27:41: Processando 1 departamentos
+2025-09-11T17:27:41: Processando emails do departamento: Suporte ti
+2025-09-11T17:28:41: Processando 1 departamentos
+2025-09-11T17:28:41: Processando emails do departamento: Suporte ti
+2025-09-11T17:29:40: Iniciando encerramento gracioso...
+2025-09-11T17:29:40: Parando Consolidated Helpdesk Worker...
+2025-09-11T17:29:40: Worker parado
+2025-09-11T17:29:40: Worker parado
+2025-09-11T17:29:40: Worker encerrado com sucesso
+2025-09-11T17:29:46: Iniciando Consolidated Helpdesk Worker...
+2025-09-11T17:29:46: Conexão com banco de dados estabelecida
+2025-09-11T17:29:46: prisma:query SELECT COUNT(*) AS "_count._all" FROM (SELECT "public"."helpdesk_departamentos"."id" FROM "public"."helpdesk_departamentos" WHERE ("public"."helpdesk_departamentos"."ativo" = $1 AND "public"."helpdesk_departamentos"."imapHost" IS NOT NULL AND "public"."helpdesk_departamentos"."imapEmail" IS NOT NULL AND "public"."helpdesk_departamentos"."imapPassword" IS NOT NULL) OFFSET $2) AS "sub"
+2025-09-11T17:29:46: Encontrados 1 departamentos configurados
+2025-09-11T17:29:46: Iniciando Consolidated Helpdesk Worker...
+2025-09-11T17:29:46: Worker iniciado com sucesso
+2025-09-11T17:29:46: Processando 1 departamentos
+2025-09-11T17:29:46: Processando emails do departamento: Suporte ti
+2025-09-11T17:29:46: Tentando conexão IMAP para Suporte ti
+2025-09-11T17:29:47: Conexão IMAP estabelecida para Suporte ti
+2025-09-11T17:29:48: Nenhum email não lido encontrado em Suporte ti
+2025-09-11T17:29:48: Worker iniciado com sucesso
+2025-09-11T17:29:48: Worker em execução. Pressione Ctrl+C para parar.
+2025-09-11T17:30:48: Processando 1 departamentos
+2025-09-11T17:30:48: Processando emails do departamento: Suporte ti
+2025-09-11T17:30:48: Nenhum email não lido encontrado em Suporte ti
+2025-09-11T17:31:48: Processando 1 departamentos
+2025-09-11T17:31:48: Processando emails do departamento: Suporte ti
+2025-09-11T17:31:48: Nenhum email não lido encontrado em Suporte ti
+2025-09-11T17:32:48: Processando 1 departamentos
+2025-09-11T17:32:48: Processando emails do departamento: Suporte ti
+2025-09-11T17:32:48: Nenhum email não lido encontrado em Suporte ti
+2025-09-11T17:33:48: Processando 1 departamentos
+2025-09-11T17:33:48: Processando emails do departamento: Suporte ti
+2025-09-11T17:33:48: Nenhum email não lido encontrado em Suporte ti
+2025-09-11T17:34:48: Status do worker: {
+2025-09-11T17:34:48:   "isRunning": true,
+2025-09-11T17:34:48:   "poolStats": {
+2025-09-11T17:34:48:     "totalConnections": 1,
+2025-09-11T17:34:48:     "activeConnections": 1,
+2025-09-11T17:34:48:     "failedConnections": 0,
+2025-09-11T17:34:48:     "circuitBreakerOpen": 0,
+2025-09-11T17:34:48:     "averageResponseTime": 156.47698974609375
+2025-09-11T17:34:48:   },
+2025-09-11T17:34:48:   "connectionPool": {
+2025-09-11T17:34:48:     "cmfee6p230001o0of71xpsksd": {
+2025-09-11T17:34:48:       "isActive": true,
+2025-09-11T17:34:48:       "lastUsed": "2025-09-11T20:34:46.891Z",
+2025-09-11T17:34:48:       "retryCount": 0,
+2025-09-11T17:34:48:       "healthCheckCount": 14,
+2025-09-11T17:34:48:       "circuitBreakerState": "CLOSED",
+2025-09-11T17:34:48:       "consecutiveFailures": 0
+2025-09-11T17:34:48:     }
+2025-09-11T17:34:48:   },
+2025-09-11T17:34:48:   "healthMetrics": {
+2025-09-11T17:34:48:     "totalHealthChecks": 14,
+2025-09-11T17:34:48:     "averageResponseTime": 156.47698974609375,
+2025-09-11T17:34:48:     "circuitBreakersOpen": 0
+2025-09-11T17:34:48:   },
+2025-09-11T17:34:48:   "retryStats": {
+2025-09-11T17:34:48:     "imap-connection-cmfee6p230001o0of71xpsksd": {
+2025-09-11T17:34:48:       "totalAttempts": 0,
+2025-09-11T17:34:48:       "consecutiveFailures": 0,
+2025-09-11T17:34:48:       "isBlocked": false,
+2025-09-11T17:34:48:       "averageDelay": 0
+2025-09-11T17:34:48:     }
+2025-09-11T17:34:48:   }
+2025-09-11T17:34:48: }
+2025-09-11T17:34:48: Processando 1 departamentos
+2025-09-11T17:34:48: Processando emails do departamento: Suporte ti
+2025-09-11T17:34:48: Nenhum email não lido encontrado em Suporte ti
+2025-09-11T17:35:48: Processando 1 departamentos
+2025-09-11T17:35:48: Processando emails do departamento: Suporte ti
+2025-09-11T17:35:48: Nenhum email não lido encontrado em Suporte ti
+2025-09-11T17:36:48: Processando 1 departamentos
+2025-09-11T17:36:48: Processando emails do departamento: Suporte ti
+2025-09-11T17:36:48: Nenhum email não lido encontrado em Suporte ti
+2025-09-11T17:37:48: Processando 1 departamentos
+2025-09-11T17:37:48: Processando emails do departamento: Suporte ti
+2025-09-11T17:37:48: Nenhum email não lido encontrado em Suporte ti
+2025-09-11T17:38:48: Processando 1 departamentos
+2025-09-11T17:38:48: Processando emails do departamento: Suporte ti
+2025-09-11T17:38:48: Nenhum email não lido encontrado em Suporte ti
+2025-09-11T17:39:48: Status do worker: {
+2025-09-11T17:39:48:   "isRunning": true,
+2025-09-11T17:39:48:   "poolStats": {
+2025-09-11T17:39:48:     "totalConnections": 1,
+2025-09-11T17:39:48:     "activeConnections": 1,
+2025-09-11T17:39:48:     "failedConnections": 0,
+2025-09-11T17:39:48:     "circuitBreakerOpen": 0,
+2025-09-11T17:39:48:     "averageResponseTime": 157.3222191464156
+2025-09-11T17:39:48:   },
+2025-09-11T17:39:48:   "connectionPool": {
+2025-09-11T17:39:48:     "cmfee6p230001o0of71xpsksd": {
+2025-09-11T17:39:48:       "isActive": true,
+2025-09-11T17:39:48:       "lastUsed": "2025-09-11T20:39:46.971Z",
+2025-09-11T17:39:48:       "retryCount": 0,
+2025-09-11T17:39:48:       "healthCheckCount": 29,
+2025-09-11T17:39:48:       "circuitBreakerState": "CLOSED",
+2025-09-11T17:39:48:       "consecutiveFailures": 0
+2025-09-11T17:39:48:     }
+2025-09-11T17:39:48:   },
+2025-09-11T17:39:48:   "healthMetrics": {
+2025-09-11T17:39:48:     "totalHealthChecks": 29,
+2025-09-11T17:39:48:     "averageResponseTime": 157.3222191464156,
+2025-09-11T17:39:48:     "circuitBreakersOpen": 0
+2025-09-11T17:39:48:   },
+2025-09-11T17:39:48:   "retryStats": {
+2025-09-11T17:39:48:     "imap-connection-cmfee6p230001o0of71xpsksd": {
+2025-09-11T17:39:48:       "totalAttempts": 0,
+2025-09-11T17:39:48:       "consecutiveFailures": 0,
+2025-09-11T17:39:48:       "isBlocked": false,
+2025-09-11T17:39:48:       "averageDelay": 0
+2025-09-11T17:39:48:     }
+2025-09-11T17:39:48:   }
+2025-09-11T17:39:48: }
+2025-09-11T17:39:48: Processando 1 departamentos
+2025-09-11T17:39:48: Processando emails do departamento: Suporte ti
+2025-09-11T17:39:48: Nenhum email não lido encontrado em Suporte ti
+2025-09-11T17:40:48: Processando 1 departamentos
+2025-09-11T17:40:48: Processando emails do departamento: Suporte ti
+2025-09-11T17:40:48: Nenhum email não lido encontrado em Suporte ti
+2025-09-11T17:41:48: Processando 1 departamentos
+2025-09-11T17:41:48: Processando emails do departamento: Suporte ti
+2025-09-11T17:41:48: Nenhum email não lido encontrado em Suporte ti
+2025-09-11T17:42:48: Processando 1 departamentos
+2025-09-11T17:42:48: Processando emails do departamento: Suporte ti
+2025-09-11T17:42:48: Nenhum email não lido encontrado em Suporte ti
+2025-09-11T17:43:48: Processando 1 departamentos
+2025-09-11T17:43:48: Processando emails do departamento: Suporte ti
+2025-09-11T17:43:48: Nenhum email não lido encontrado em Suporte ti
+2025-09-11T17:44:48: Status do worker: {
+2025-09-11T17:44:48:   "isRunning": true,
+2025-09-11T17:44:48:   "poolStats": {
+2025-09-11T17:44:48:     "totalConnections": 1,
+2025-09-11T17:44:48:     "activeConnections": 1,
+2025-09-11T17:44:48:     "failedConnections": 0,
+2025-09-11T17:44:48:     "circuitBreakerOpen": 0,
+2025-09-11T17:44:48:     "averageResponseTime": 163.89280158139485
+2025-09-11T17:44:48:   },
+2025-09-11T17:44:48:   "connectionPool": {
+2025-09-11T17:44:48:     "cmfee6p230001o0of71xpsksd": {
+2025-09-11T17:44:48:       "isActive": true,
+2025-09-11T17:44:48:       "lastUsed": "2025-09-11T20:44:47.054Z",
+2025-09-11T17:44:48:       "retryCount": 0,
+2025-09-11T17:44:48:       "healthCheckCount": 44,
+2025-09-11T17:44:48:       "circuitBreakerState": "CLOSED",
+2025-09-11T17:44:48:       "consecutiveFailures": 0
+2025-09-11T17:44:48:     }
+2025-09-11T17:44:48:   },
+2025-09-11T17:44:48:   "healthMetrics": {
+2025-09-11T17:44:48:     "totalHealthChecks": 44,
+2025-09-11T17:44:48:     "averageResponseTime": 163.89280158139485,
+2025-09-11T17:44:48:     "circuitBreakersOpen": 0
+2025-09-11T17:44:48:   },
+2025-09-11T17:44:48:   "retryStats": {
+2025-09-11T17:44:48:     "imap-connection-cmfee6p230001o0of71xpsksd": {
+2025-09-11T17:44:48:       "totalAttempts": 0,
+2025-09-11T17:44:48:       "consecutiveFailures": 0,
+2025-09-11T17:44:48:       "isBlocked": false,
+2025-09-11T17:44:48:       "averageDelay": 0
+2025-09-11T17:44:48:     }
+2025-09-11T17:44:48:   }
+2025-09-11T17:44:48: }
+2025-09-11T17:44:48: Processando 1 departamentos
+2025-09-11T17:44:48: Processando emails do departamento: Suporte ti
+2025-09-11T17:44:48: Nenhum email não lido encontrado em Suporte ti
+2025-09-11T17:45:48: Processando 1 departamentos
+2025-09-11T17:45:48: Processando emails do departamento: Suporte ti
+2025-09-11T17:45:48: Nenhum email não lido encontrado em Suporte ti
+2025-09-11T17:46:48: Processando 1 departamentos
+2025-09-11T17:46:48: Processando emails do departamento: Suporte ti
+2025-09-11T17:46:48: Nenhum email não lido encontrado em Suporte ti
+2025-09-11T17:47:48: Processando 1 departamentos
+2025-09-11T17:47:48: Processando emails do departamento: Suporte ti
+2025-09-11T17:47:48: Nenhum email não lido encontrado em Suporte ti
+2025-09-11T17:48:48: Processando 1 departamentos
+2025-09-11T17:48:48: Processando emails do departamento: Suporte ti
+2025-09-11T17:48:48: Nenhum email não lido encontrado em Suporte ti
+2025-09-11T17:49:46: Iniciando encerramento gracioso...
+2025-09-11T17:49:46: Parando Consolidated Helpdesk Worker...
+2025-09-11T17:49:46: Worker parado
+2025-09-11T17:49:46: Worker parado
+2025-09-11T17:49:46: Worker encerrado com sucesso

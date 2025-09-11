@@ -1,6 +1,6 @@
 {
   "name": "GarapaSystem",
-  "version": "0.1.32",
+  "version": "0.1.33",
   "private": true,
   "scripts": {
     "dev": "nodemon --exec \"npx tsx server.ts\" --watch server.ts --watch src --ext ts,tsx,js,jsx 2>&1 | tee dev.log",
@@ -11,7 +11,17 @@
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:reset": "prisma migrate reset",
-    "db:seed": "tsx prisma/seed.ts"
+    "db:seed": "tsx prisma/seed.ts",
+    "pm2:start": "pm2 start ecosystem.config.js",
+    "pm2:stop": "pm2 stop ecosystem.config.js",
+    "pm2:restart": "pm2 restart ecosystem.config.js",
+    "pm2:reload": "pm2 reload ecosystem.config.js",
+    "pm2:delete": "pm2 delete ecosystem.config.js",
+    "pm2:logs": "pm2 logs",
+    "pm2:monit": "pm2 monit",
+    "pm2:status": "pm2 status",
+    "pm2:dev": "pm2 start ecosystem.config.js --env development",
+    "pm2:prod": "pm2 start ecosystem.config.js --env production"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",
@@ -33,6 +43,7 @@
     "@radix-ui/react-toast": "^1.2.14",
     "@radix-ui/react-tooltip": "^1.2.7",
     "@types/bcryptjs": "^2.4.6",
+    "@types/mailparser": "^3.4.6",
     "@types/nodemailer": "^7.0.1",
     "@types/pg": "^8.15.5",
     "axios": "^1.10.0",
@@ -45,6 +56,7 @@
     "imapflow": "^1.0.195",
     "input-otp": "^1.4.2",
     "lucide-react": "^0.525.0",
+    "mailparser": "^3.7.4",
     "next": "15.3.5",
     "next-auth": "^4.24.11",
     "node-fetch": "^2.7.0",

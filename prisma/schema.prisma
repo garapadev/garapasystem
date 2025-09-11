@@ -84,6 +84,9 @@ model Cliente {
   // Oportunidades
   oportunidades  Oportunidade[]
   
+  // Tickets do Helpdesk
+  helpdeskTickets HelpdeskTicket[]
+  
   @@map("clientes")
 }
 
@@ -104,6 +107,7 @@ model GrupoHierarquico {
   // Relacionamentos
   clientes    Cliente[]
   colaboradores Colaborador[]
+  helpdeskDepartamentos HelpdeskDepartamento[]
   
   @@map("grupos_hierarquicos")
 }
@@ -177,6 +181,10 @@ model Colaborador {
   
   // Configuração de email
   emailConfig    EmailConfig?
+  
+  // Helpdesk
+  helpdeskTicketsResponsavel HelpdeskTicket[]
+  helpdeskMensagens HelpdeskMensagem[]
   
   @@map("colaboradores")
 }
@@ -501,4 +509,153 @@ enum EmailSyncStatus {
   SYNCING
   ERROR
   DISABLED
+}
+
+// Sistema de Helpdesk
+
+// Departamentos do Helpdesk
+model HelpdeskDepartamento {
+  id                String   @id @default(cuid())
+  nome              String
+  descricao         String?
+  ativo             Boolean  @default(true)
+  
+  // Configurações IMAP específicas do departamento
+  imapHost          String?
+  imapPort          Int?     @default(993)
+  imapSecure        Boolean  @default(true)
+  imapEmail         String?
+  imapPassword      String?  // Criptografado
+  
+  // Configurações SMTP específicas do departamento
+  smtpHost          String?
+  smtpPort          Int?     @default(587)
+  smtpSecure        Boolean  @default(false)
+  smtpEmail         String?
+  smtpPassword      String?  // Criptografado
+  
+  // Configurações de sincronização
+  syncEnabled       Boolean  @default(true)
+  syncInterval      Int      @default(300) // segundos (5 minutos)
+  lastSync          DateTime?
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  // Relacionamentos
+  grupoHierarquicoId String?
+  grupoHierarquico   GrupoHierarquico? @relation(fields: [grupoHierarquicoId], references: [id])
+  
+  tickets           HelpdeskTicket[]
+  
+  @@map("helpdesk_departamentos")
+}
+
+// Tickets do Helpdesk
+model HelpdeskTicket {
+  id                String   @id @default(cuid())
+  numero            Int      @unique // Numeração sequencial
+  assunto           String
+  descricao         String?
+  prioridade        HelpdeskPrioridade @default(MEDIA)
+  status            HelpdeskStatus @default(ABERTO)
+  
+  // Informações do solicitante
+  solicitanteNome   String
+  solicitanteEmail  String
+  solicitanteTelefone String?
+  
+  // Dados de origem do email (se aplicável)
+  emailMessageId    String?  // Message-ID do email original
+  emailUid          Int?     // UID do email no servidor IMAP
+  
+  // Timestamps
+  dataAbertura      DateTime @default(now())
+  dataFechamento    DateTime?
+  dataUltimaResposta DateTime?
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  // Relacionamentos
+  departamentoId    String
+  departamento      HelpdeskDepartamento @relation(fields: [departamentoId], references: [id])
+  
+  clienteId         String?
+  cliente           Cliente? @relation(fields: [clienteId], references: [id])
+  
+  responsavelId     String?
+  responsavel       Colaborador? @relation(fields: [responsavelId], references: [id])
+  
+  mensagens         HelpdeskMensagem[]
+  
+  @@map("helpdesk_tickets")
+}
+
+// Mensagens dos tickets
+model HelpdeskMensagem {
+  id                String   @id @default(cuid())
+  conteudo          String
+  tipoConteudo      HelpdeskTipoConteudo @default(TEXTO)
+  
+  // Informações do remetente
+  remetenteNome     String
+  remetenteEmail    String
+  isInterno         Boolean  @default(false) // true se for resposta interna da equipe
+  
+  // Dados de origem do email (se aplicável)
+  emailMessageId    String?  // Message-ID do email
+  emailUid          Int?     // UID do email no servidor IMAP
+  
+  createdAt         DateTime @default(now())
+  
+  // Relacionamentos
+  ticketId          String
+  ticket            HelpdeskTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  
+  autorId           String?
+  autor             Colaborador? @relation(fields: [autorId], references: [id])
+  
+  anexos            HelpdeskAnexo[]
+  
+  @@map("helpdesk_mensagens")
+}
+
+// Anexos das mensagens
+model HelpdeskAnexo {
+  id                String   @id @default(cuid())
+  nomeArquivo       String
+  tipoConteudo      String
+  tamanho           Int
+  caminhoArquivo    String   // Caminho no sistema de arquivos
+  
+  createdAt         DateTime @default(now())
+  
+  // Relacionamentos
+  mensagemId        String
+  mensagem          HelpdeskMensagem @relation(fields: [mensagemId], references: [id], onDelete: Cascade)
+  
+  @@map("helpdesk_anexos")
+}
+
+// Enums do Helpdesk
+enum HelpdeskStatus {
+  ABERTO
+  EM_ANDAMENTO
+  AGUARDANDO_CLIENTE
+  RESOLVIDO
+  FECHADO
+}
+
+enum HelpdeskPrioridade {
+  BAIXA
+  MEDIA
+  ALTA
+  URGENTE
+}
+
+enum HelpdeskTipoConteudo {
+  TEXTO
+  HTML
+  MARKDOWN
 }
