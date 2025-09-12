@@ -20,9 +20,9 @@ const updateTicketSchema = z.object({
 });
 
 interface RouteParams {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 // GET - Buscar ticket por ID
@@ -31,13 +31,14 @@ export async function GET(
   { params }: RouteParams
 ) {
   try {
+    const { id } = await params;
     const session = await getServerSession(authOptions);
     if (!session) {
       return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
     }
 
     const ticket = await db.helpdeskTicket.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         cliente: {
           select: {
@@ -102,6 +103,7 @@ export async function PUT(
   { params }: RouteParams
 ) {
   try {
+    const { id } = await params;
     const session = await getServerSession(authOptions);
     if (!session) {
       return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
@@ -112,7 +114,7 @@ export async function PUT(
 
     // Verificar se o ticket existe e buscar dados completos para auditoria
     const ticketExistente = await db.helpdeskTicket.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         responsavel: {
           select: {
@@ -168,7 +170,7 @@ export async function PUT(
 
     // Atualizar ticket
     const ticket = await db.helpdeskTicket.update({
-      where: { id: params.id },
+      where: { id },
       data: updateData,
       include: {
         cliente: {
@@ -247,6 +249,7 @@ export async function DELETE(
   { params }: RouteParams
 ) {
   try {
+    const { id } = await params;
     const session = await getServerSession(authOptions);
     if (!session) {
       return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
@@ -254,7 +257,7 @@ export async function DELETE(
 
     // Verificar se o ticket existe
     const ticket = await db.helpdeskTicket.findUnique({
-      where: { id: params.id }
+      where: { id }
     });
 
     if (!ticket) {
@@ -266,7 +269,7 @@ export async function DELETE(
 
     // Excluir ticket (as mensagens e anexos serão excluídos em cascata)
     await db.helpdeskTicket.delete({
-      where: { id: params.id }
+      where: { id }
     });
 
     return NextResponse.json(

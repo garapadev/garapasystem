@@ -22,15 +22,15 @@ const updateDepartamentoSchema = z.object({
 });
 
 interface RouteParams {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 // GET - Buscar departamento por ID
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     const departamento = await db.helpdeskDepartamento.findUnique({
       where: { id },
@@ -76,7 +76,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 // PUT - Atualizar departamento
 export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
     const validatedData = updateDepartamentoSchema.parse(body);
 
@@ -174,7 +174,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 // DELETE - Excluir departamento
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     // Verificar se o departamento existe
     const existingDepartamento = await db.helpdeskDepartamento.findUnique({

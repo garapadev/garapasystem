@@ -90,18 +90,19 @@ import { db } from '@/lib/db';
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1');
-    const limit = Math.min(parseInt(searchParams.get('limit') || '50'), 100);
-    const tipo = searchParams.get('tipo');
+    const limit = parseInt(searchParams.get('limit') || '20');
+    const tipo = searchParams.get('tipo') as HelpdeskLogTipo | null;
     const skip = (page - 1) * limit;
 
     // Verificar se o ticket existe
     const ticket = await db.helpdeskTicket.findUnique({
-      where: { id: params.id },
+      where: { id },
       select: { id: true }
     });
 
@@ -114,7 +115,7 @@ export async function GET(
 
     // Construir filtros
     const where: any = {
-      ticketId: params.id
+      ticketId: id
     };
 
     if (tipo) {
@@ -216,9 +217,10 @@ export async function GET(
  */
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const body = await request.json();
     const {
       tipo,
@@ -240,7 +242,7 @@ export async function POST(
 
     // Verificar se o ticket existe
     const ticket = await db.helpdeskTicket.findUnique({
-      where: { id: params.id },
+      where: { id },
       select: { id: true }
     });
 
@@ -254,7 +256,7 @@ export async function POST(
     // Criar o log
     const log = await db.helpdeskTicketLog.create({
       data: {
-        ticketId: params.id,
+        ticketId: id,
         tipo,
         descricao,
         valorAnterior,

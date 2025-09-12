@@ -11,7 +11,7 @@ import RichTextEditor from '@/components/helpdesk/RichTextEditor';
 import ObserversModule from '@/components/helpdesk/ObserversModule';
 import TicketTimeline from '@/components/helpdesk/TicketTimeline';
 import { TicketHistoryLog } from '@/components/helpdesk/TicketHistoryLog';
-import { QuickEditControls } from '@/components/helpdesk/QuickEditControls';
+import { StatusTicket } from '@/components/helpdesk/StatusTicket';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -100,64 +100,109 @@ export default function TicketViewPage() {
     type: 'manual' | 'colaborador';
   }>>([]);
   
-  // Timeline events (exemplo - em produção viria da API)
-  const timelineEvents = [
-    {
-      id: '1',
-      type: 'created' as const,
-      timestamp: new Date(Date.now() - 86400000 * 2), // 2 dias atrás
-      author: {
-        id: 'user1',
-        name: 'Sistema',
-        email: 'sistema@empresa.com'
-      },
-      data: {}
-    },
-    {
-      id: '2',
-      type: 'assigned' as const,
-      timestamp: new Date(Date.now() - 86400000 * 1), // 1 dia atrás
-      author: {
-        id: 'user2',
-        name: 'João Silva',
-        email: 'joao@empresa.com'
-      },
-      data: {
-        newValue: 'Maria Santos'
+  // Buscar observadores do ticket
+  useEffect(() => {
+    const fetchObservers = async () => {
+      try {
+        const response = await fetch(`/api/helpdesk/tickets/${ticketId}/observers`);
+        if (response.ok) {
+          const data = await response.json();
+          setObservers(data.observers || []);
+        }
+      } catch (error) {
+        console.error('Erro ao buscar observadores:', error);
       }
-    },
-    {
-      id: '3',
-      type: 'priority_change' as const,
-      timestamp: new Date(Date.now() - 3600000 * 6), // 6 horas atrás
-      author: {
-        id: 'user3',
-        name: 'Maria Santos',
-        email: 'maria@empresa.com'
-      },
-      data: {
-        oldValue: 'Baixa',
-        newValue: 'Alta'
-      }
-    },
-    {
-      id: '4',
-      type: 'message' as const,
-      timestamp: new Date(Date.now() - 3600000 * 2), // 2 horas atrás
-      author: {
-        id: 'user4',
-        name: 'Cliente',
-        email: 'cliente@exemplo.com'
-      },
-      data: {
-        message: 'Obrigado pela resposta rápida. O problema ainda persiste, mas agora entendo melhor a situação.'
-      }
+    };
+    
+    if (ticketId) {
+      fetchObservers();
     }
-  ];
+  }, [ticketId]);
+  
+  // Estado para eventos do timeline
+  const [timelineEvents, setTimelineEvents] = useState([]);
+  
+  // Buscar eventos do timeline
+  useEffect(() => {
+    const fetchTimelineEvents = async () => {
+      try {
+        const response = await fetch(`/api/helpdesk/tickets/${ticketId}/logs`);
+        if (response.ok) {
+          const data = await response.json();
+          // Converter logs para formato do timeline
+          const events = data.logs.map((log: any) => ({
+            id: log.id,
+            type: getTimelineEventType(log.tipo),
+            timestamp: new Date(log.createdAt),
+            author: {
+              id: log.autorId || 'system',
+              name: log.autorNome || 'Sistema',
+              email: log.autorEmail || 'sistema@empresa.com'
+            },
+            data: {
+              oldValue: log.valorAnterior,
+              newValue: log.valorNovo,
+              message: log.descricao
+            }
+          }));
+          setTimelineEvents(events);
+        }
+      } catch (error) {
+        console.error('Erro ao buscar eventos do timeline:', error);
+      }
+    };
+    
+    if (ticketId) {
+      fetchTimelineEvents();
+    }
+  }, [ticketId]);
+  
+  const getTimelineEventType = (acao: string) => {
+    switch (acao) {
+      case 'CRIACAO': return 'created';
+      case 'STATUS_ALTERADO': return 'status_change';
+      case 'PRIORIDADE_ALTERADA': return 'priority_change';
+      case 'RESPONSAVEL_ALTERADO': return 'assigned';
+      case 'MENSAGEM_ADICIONADA': return 'message';
+      case 'OBSERVADOR_ADICIONADO': return 'observer_added';
+      case 'OBSERVADOR_REMOVIDO': return 'observer_removed';
+      default: return 'created';
+    }
+  };
   const handleTicketUpdate = (updatedTicket: any) => {
     // O hook useHelpdeskTicket já atualiza o estado do ticket automaticamente
-    // Esta função é chamada pelo QuickEditControls após uma atualização bem-sucedida
+    // Esta função é chamada pelo StatusTicket após uma atualização bem-sucedida
     refreshTicket();
+    
+    // Recarregar timeline após atualização
+    const fetchTimelineEvents = async () => {
+      try {
+        const response = await fetch(`/api/helpdesk/tickets/${ticketId}/logs`);
+        if (response.ok) {
+          const data = await response.json();
+          const events = data.logs.map((log: any) => ({
+            id: log.id,
+            type: getTimelineEventType(log.tipo),
+            timestamp: new Date(log.createdAt),
+            author: {
+              id: log.autorId || 'system',
+              name: log.autorNome || 'Sistema',
+              email: log.autorEmail || 'sistema@empresa.com'
+            },
+            data: {
+              oldValue: log.valorAnterior,
+              newValue: log.valorNovo,
+              message: log.descricao
+            }
+          }));
+          setTimelineEvents(events);
+        }
+      } catch (error) {
+        console.error('Erro ao buscar eventos do timeline:', error);
+      }
+    };
+    
+    fetchTimelineEvents();
   };
   
   const handleSendResponse = async () => {
@@ -450,9 +495,10 @@ export default function TicketViewPage() {
              }}
            />
           
-          {/* Controles de Edição Rápida */}
-          <QuickEditControls
+          {/* Status do Ticket */}
+          <StatusTicket
             ticket={ticket}
+            colaboradores={colaboradores}
             onTicketUpdate={handleTicketUpdate}
             className="mb-6"
           />

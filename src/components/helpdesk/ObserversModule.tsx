@@ -72,36 +72,38 @@ export function ObserversModule({
       return;
     }
 
-    const newObserver: Observer = {
-      id: `manual_${Date.now()}`,
-      email: manualEmail.trim(),
-      type: 'manual'
-    };
-
-    onChange([...observers, newObserver]);
-    
-    // Enviar notificação de boas-vindas para o novo observador
-    if (ticketId) {
-      try {
-        await TicketNotificationService.notifyObservers(
-          ticketId,
-          [newObserver],
-          {
-            ticketId,
-            type: 'observer_added',
-            authorName: 'Usuário Atual', // Em produção, pegar do contexto de autenticação
-            authorEmail: 'usuario@exemplo.com' // Em produção, pegar do contexto de autenticação
-          }
-        );
-      } catch (error) {
-        console.error('Erro ao enviar notificação de boas-vindas:', error);
-        // Não interromper o fluxo por erro de notificação
-      }
+    if (!ticketId) {
+      setEmailError('ID do ticket não encontrado');
+      return;
     }
-    
-    setManualEmail('');
-    setEmailError('');
-    toast.success('Observador adicionado com sucesso!');
+
+    try {
+      const response = await fetch(`/api/helpdesk/tickets/${ticketId}/observers`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: manualEmail.trim(),
+          tipo: 'email'
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Erro ao adicionar observador');
+      }
+
+      const newObserver = await response.json();
+      onChange([...observers, newObserver]);
+      
+      setManualEmail('');
+      setEmailError('');
+      toast.success('Observador adicionado com sucesso!');
+    } catch (error) {
+      console.error('Erro ao adicionar observador:', error);
+      setEmailError(error instanceof Error ? error.message : 'Erro ao adicionar observador');
+    }
   };
 
   // Adicionar colaborador
@@ -117,41 +119,62 @@ export function ObserversModule({
       return;
     }
 
-    const newObserver: Observer = {
-      id: `colaborador_${colaborador.id}`,
-      email: colaborador.email,
-      name: colaborador.nome,
-      type: 'colaborador'
-    };
-
-    onChange([...observers, newObserver]);
-    
-    // Enviar notificação de boas-vindas para o novo observador
-    if (ticketId) {
-      try {
-        await TicketNotificationService.notifyObservers(
-          ticketId,
-          [newObserver],
-          {
-            ticketId,
-            type: 'observer_added',
-            authorName: 'Usuário Atual', // Em produção, pegar do contexto de autenticação
-            authorEmail: 'usuario@exemplo.com' // Em produção, pegar do contexto de autenticação
-          }
-        );
-      } catch (error) {
-        console.error('Erro ao enviar notificação de boas-vindas:', error);
-        // Não interromper o fluxo por erro de notificação
-      }
+    if (!ticketId) {
+      toast.error('ID do ticket não encontrado');
+      return;
     }
-    
-    setSelectedColaborador('');
-    toast.success(`${colaborador.nome} adicionado como observador!`);
+
+    try {
+      const response = await fetch(`/api/helpdesk/tickets/${ticketId}/observers`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: colaborador.email,
+          tipo: 'colaborador'
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Erro ao adicionar colaborador');
+      }
+
+      const newObserver = await response.json();
+      onChange([...observers, newObserver]);
+      
+      setSelectedColaborador('');
+      toast.success(`${colaborador.nome} adicionado como observador!`);
+    } catch (error) {
+      console.error('Erro ao adicionar colaborador:', error);
+      toast.error(error instanceof Error ? error.message : 'Erro ao adicionar colaborador');
+    }
   };
 
   // Remover observador
-  const removeObserver = (observerId: string) => {
-    onChange(observers.filter(obs => obs.id !== observerId));
+  const removeObserver = async (observerId: string) => {
+    if (!ticketId) {
+      toast.error('ID do ticket não encontrado');
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/helpdesk/tickets/${ticketId}/observers?observerId=${observerId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Erro ao remover observador');
+      }
+
+      onChange(observers.filter(obs => obs.id !== observerId));
+      toast.success('Observador removido com sucesso!');
+    } catch (error) {
+      console.error('Erro ao remover observador:', error);
+      toast.error(error instanceof Error ? error.message : 'Erro ao remover observador');
+    }
   };
 
   // Colaboradores disponíveis (não incluídos ainda)
