@@ -5,6 +5,8 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 
 // Schema para atualização de ticket
+// NOTA: departamentoId foi removido intencionalmente para garantir que tickets
+// permaneçam vinculados ao departamento original, exceto quando explicitamente encaminhados
 const updateTicketSchema = z.object({
   assunto: z.string().min(1, 'Assunto é obrigatório').optional(),
   descricao: z.string().optional(),

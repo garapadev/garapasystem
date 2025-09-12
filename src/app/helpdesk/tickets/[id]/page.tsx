@@ -35,6 +35,7 @@ import { useHelpdeskDepartamentos } from '@/hooks/useHelpdeskDepartamentos';
 import { HelpdeskTicket, HelpdeskMensagem } from '@/hooks/useHelpdesk';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { GrupoHierarquicoCard } from '@/components/helpdesk/GrupoHierarquicoCard';
 
 interface Colaborador {
   id: string;
@@ -85,9 +86,8 @@ export default function TicketViewPage() {
   const ticketId = params.id as string;
   
   const { ticket, loading, error, updateTicket, addMessage, refreshTicket } = useHelpdeskTicket(ticketId);
-  const { data: colaboradoresData } = useColaboradores();
+  const { colaboradores } = useColaboradores();
   const { departamentos } = useHelpdeskDepartamentos();
-  const colaboradores = colaboradoresData?.data || [];
   
   const [isEditing, setIsEditing] = useState(false);
   const [responseContent, setResponseContent] = useState('');
@@ -153,9 +153,13 @@ export default function TicketViewPage() {
       }
     }
   ];
-  const [editData, setEditData] = useState({
-    prioridade: '',
-    status: '',
+  const [editData, setEditData] = useState<{
+    prioridade: 'BAIXA' | 'MEDIA' | 'ALTA' | 'URGENTE';
+    status: 'ABERTO' | 'EM_ANDAMENTO' | 'AGUARDANDO_CLIENTE' | 'RESOLVIDO' | 'FECHADO';
+    responsavelId: string;
+  }>({
+    prioridade: 'BAIXA',
+    status: 'ABERTO',
     responsavelId: ''
   });
   
@@ -547,21 +551,35 @@ export default function TicketViewPage() {
             </CardContent>
           </Card>
           
-          {/* Informações do Departamento */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Building className="h-5 w-5" />
-                <span>Departamento</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm font-medium">{departamentos.find(d => d.id === ticket.departamentoId)?.nome || 'N/A'}</p>
-              {departamentos.find(d => d.id === ticket.departamentoId)?.descricao && (
-                <p className="text-xs text-gray-500 mt-1">{departamentos.find(d => d.id === ticket.departamentoId)?.descricao}</p>
-              )}
-            </CardContent>
-          </Card>
+          {/* Card do Grupo Hierárquico */}
+           <GrupoHierarquicoCard 
+             ticket={{
+               id: ticket.id,
+               numero: ticket.numero.toString(),
+               assunto: ticket.assunto,
+               departamento: {
+                 id: ticket.departamento.id,
+                 nome: ticket.departamento.nome,
+                 cor: '#6B7280',
+                 grupoHierarquicoId: departamentos.find(d => d.id === ticket.departamento.id)?.grupoHierarquico?.id,
+                 grupoHierarquico: departamentos.find(d => d.id === ticket.departamento.id)?.grupoHierarquico ? {
+                   id: departamentos.find(d => d.id === ticket.departamento.id)?.grupoHierarquico?.id || '',
+                   nome: departamentos.find(d => d.id === ticket.departamento.id)?.grupoHierarquico?.nome || '',
+                   ativo: true
+                 } : undefined
+               }
+             }}
+             onEncaminhar={async (novoGrupoId: string, observacao: string) => {
+               try {
+                 // Implementar lógica de encaminhamento do ticket para novo grupo
+                 console.log('Encaminhando ticket para grupo:', novoGrupoId, 'Observação:', observacao);
+                 toast.success('Ticket encaminhado com sucesso!');
+                 await refreshTicket();
+               } catch (error) {
+                 toast.error('Erro ao encaminhar ticket');
+               }
+             }}
+           />
           
           {/* Módulo de Observadores */}
            <ObserversModule

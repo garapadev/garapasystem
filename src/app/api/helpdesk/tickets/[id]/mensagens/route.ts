@@ -109,8 +109,10 @@ export async function POST(
     // Buscar colaborador pelo session user id
     const colaborador = await db.colaborador.findFirst({
       where: {
-        usuario: {
-          id: session.user.id
+        usuarios: {
+          some: {
+            id: session.user.id
+          }
         }
       }
     });

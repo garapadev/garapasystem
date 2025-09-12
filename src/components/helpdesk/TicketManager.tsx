@@ -32,6 +32,7 @@ import {
   Edit,
   Trash2
 } from 'lucide-react';
+import { GrupoHierarquicoCard } from './GrupoHierarquicoCard';
 
 // Interfaces
 interface Ticket {
@@ -44,6 +45,20 @@ interface Ticket {
     id: string;
     nome: string;
     cor: string;
+    grupoHierarquicoId?: string;
+    grupoHierarquico?: {
+      id: string;
+      nome: string;
+      descricao?: string;
+      ativo: boolean;
+      parentId?: string;
+      parent?: {
+        id: string;
+        nome: string;
+        descricao?: string;
+        ativo: boolean;
+      };
+    };
   };
   responsavel?: {
     id: string;
@@ -107,7 +122,7 @@ interface EditingTicketState {
   assunto?: string;
   status?: 'ABERTO' | 'EM_ANDAMENTO' | 'AGUARDANDO_CLIENTE' | 'RESOLVIDO' | 'FECHADO';
   prioridade?: 'BAIXA' | 'MEDIA' | 'ALTA' | 'URGENTE';
-  departamentoId?: string;
+  // departamentoId removido - tickets devem permanecer no departamento original
   responsavelId?: string;
   emailRemetente?: string;
   nomeRemetente?: string;
@@ -173,7 +188,7 @@ export function TicketManager({ className }: TicketManagerProps) {
         ...(priorityFilter !== 'all' && { prioridade: priorityFilter })
       });
       
-      const response = await fetch(`/api/helpdesk/tickets?${params}`);
+      const response = await fetch(`/api/helpdesk/tickets?${params}&includeGrupoHierarquico=true`);
       if (!response.ok) throw new Error('Erro ao buscar tickets');
       
       const data = await response.json();
@@ -220,6 +235,38 @@ export function TicketManager({ className }: TicketManagerProps) {
       });
     }
   }, [toast]);
+
+  const encaminharTicket = async (ticketId: string, novoGrupoId: string, observacao: string) => {
+    try {
+      const response = await fetch(`/api/helpdesk/tickets/${ticketId}/encaminhar`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          grupoHierarquicoId: novoGrupoId,
+          observacao
+        }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Erro ao encaminhar ticket');
+      }
+      
+      toast({
+        title: "Sucesso",
+        description: "Ticket encaminhado com sucesso",
+      });
+    } catch (error) {
+      console.error('Erro ao encaminhar ticket:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao encaminhar ticket",
+        variant: "destructive",
+      });
+      throw error;
+    }
+  };
 
   const createTicket = async () => {
     try {
@@ -309,7 +356,7 @@ export function TicketManager({ className }: TicketManagerProps) {
       assunto: ticket.assunto,
       status: ticket.status,
       prioridade: ticket.prioridade,
-      departamentoId: ticket.departamento.id,
+      // departamentoId removido - tickets permanecem no departamento original
       responsavelId: ticket.responsavel?.id,
       emailRemetente: ticket.emailRemetente,
       nomeRemetente: ticket.nomeRemetente
@@ -332,7 +379,7 @@ export function TicketManager({ className }: TicketManagerProps) {
           assunto: editingTicket.assunto,
           status: editingTicket.status,
           prioridade: editingTicket.prioridade,
-          departamentoId: editingTicket.departamentoId,
+          // departamentoId removido - tickets permanecem no departamento original
           responsavelId: editingTicket.responsavelId,
           emailRemetente: editingTicket.emailRemetente,
           nomeRemetente: editingTicket.nomeRemetente
@@ -761,7 +808,7 @@ export function TicketManager({ className }: TicketManagerProps) {
                       <th className="text-left p-4 font-medium text-gray-900">Ticket</th>
                       <th className="text-left p-4 font-medium text-gray-900">Assunto</th>
                       <th className="text-left p-4 font-medium text-gray-900">Solicitante</th>
-                      <th className="text-left p-4 font-medium text-gray-900">Departamento</th>
+                      <th className="text-left p-4 font-medium text-gray-900">Departamento / Grupo</th>
                       <th className="text-left p-4 font-medium text-gray-900">Status</th>
                       <th className="text-left p-4 font-medium text-gray-900">Prioridade</th>
                       <th className="text-left p-4 font-medium text-gray-900">Data</th>
@@ -797,12 +844,22 @@ export function TicketManager({ className }: TicketManagerProps) {
                           </div>
                         </td>
                         <td className="p-4">
-                          <div className="flex items-center gap-2">
-                            <div 
-                              className="w-3 h-3 rounded-full" 
-                              style={{ backgroundColor: ticket.departamento.cor }}
-                            />
-                            <span className="text-sm text-gray-900">{ticket.departamento.nome}</span>
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-2">
+                              <div 
+                                className="w-3 h-3 rounded-full" 
+                                style={{ backgroundColor: ticket.departamento.cor }}
+                              />
+                              <span className="text-sm text-gray-900">{ticket.departamento.nome}</span>
+                            </div>
+                            {ticket.departamento.grupoHierarquico && (
+                              <div className="text-xs text-gray-500 ml-5">
+                                {ticket.departamento.grupoHierarquico.parent && (
+                                  <span>{ticket.departamento.grupoHierarquico.parent.nome} → </span>
+                                )}
+                                {ticket.departamento.grupoHierarquico.nome}
+                              </div>
+                            )}
                           </div>
                         </td>
                         <td className="p-4">
@@ -949,30 +1006,8 @@ export function TicketManager({ className }: TicketManagerProps) {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="edit-departamento">Departamento</Label>
-                  <Select
-                    value={editingTicket.departamentoId || ''}
-                    onValueChange={(value) => setEditingTicket(prev => ({ ...prev, departamentoId: value }))}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione o departamento" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {departments.map(dept => (
-                        <SelectItem key={dept.id} value={dept.id}>
-                          <div className="flex items-center gap-2">
-                            <div 
-                              className="w-3 h-3 rounded-full" 
-                              style={{ backgroundColor: dept.cor }}
-                            />
-                            {dept.nome}
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                {/* Campo de departamento removido - tickets permanecem no departamento original */}
+                {/* Para transferir tickets entre departamentos, use a funcionalidade de encaminhamento */}
               </div>
               
               <div className="grid grid-cols-2 gap-4">
@@ -1154,17 +1189,26 @@ export function TicketManager({ className }: TicketManagerProps) {
                 </TabsContent>
                 
                 <TabsContent value="details" className="space-y-4">
+                  <div className="grid grid-cols-1 gap-4">
+                    {/* Card de Grupo Hierárquico */}
+                    <GrupoHierarquicoCard 
+                      ticket={selectedTicket}
+                      onEncaminhar={async (novoGrupoId: string, observacao: string) => {
+                        // Implementar lógica de encaminhamento
+                        await encaminharTicket(selectedTicket.id, novoGrupoId, observacao);
+                        // Recarregar dados do ticket
+                        await fetchTickets();
+                        if (selectedTicket) {
+                          const updatedTicket = tickets.find(t => t.id === selectedTicket.id);
+                          if (updatedTicket) {
+                            setSelectedTicket(updatedTicket);
+                          }
+                        }
+                      }}
+                    />
+                  </div>
+                  
                   <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label className="text-sm font-medium">Departamento</Label>
-                      <div className="flex items-center gap-2 mt-1">
-                        <div 
-                          className="w-3 h-3 rounded-full" 
-                          style={{ backgroundColor: selectedTicket.departamento.cor }}
-                        />
-                        {selectedTicket.departamento.nome}
-                      </div>
-                    </div>
                     
                     <div>
                       <Label className="text-sm font-medium">Prioridade</Label>

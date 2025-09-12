@@ -56,7 +56,8 @@ export default function HelpdeskTab() {
       const response = await fetch('/api/helpdesk/departamentos');
       if (response.ok) {
         const data = await response.json();
-        setDepartamentos(data);
+        // A API retorna um objeto com a propriedade 'departamentos'
+        setDepartamentos(data.departamentos || []);
       }
     } catch (error) {
       console.error('Erro ao carregar departamentos:', error);
@@ -146,7 +147,7 @@ export default function HelpdeskTab() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {departamentos.length === 0 ? (
+                {!Array.isArray(departamentos) || departamentos.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
                       Nenhum departamento cadastrado
