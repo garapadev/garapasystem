@@ -517,55 +517,6 @@ export default function TicketViewPage() {
              ticketId={ticketId}
              className=""
            />
-           
-           {/* Timeline de Alterações */}
-           <TicketTimeline
-             events={timelineEvents}
-             className="mt-6"
-           />
-          
-          {/* Timestamps */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Clock className="h-5 w-5" />
-                <span>Cronologia</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div>
-                <p className="text-xs text-gray-500">Criado</p>
-                <p className="text-sm">
-                  {new Date(ticket.createdAt).toLocaleString('pt-BR')}
-                </p>
-              </div>
-              
-              <div>
-                <p className="text-xs text-gray-500">Última Atualização</p>
-                <p className="text-sm">
-                  {new Date(ticket.updatedAt).toLocaleString('pt-BR')}
-                </p>
-              </div>
-              
-              {ticket.dataUltimaResposta && (
-                <div>
-                  <p className="text-xs text-gray-500">Última Resposta</p>
-                  <p className="text-sm">
-                    {new Date(ticket.dataUltimaResposta).toLocaleString('pt-BR')}
-                  </p>
-                </div>
-              )}
-              
-              {ticket.dataFechamento && (
-                <div>
-                  <p className="text-xs text-gray-500">Fechado</p>
-                  <p className="text-sm">
-                    {new Date(ticket.dataFechamento).toLocaleString('pt-BR')}
-                  </p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
         </div>
       </div>
     </div>
