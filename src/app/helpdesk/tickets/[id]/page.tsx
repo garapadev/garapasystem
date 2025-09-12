@@ -10,6 +10,8 @@ import { Textarea } from '@/components/ui/textarea';
 import RichTextEditor from '@/components/helpdesk/RichTextEditor';
 import ObserversModule from '@/components/helpdesk/ObserversModule';
 import TicketTimeline from '@/components/helpdesk/TicketTimeline';
+import { TicketHistoryLog } from '@/components/helpdesk/TicketHistoryLog';
+import { QuickEditControls } from '@/components/helpdesk/QuickEditControls';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -89,7 +91,6 @@ export default function TicketViewPage() {
   const { colaboradores } = useColaboradores();
   const { departamentos } = useHelpdeskDepartamentos();
   
-  const [isEditing, setIsEditing] = useState(false);
   const [responseContent, setResponseContent] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [observers, setObservers] = useState<Array<{
@@ -153,34 +154,10 @@ export default function TicketViewPage() {
       }
     }
   ];
-  const [editData, setEditData] = useState<{
-    prioridade: 'BAIXA' | 'MEDIA' | 'ALTA' | 'URGENTE';
-    status: 'ABERTO' | 'EM_ANDAMENTO' | 'AGUARDANDO_CLIENTE' | 'RESOLVIDO' | 'FECHADO';
-    responsavelId: string;
-  }>({
-    prioridade: 'BAIXA',
-    status: 'ABERTO',
-    responsavelId: ''
-  });
-  
-  useEffect(() => {
-    if (ticket) {
-      setEditData({
-        prioridade: ticket.prioridade,
-        status: ticket.status,
-        responsavelId: ticket.responsavel?.id || ''
-      });
-    }
-  }, [ticket]);
-  
-  const handleUpdateTicket = async () => {
-    try {
-      await updateTicket(editData);
-      setIsEditing(false);
-      toast.success('Ticket atualizado com sucesso!');
-    } catch (error) {
-      toast.error('Erro ao atualizar ticket');
-    }
+  const handleTicketUpdate = (updatedTicket: any) => {
+    // O hook useHelpdeskTicket já atualiza o estado do ticket automaticamente
+    // Esta função é chamada pelo QuickEditControls após uma atualização bem-sucedida
+    refreshTicket();
   };
   
   const handleSendResponse = async () => {
@@ -279,20 +256,10 @@ export default function TicketViewPage() {
           {/* Informações do Ticket */}
           <Card>
             <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center space-x-2">
-                  <Eye className="h-5 w-5" />
-                  <span>Detalhes do Ticket</span>
-                </CardTitle>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setIsEditing(!isEditing)}
-                >
-                  <Edit3 className="h-4 w-4 mr-2" />
-                  {isEditing ? 'Cancelar' : 'Editar'}
-                </Button>
-              </div>
+              <CardTitle className="flex items-center space-x-2">
+                <Eye className="h-5 w-5" />
+                <span>Detalhes do Ticket</span>
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
@@ -301,104 +268,6 @@ export default function TicketViewPage() {
                   {ticket.assunto}
                 </p>
               </div>
-              
-              {/* Controles Editáveis */}
-              {isEditing ? (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                  <div>
-                    <Label htmlFor="prioridade">Prioridade</Label>
-                    <Select
-                      value={editData.prioridade}
-                      onValueChange={(value) => setEditData({...editData, prioridade: value})}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="BAIXA">Baixa</SelectItem>
-                        <SelectItem value="MEDIA">Média</SelectItem>
-                        <SelectItem value="ALTA">Alta</SelectItem>
-                        <SelectItem value="URGENTE">Urgente</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="status">Status</Label>
-                    <Select
-                      value={editData.status}
-                      onValueChange={(value) => setEditData({...editData, status: value})}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="ABERTO">Aberto</SelectItem>
-                        <SelectItem value="EM_ANDAMENTO">Em Andamento</SelectItem>
-                        <SelectItem value="AGUARDANDO_CLIENTE">Aguardando Cliente</SelectItem>
-                        <SelectItem value="RESOLVIDO">Resolvido</SelectItem>
-                        <SelectItem value="FECHADO">Fechado</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="responsavel">Responsável</Label>
-                    <Select
-                      value={editData.responsavelId}
-                      onValueChange={(value) => setEditData({...editData, responsavelId: value})}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecionar responsável" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="">Nenhum</SelectItem>
-                        {colaboradores.map((colaborador) => (
-                          <SelectItem key={colaborador.id} value={colaborador.id}>
-                            {colaborador.nome}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="md:col-span-3 flex justify-end space-x-2">
-                    <Button variant="outline" onClick={() => setIsEditing(false)}>
-                      Cancelar
-                    </Button>
-                    <Button onClick={handleUpdateTicket}>
-                      Salvar Alterações
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <Label className="text-sm font-medium text-gray-700">Prioridade</Label>
-                    <div className="mt-1">
-                      <Badge className={priorityColors[ticket.prioridade]}>
-                        {priorityLabels[ticket.prioridade]}
-                      </Badge>
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <Label className="text-sm font-medium text-gray-700">Status</Label>
-                    <div className="mt-1">
-                      <Badge className={statusColors[ticket.status]}>
-                        {statusLabels[ticket.status]}
-                      </Badge>
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <Label className="text-sm font-medium text-gray-700">Responsável</Label>
-                    <p className="mt-1 text-sm text-gray-900">
-                      {ticket.responsavel ? ticket.responsavel.nome : 'Não atribuído'}
-                    </p>
-                  </div>
-                </div>
-              )}
             </CardContent>
           </Card>
           
@@ -580,6 +449,19 @@ export default function TicketViewPage() {
                }
              }}
            />
+          
+          {/* Controles de Edição Rápida */}
+          <QuickEditControls
+            ticket={ticket}
+            onTicketUpdate={handleTicketUpdate}
+            className="mb-6"
+          />
+          
+          {/* Histórico de Alterações */}
+          <TicketHistoryLog
+            ticketId={ticketId}
+            className="mb-6"
+          />
           
           {/* Módulo de Observadores */}
            <ObserversModule

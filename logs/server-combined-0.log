@@ -3725,3 +3725,19 @@
 2025-09-11T17:49:46: Sincronização parada para configuração cmfbj4vu80001o0l7w12d86v7
 2025-09-11T17:49:46: Todas as sincronizações foram paradas
 2025-09-11T17:49:46: Scheduler de sincronização parado
+2025-09-12T11:57:23:  ⨯ uncaughtException: Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
+2025-09-12T11:57:23:     at <unknown> (Error: listen EADDRINUSE: address already in use 0.0.0.0:3000) {
+2025-09-12T11:57:23:   code: 'EADDRINUSE',
+2025-09-12T11:57:23:   errno: -98,
+2025-09-12T11:57:23:   syscall: 'listen',
+2025-09-12T11:57:23:   address: '0.0.0.0',
+2025-09-12T11:57:23:   port: 3000
+2025-09-12T11:57:23: }
+2025-09-12T11:57:23:  ⨯ uncaughtException:  Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
+2025-09-12T11:57:23:     at <unknown> (Error: listen EADDRINUSE: address already in use 0.0.0.0:3000) {
+2025-09-12T11:57:23:   code: 'EADDRINUSE',
+2025-09-12T11:57:23:   errno: -98,
+2025-09-12T11:57:23:   syscall: 'listen',
+2025-09-12T11:57:23:   address: '0.0.0.0',
+2025-09-12T11:57:23:   port: 3000
+2025-09-12T11:57:23: }

@@ -185,6 +185,7 @@ model Colaborador {
   // Helpdesk
   helpdeskTicketsResponsavel HelpdeskTicket[]
   helpdeskMensagens HelpdeskMensagem[]
+  helpdeskTicketLogs HelpdeskTicketLog[]
   
   @@map("colaboradores")
 }
@@ -588,6 +589,7 @@ model HelpdeskTicket {
   responsavel       Colaborador? @relation(fields: [responsavelId], references: [id])
   
   mensagens         HelpdeskMensagem[]
+  logs              HelpdeskTicketLog[]
   
   @@map("helpdesk_tickets")
 }
@@ -658,4 +660,41 @@ enum HelpdeskTipoConteudo {
   TEXTO
   HTML
   MARKDOWN
+}
+
+enum HelpdeskLogTipo {
+  CRIACAO
+  STATUS_ALTERADO
+  PRIORIDADE_ALTERADA
+  RESPONSAVEL_ALTERADO
+  ASSUNTO_ALTERADO
+  DESCRICAO_ALTERADA
+  MENSAGEM_ADICIONADA
+  ANEXO_ADICIONADO
+  FECHAMENTO
+  REABERTURA
+}
+
+// Log de alterações dos tickets
+model HelpdeskTicketLog {
+  id                String   @id @default(cuid())
+  tipo              HelpdeskLogTipo
+  descricao         String   // Descrição da alteração
+  valorAnterior     String?  // Valor anterior (JSON ou texto)
+  valorNovo         String?  // Novo valor (JSON ou texto)
+  
+  // Informações do autor da alteração
+  autorNome         String
+  autorEmail        String
+  autorId           String?
+  
+  createdAt         DateTime @default(now())
+  
+  // Relacionamentos
+  ticketId          String
+  ticket            HelpdeskTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  
+  autor             Colaborador? @relation(fields: [autorId], references: [id])
+  
+  @@map("helpdesk_ticket_logs")
 }

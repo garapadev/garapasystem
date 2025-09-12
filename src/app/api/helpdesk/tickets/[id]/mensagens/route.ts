@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { db } from '@/lib/db';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import { TicketAuditService } from '@/lib/helpdesk/ticket-audit-service';
 
 // Schema para criação de mensagem
 const createMensagemSchema = z.object({
@@ -147,6 +148,24 @@ export async function POST(
         dataUltimaResposta: new Date()
       }
     });
+
+    // Registrar adição de mensagem no log de auditoria
+    const auditContext = TicketAuditService.getAuditContext(
+      session.user?.name || 'Usuário',
+      session.user?.email || 'usuario@sistema.com',
+      session.user?.id
+    );
+
+    await TicketAuditService.logMessageAdded(
+      params.id,
+      {
+        remetenteNome: data.remetenteNome,
+        remetenteEmail: data.remetenteEmail,
+        isInterno: data.isInterno,
+        conteudo: data.conteudo
+      },
+      auditContext
+    );
 
     return NextResponse.json(mensagem, { status: 201 });
   } catch (error) {

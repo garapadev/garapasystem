@@ -4,6 +4,7 @@ import { db } from '@/lib/db';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { HelpdeskMiddleware } from '@/lib/helpdesk/helpdesk-middleware';
+import { TicketAuditService } from '@/lib/helpdesk/ticket-audit-service';
 
 // Schema para criação de ticket
 const createTicketSchema = z.object({
@@ -47,7 +48,7 @@ async function gerarNumeroTicket(): Promise<number> {
   const ano = new Date().getFullYear();
   
   // Buscar o último ticket do ano
-  const ultimoTicket = await db.HelpdeskTicket.findFirst({
+  const ultimoTicket = await db.helpdeskTicket.findFirst({
     where: {
       numero: {
         gte: parseInt(`${ano}000`),
@@ -138,7 +139,7 @@ export async function GET(request: NextRequest) {
 
     // Buscar tickets
     const [tickets, total] = await Promise.all([
-      db.HelpdeskTicket.findMany({
+      db.helpdeskTicket.findMany({
         where,
         include: {
           cliente: {
@@ -173,7 +174,7 @@ export async function GET(request: NextRequest) {
         skip,
         take: limit,
       }),
-      db.HelpdeskTicket.count({ where })
+      db.helpdeskTicket.count({ where })
     ]);
 
     return NextResponse.json({
@@ -215,7 +216,7 @@ export async function POST(request: NextRequest) {
     const data = createTicketSchema.parse(body) as TicketData;
 
     // Verificar se o departamento existe
-    const departamento = await db.HelpdeskDepartamento.findUnique({
+    const departamento = await db.helpdeskDepartamento.findUnique({
       where: { id: data.departamentoId }
     });
     
@@ -271,7 +272,7 @@ export async function POST(request: NextRequest) {
     const numero = await gerarNumeroTicket();
 
     // Criar ticket
-    const ticket = await db.HelpdeskTicket.create({
+    const ticket = await db.helpdeskTicket.create({
       data: {
         numero,
         assunto: data.assunto,
@@ -311,7 +312,7 @@ export async function POST(request: NextRequest) {
     });
 
     // Criar mensagem inicial do sistema
-    await db.HelpdeskMensagem.create({
+    await db.helpdeskMensagem.create({
       data: {
         ticketId: ticket.id,
         conteudo: data.descricao || 'Ticket criado.',
@@ -320,6 +321,24 @@ export async function POST(request: NextRequest) {
         isInterno: false
       }
     });
+
+    // Registrar criação do ticket no log de auditoria
+    const auditContext = TicketAuditService.getAuditContext(
+      authResult.colaborador?.nome || 'Sistema',
+      authResult.colaborador?.email || 'sistema@helpdesk.com',
+      authResult.colaborador?.id
+    );
+
+    await TicketAuditService.logTicketCreation(
+      ticket.id,
+      {
+        assunto: ticket.assunto,
+        prioridade: ticket.prioridade,
+        status: ticket.status,
+        solicitanteNome: ticket.solicitanteNome
+      },
+      auditContext
+    );
 
     return NextResponse.json(ticket, { status: 201 });
   } catch (error) {

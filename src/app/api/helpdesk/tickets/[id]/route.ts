@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { db } from '@/lib/db';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import { TicketAuditService } from '@/lib/helpdesk/ticket-audit-service';
 
 // Schema para atualização de ticket
 // NOTA: departamentoId foi removido intencionalmente para garantir que tickets
@@ -109,9 +110,18 @@ export async function PUT(
     const body = await request.json();
     const data = updateTicketSchema.parse(body);
 
-    // Verificar se o ticket existe
+    // Verificar se o ticket existe e buscar dados completos para auditoria
     const ticketExistente = await db.helpdeskTicket.findUnique({
-      where: { id: params.id }
+      where: { id: params.id },
+      include: {
+        responsavel: {
+          select: {
+            id: true,
+            nome: true,
+            email: true,
+          }
+        }
+      }
     });
 
     if (!ticketExistente) {
@@ -185,6 +195,33 @@ export async function PUT(
         }
       }
     });
+
+    // Registrar alterações no log de auditoria
+    if (Object.keys(updateData).length > 0) {
+      const auditContext = TicketAuditService.getAuditContext(
+        session.user?.name || 'Usuário',
+        session.user?.email || 'usuario@sistema.com',
+        session.user?.id
+      );
+
+      await TicketAuditService.logTicketUpdate(
+        params.id,
+        ticketExistente,
+        ticket,
+        auditContext
+      );
+
+      // Log específico para fechamento/reabertura
+      if (data.status === 'FECHADO' || data.status === 'RESOLVIDO') {
+        if (ticketExistente.status !== 'FECHADO' && ticketExistente.status !== 'RESOLVIDO') {
+          await TicketAuditService.logTicketClosure(params.id, auditContext);
+        }
+      } else if (ticketExistente.status === 'FECHADO' || ticketExistente.status === 'RESOLVIDO') {
+        if (data.status && data.status !== 'FECHADO' && data.status !== 'RESOLVIDO') {
+          await TicketAuditService.logTicketReopening(params.id, auditContext);
+        }
+      }
+    }
 
     return NextResponse.json(ticket);
   } catch (error) {

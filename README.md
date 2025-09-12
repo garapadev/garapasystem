@@ -8,6 +8,20 @@ Plataforma completa de gestão empresarial desenvolvida com Next.js 15, TypeScri
 
 ## ✨ Principais Funcionalidades
 
+### 🎫 Sistema de Helpdesk Avançado
+
+O GarapaSystem oferece um sistema completo de helpdesk com automação inteligente e integração total com email.
+
+**Características:**
+- **Criação Automática de Tickets**: Integração IMAP para criação automática via email
+- **Sistema de Auditoria**: Rastreamento completo de todas as alterações nos tickets
+- **Dashboard de Métricas**: Estatísticas em tempo real com gráficos interativos
+- **Notificações Inteligentes**: Sistema de notificações para observadores e responsáveis
+- **Integração com Clientes**: Associação automática de tickets com base de clientes
+- **Respostas Automáticas**: Confirmação automática por email na criação de tickets
+- **Gerenciamento de Departamentos**: Organização por departamentos com emails específicos
+- **Histórico Completo**: Registro detalhado de todas as interações e mudanças
+
 ### 🔐 Sistema de Autenticação e Segurança
 
 O GarapaSystem oferece um sistema robusto de autenticação com NextAuth.js, garantindo segurança e controle de acesso granular.
@@ -117,7 +131,15 @@ Painel completo de configurações e monitoramento do sistema.
 - **IMAP Client** - Conexão e sincronização com servidores IMAP
 - **Email Parser** - Processamento e análise de mensagens de email
 
+### Arquitetura
+- **Domain-Driven Design (DDD)** - Arquitetura orientada ao domínio
+- **Clean Architecture** - Separação clara de responsabilidades
+- **Repository Pattern** - Abstração da camada de dados
+- **Service Layer** - Lógica de negócio centralizada
+- **Event-Driven Architecture** - Comunicação assíncrona entre módulos
+
 ### Infraestrutura
+- **PM2** - Gerenciador de processos para produção
 - **Docker** - Containerização para deploy consistente
 - **Rate Limiting** - Proteção contra abuso de API
 - **Middleware de Segurança** - Proteção de rotas e endpoints
@@ -231,6 +253,7 @@ npm start
 
 ### 🔧 Comandos Úteis
 
+#### Desenvolvimento
 ```bash
 # Resetar banco de dados
 npx prisma migrate reset
@@ -249,6 +272,27 @@ npm run lint
 
 # Formatar código
 npm run format
+```
+
+#### Produção com PM2
+```bash
+# Iniciar todos os serviços
+npm run pm2:start
+
+# Verificar status dos processos
+npm run pm2:status
+
+# Ver logs em tempo real
+npm run pm2:logs
+
+# Reiniciar serviços
+npm run pm2:restart
+
+# Parar todos os serviços
+npm run pm2:stop
+
+# Remover processos do PM2
+npm run pm2:delete
 ```
 
 ### 🐳 Execução com Docker
@@ -284,6 +328,17 @@ docker-compose down
 - Teste a conectividade com `telnet servidor porta`
 
 ##### 🆕 Atualizações Recentes
+
+#### Versão 0.1.34 - Janeiro 2025
+- 🎫 **Sistema de Helpdesk Completo**: Gestão avançada de tickets com automação
+- 🤖 **Automação IMAP**: Criação automática de tickets via monitoramento de email
+- 📊 **Dashboard de Helpdesk**: Métricas e estatísticas em tempo real
+- 🔍 **Sistema de Auditoria**: Rastreamento completo de alterações nos tickets
+- 🔔 **Notificações Inteligentes**: Sistema de notificações para observadores
+- 📧 **Integração com Email**: Respostas automáticas e confirmações
+- 🏢 **Gestão de Departamentos**: Organização por departamentos com emails específicos
+- ⚙️ **Migração para PM2**: Gerenciamento profissional de processos em produção
+- 🧹 **Limpeza de Código**: Remoção de scripts desnecessários e otimizações
 
 #### Versão 0.1.33 - Janeiro 2025
 - 📧 **Sistema de Webmail Completo**: Cliente de email integrado com suporte IMAP/SMTP
@@ -381,21 +436,45 @@ const response = await fetch('/api/clientes', {
 ```
 garapasystem/
 ├── 📁 src/
-│   ├── 📁 app/               # Páginas e rotas (App Router)
-│   │   ├── 📁 api/           # Endpoints da API
-│   │   ├── 📁 clientes/      # Interface de clientes
-│   │   ├── 📁 colaboradores/ # Interface de colaboradores
-│   │   ├── 📁 configuracoes/ # Configurações do sistema
-│   │   ├── 📁 usuarios/      # Interface de usuários
-│   │   └── 📁 webmail/       # Sistema de webmail
-│   ├── 📁 components/        # Componentes reutilizáveis
-│   ├── 📁 hooks/             # Hooks customizados
-│   ├── 📁 lib/               # Utilitários e configurações
-│   └── 📁 types/             # Definições de tipos
-├── 📁 prisma/                # Configuração do banco de dados
-├── 📁 public/                # Arquivos estáticos
-├── docker-compose.yml        # Orquestração Docker
-└── package.json              # Dependências e scripts
+│   ├── 📁 app/                    # Páginas e rotas (App Router)
+│   │   ├── 📁 api/                # Endpoints da API
+│   │   │   ├── 📁 helpdesk/       # APIs do sistema de helpdesk
+│   │   │   ├── 📁 clientes/       # APIs de clientes
+│   │   │   ├── 📁 email/          # APIs de webmail
+│   │   │   └── 📁 auth/           # APIs de autenticação
+│   │   ├── 📁 helpdesk/           # Interface do sistema de helpdesk
+│   │   ├── 📁 clientes/           # Interface de clientes
+│   │   ├── 📁 colaboradores/      # Interface de colaboradores
+│   │   ├── 📁 configuracoes/      # Configurações do sistema
+│   │   ├── 📁 usuarios/           # Interface de usuários
+│   │   └── 📁 webmail/            # Sistema de webmail
+│   ├── 📁 components/             # Componentes reutilizáveis
+│   │   ├── 📁 helpdesk/           # Componentes do helpdesk
+│   │   ├── 📁 ui/                 # Componentes base (shadcn/ui)
+│   │   └── 📁 webmail/            # Componentes do webmail
+│   ├── 📁 hooks/                  # Hooks customizados
+│   │   ├── useHelpdesk.ts         # Hook para gestão de helpdesk
+│   │   ├── useTickets.ts          # Hook para gestão de tickets
+│   │   └── useWebmail.ts          # Hook para webmail
+│   ├── 📁 lib/                    # Utilitários e configurações
+│   │   ├── 📁 helpdesk/           # Serviços do helpdesk
+│   │   │   ├── ticket-automation-service.ts
+│   │   │   ├── email-response-system.ts
+│   │   │   └── notification-service.ts
+│   │   ├── 📁 email/              # Serviços de email
+│   │   ├── 📁 auth/               # Configurações de autenticação
+│   │   └── db.ts                  # Configuração do Prisma
+│   └── 📁 types/                  # Definições de tipos TypeScript
+├── 📁 prisma/                     # Configuração do banco de dados
+│   ├── schema.prisma              # Schema do banco
+│   ├── 📁 migrations/             # Migrações do banco
+│   └── seed.ts                    # Dados iniciais
+├── 📁 public/                     # Arquivos estáticos
+├── 📁 screenshots/                # Screenshots da aplicação
+├── ecosystem.config.js            # Configuração do PM2
+├── docker-compose.yml             # Orquestração Docker
+├── server.ts                      # Servidor customizado
+└── package.json                   # Dependências e scripts
 ```
 
 ## 🧪 Scripts Disponíveis
@@ -410,6 +489,17 @@ npm run start        # Servidor de produção
 npm run db:generate  # Gera cliente Prisma
 npm run db:migrate   # Executa migrações
 npm run db:seed      # Popula banco com dados iniciais
+
+# PM2 (Produção)
+npm run pm2:start           # Inicia todos os processos
+npm run pm2:stop            # Para todos os processos
+npm run pm2:restart         # Reinicia todos os processos
+npm run pm2:reload          # Recarrega sem downtime
+npm run pm2:status          # Status dos processos
+npm run pm2:logs            # Logs em tempo real
+npm run pm2:start:server    # Apenas servidor web
+npm run pm2:start:helpdesk  # Apenas worker helpdesk
+npm run pm2:start:email     # Apenas worker email
 
 # Docker
 docker-compose up -d    # Inicia todos os serviços
