@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import bcrypt from 'bcryptjs';
 
 export async function GET(
   request: NextRequest,
@@ -63,6 +64,23 @@ export async function PUT(
         { error: 'Nome e email são obrigatórios' },
         { status: 400 }
       );
+    }
+
+    // Validar senha se alterarSenha for true
+    if (body.alterarSenha) {
+      if (!body.novaSenha || body.novaSenha.length < 6) {
+        return NextResponse.json(
+          { error: 'Nova senha deve ter pelo menos 6 caracteres' },
+          { status: 400 }
+        );
+      }
+
+      if (body.novaSenha !== body.confirmarSenha) {
+        return NextResponse.json(
+          { error: 'Confirmação de senha não confere' },
+          { status: 400 }
+        );
+      }
     }
 
     // Verificar se colaborador existe
@@ -160,9 +178,67 @@ export async function PUT(
             nome: true,
             descricao: true
           }
+        },
+        usuarios: {
+          select: {
+            id: true,
+            email: true,
+            ativo: true
+          }
         }
       }
     });
+
+    // Sincronizar email do usuário se o email do colaborador foi alterado
+    if (body.email !== existingColaborador.email && colaborador.usuarios.length > 0) {
+      try {
+        await db.usuario.update({
+          where: { id: colaborador.usuarios[0].id },
+          data: {
+            email: body.email,
+            nome: body.nome // Também sincronizar o nome
+          }
+        });
+      } catch (userUpdateError) {
+        console.error('Erro ao sincronizar dados do usuário:', userUpdateError);
+        // Continua mesmo se houver erro na sincronização do usuário
+      }
+    }
+
+    // Se o colaborador não tem usuário associado e foi solicitada a criação
+    if (colaborador.usuarios.length === 0 && body.criarUsuario && body.senhaNovoUsuario) {
+      try {
+        const hashedPassword = await bcrypt.hash(body.senhaNovoUsuario, 10);
+        
+        await db.usuario.create({
+          data: {
+            email: body.email,
+            senha: hashedPassword,
+            nome: body.nome,
+            ativo: true,
+            colaboradorId: colaborador.id
+          }
+        });
+      } catch (userCreateError) {
+        console.error('Erro ao criar usuário associado:', userCreateError);
+        return NextResponse.json(
+          { error: 'Erro ao criar usuário associado' },
+          { status: 500 }
+        );
+      }
+    }
+
+    // Atualizar senha do usuário se solicitado
+    if (body.alterarSenha && colaborador.usuarios.length > 0) {
+      const hashedPassword = await bcrypt.hash(body.novaSenha, 10);
+      
+      await db.usuario.update({
+        where: { id: colaborador.usuarios[0].id },
+        data: {
+          senha: hashedPassword
+        }
+      });
+    }
 
     return NextResponse.json(colaborador);
   } catch (error) {
