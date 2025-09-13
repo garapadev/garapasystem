@@ -141,7 +141,23 @@ export async function GET(request: NextRequest) {
     const [tickets, total] = await Promise.all([
       db.helpdeskTicket.findMany({
         where,
-        include: {
+        select: {
+          id: true,
+          numero: true,
+          assunto: true,
+          descricao: true,
+          prioridade: true,
+          status: true,
+          solicitanteNome: true,
+          solicitanteEmail: true,
+          solicitanteTelefone: true,
+          dataAbertura: true,
+          dataFechamento: true,
+          dataUltimaResposta: true,
+          createdAt: true,
+          updatedAt: true,
+          departamentoId: true,
+          responsavelId: true,
           cliente: {
             select: {
               id: true,

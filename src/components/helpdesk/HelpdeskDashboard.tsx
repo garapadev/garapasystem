@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
@@ -20,6 +20,11 @@ interface HelpdeskDashboardProps {
 }
 
 export function HelpdeskDashboard({ className }: HelpdeskDashboardProps) {
+  const [lastCheck, setLastCheck] = useState<string>('');
+
+  useEffect(() => {
+    setLastCheck(new Date().toLocaleString('pt-BR'));
+  }, []);
 
   return (
     <div className={`space-y-6 ${className}`}>
@@ -282,7 +287,7 @@ export function HelpdeskDashboard({ className }: HelpdeskDashboardProps) {
           
           <div className="mt-4 pt-4 border-t">
             <p className="text-xs text-muted-foreground">
-              Última verificação: {new Date().toLocaleString('pt-BR')}
+              Última verificação: {lastCheck || 'Carregando...'}
             </p>
           </div>
         </CardContent>

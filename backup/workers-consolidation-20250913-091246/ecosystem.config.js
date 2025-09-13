@@ -82,7 +82,32 @@ module.exports = {
       restart_delay: 4000,
       cron_restart: '0 */4 * * *' // Restart a cada 4 horas para limpeza de memória
     },
-
+    {
+      name: 'automation-worker',
+      script: './src/scripts/start-ticket-automation.ts',
+      interpreter: 'npx',
+      interpreter_args: 'tsx',
+      instances: 1,
+      exec_mode: 'fork',
+      watch: false,
+      max_memory_restart: '256M',
+      env: {
+        NODE_ENV: 'development',
+        WORKER_TYPE: 'ticket_automation'
+      },
+      env_production: {
+        NODE_ENV: 'production',
+        WORKER_TYPE: 'ticket_automation'
+      },
+      error_file: './logs/automation-error.log',
+      out_file: './logs/automation-out.log',
+      log_file: './logs/automation-combined.log',
+      time: true,
+      autorestart: true,
+      max_restarts: 10,
+      min_uptime: '10s',
+      restart_delay: 4000
+    }
   ],
 
   deploy: {

@@ -20,10 +20,11 @@ interface HelpdeskTicket {
   };
   categoria?: string;
   tags?: string;
-  criadoEm: Date;
-  atualizadoEm: Date;
-  resolvidoEm?: Date;
-  fechadoEm?: Date;
+  dataAbertura: Date;
+  dataFechamento?: Date;
+  dataUltimaResposta?: Date;
+  createdAt: Date;
+  updatedAt: Date;
   responsavelId?: number;
   responsavel?: {
     id: number;
@@ -83,13 +84,14 @@ export function useTickets(options: UseTicketsOptions = {}): UseTicketsReturn {
 
       const data = await response.json();
       
-      // Converter strings de data para objetos Date e mapear campos
+      // Converter strings de data para objetos Date
       const ticketsWithDates = data.tickets.map((ticket: any) => ({
         ...ticket,
-        criadoEm: new Date(ticket.createdAt || ticket.dataAbertura),
-        atualizadoEm: new Date(ticket.updatedAt),
-        resolvidoEm: ticket.dataFechamento ? new Date(ticket.dataFechamento) : undefined,
-        fechadoEm: ticket.dataFechamento ? new Date(ticket.dataFechamento) : undefined,
+        dataAbertura: new Date(ticket.dataAbertura),
+        dataFechamento: ticket.dataFechamento ? new Date(ticket.dataFechamento) : undefined,
+        dataUltimaResposta: ticket.dataUltimaResposta ? new Date(ticket.dataUltimaResposta) : undefined,
+        createdAt: new Date(ticket.createdAt),
+        updatedAt: new Date(ticket.updatedAt),
       }));
 
       setTickets(ticketsWithDates);
@@ -125,10 +127,11 @@ export function useTickets(options: UseTicketsOptions = {}): UseTicketsReturn {
       // Converter datas
       const ticketWithDates = {
         ...newTicket,
-        criadoEm: new Date(newTicket.criadoEm),
-        atualizadoEm: new Date(newTicket.atualizadoEm),
-        resolvidoEm: newTicket.resolvidoEm ? new Date(newTicket.resolvidoEm) : undefined,
-        fechadoEm: newTicket.fechadoEm ? new Date(newTicket.fechadoEm) : undefined,
+        dataAbertura: new Date(newTicket.dataAbertura),
+        dataFechamento: newTicket.dataFechamento ? new Date(newTicket.dataFechamento) : undefined,
+        dataUltimaResposta: newTicket.dataUltimaResposta ? new Date(newTicket.dataUltimaResposta) : undefined,
+        createdAt: new Date(newTicket.createdAt),
+        updatedAt: new Date(newTicket.updatedAt),
       };
 
       // Atualizar lista local
@@ -169,10 +172,11 @@ export function useTickets(options: UseTicketsOptions = {}): UseTicketsReturn {
       // Converter datas
       const ticketWithDates = {
         ...updatedTicket,
-        criadoEm: new Date(updatedTicket.criadoEm),
-        atualizadoEm: new Date(updatedTicket.atualizadoEm),
-        resolvidoEm: updatedTicket.resolvidoEm ? new Date(updatedTicket.resolvidoEm) : undefined,
-        fechadoEm: updatedTicket.fechadoEm ? new Date(updatedTicket.fechadoEm) : undefined,
+        dataAbertura: new Date(updatedTicket.dataAbertura),
+        dataFechamento: updatedTicket.dataFechamento ? new Date(updatedTicket.dataFechamento) : undefined,
+        dataUltimaResposta: updatedTicket.dataUltimaResposta ? new Date(updatedTicket.dataUltimaResposta) : undefined,
+        createdAt: new Date(updatedTicket.createdAt),
+        updatedAt: new Date(updatedTicket.updatedAt),
       };
 
       // Atualizar lista local
@@ -234,6 +238,9 @@ export function useTickets(options: UseTicketsOptions = {}): UseTicketsReturn {
           'Categoria',
           'Prioridade',
           'Status',
+          'Data Abertura',
+          'Data Fechamento',
+          'Última Resposta',
           'Criado em',
           'Atualizado em',
           'Responsável',
@@ -251,8 +258,11 @@ export function useTickets(options: UseTicketsOptions = {}): UseTicketsReturn {
             `"${ticket.categoria || ''}"`,
             `"${ticket.prioridade}"`,
             `"${ticket.status}"`,
-            `"${ticket.criadoEm.toLocaleDateString('pt-BR')}"`,
-            `"${ticket.atualizadoEm.toLocaleDateString('pt-BR')}"`,
+            `"${ticket.dataAbertura.toLocaleDateString('pt-BR')}"`,
+            `"${ticket.dataFechamento?.toLocaleDateString('pt-BR') || ''}"`,
+            `"${ticket.dataUltimaResposta?.toLocaleDateString('pt-BR') || ''}"`,
+            `"${ticket.createdAt.toLocaleDateString('pt-BR')}"`,
+            `"${ticket.updatedAt.toLocaleDateString('pt-BR')}"`,
             `"${ticket.responsavel?.nome || ''}"`,
             `"${ticket.tags || ''}"`
           ].join(','))

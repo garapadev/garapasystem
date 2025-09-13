@@ -9,6 +9,8 @@ import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
+import { format, parseISO, isValid } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import { 
   Plus, 
   Settings, 
@@ -350,7 +352,15 @@ export function DepartmentManager({ className }: DepartmentManagerProps) {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleString('pt-BR');
+    if (!dateString) return '-';
+    
+    try {
+      const date = parseISO(dateString);
+      if (!isValid(date)) return '-';
+      return format(date, 'dd/MM/yyyy HH:mm', { locale: ptBR });
+    } catch {
+      return '-';
+    }
   };
 
   // Efeitos

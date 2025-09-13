@@ -48,26 +48,6 @@ interface PoolStats {
   averageResponseTime: number;
 }
 
-interface AutomationConfig {
-  enabled: boolean;
-  checkInterval: number; // em minutos
-  maxEmailsPerCheck: number;
-  retryAttempts: number;
-  retryDelay: number; // em segundos
-}
-
-interface DepartmentStats {
-  departmentId: string;
-  departmentName: string;
-  emailsProcessed: number;
-  ticketsCreated: number;
-  emailsIgnored: number;
-  clientsAssociated: number;
-  clientsCreated: number;
-  errors: number;
-  lastCheck: Date;
-}
-
 class ConsolidatedHelpdeskWorker extends EventEmitter {
   private db: PrismaClient;
   private isRunning: boolean = false;
@@ -91,17 +71,6 @@ class ConsolidatedHelpdeskWorker extends EventEmitter {
     circuitBreakerOpen: 0,
     averageResponseTime: 0
   };
-  
-  private config: AutomationConfig = {
-    enabled: true,
-    checkInterval: 1, // 1 minuto (convertido de 60000ms)
-    maxEmailsPerCheck: 50,
-    retryAttempts: 5,
-    retryDelay: 30 // 30 segundos
-  };
-  
-  private departmentStats: Map<string, DepartmentStats> = new Map();
-  private startTime: Date = new Date();
 
   constructor() {
     super();
@@ -144,10 +113,10 @@ class ConsolidatedHelpdeskWorker extends EventEmitter {
 
     // Agendar processamento periódico
     this.intervalId = setInterval(async () => {
-      if (this.isRunning && this.config.enabled) {
+      if (this.isRunning) {
         await this.processAllDepartments();
       }
-    }, this.config.checkInterval * 60 * 1000); // Converter minutos para milissegundos
+    }, 60000); // 1 minuto
 
     console.log('Worker iniciado com sucesso');
   }
@@ -205,21 +174,6 @@ class ConsolidatedHelpdeskWorker extends EventEmitter {
       for (const dept of departments) {
         if (!this.isRunning) break;
         
-        // Inicializar estatísticas se não existirem
-        if (!this.departmentStats.has(dept.id)) {
-          this.departmentStats.set(dept.id, {
-            departmentId: dept.id,
-            departmentName: dept.nome,
-            emailsProcessed: 0,
-            ticketsCreated: 0,
-            emailsIgnored: 0,
-            clientsAssociated: 0,
-            clientsCreated: 0,
-            errors: 0,
-            lastCheck: new Date()
-          });
-        }
-        
         try {
           await this.processDepartmentEmails({
             id: dept.id,
@@ -231,21 +185,9 @@ class ConsolidatedHelpdeskWorker extends EventEmitter {
             imapSecure: dept.imapSecure,
             syncInterval: dept.syncInterval
           });
-          
-          // Atualizar timestamp da última verificação
-          const stats = this.departmentStats.get(dept.id);
-          if (stats) {
-            stats.lastCheck = new Date();
-          }
         } catch (error) {
           console.error(`Erro ao processar departamento ${dept.nome}:`, error);
           this.emit('departmentError', { departmentId: dept.id, error });
-          
-          // Incrementar contador de erros
-          const stats = this.departmentStats.get(dept.id);
-          if (stats) {
-            stats.errors++;
-          }
         }
       }
     } catch (error) {
@@ -406,9 +348,6 @@ class ConsolidatedHelpdeskWorker extends EventEmitter {
         messageId: parsed.messageId || `${uid}-${Date.now()}`
       };
 
-      // Atualizar estatísticas - email processado
-      this.updateDepartmentStats(department.id, 'emailsProcessed');
-      
       // Verificar se o ticket já existe
       const existingTicket = await this.db.helpdeskTicket.findFirst({
         where: {
@@ -418,15 +357,11 @@ class ConsolidatedHelpdeskWorker extends EventEmitter {
 
       if (existingTicket) {
         console.log(`Email ${emailData.messageId} já processado`);
-        this.updateDepartmentStats(department.id, 'emailsIgnored');
         return;
       }
 
       // Criar novo ticket
       await this.createTicket(emailData, department);
-      
-      // Atualizar estatísticas - ticket criado
-      this.updateDepartmentStats(department.id, 'ticketsCreated');
       
       // Marcar email como lido
       await connection.messageFlagsAdd(uid, ['\\Seen']);
@@ -580,64 +515,31 @@ class ConsolidatedHelpdeskWorker extends EventEmitter {
   }
 
   getStatus(): object {
-    const uptime = Date.now() - this.startTime.getTime();
     return {
       isRunning: this.isRunning,
-      config: this.config,
-      departmentCount: this.departmentStats.size,
-      uptime: uptime,
-      connectionPool: {
-        totalConnections: Object.keys(this.connectionPool).length,
-        activeConnections: Object.values(this.connectionPool).filter(p => p.isActive).length,
-        stats: this.poolStats
+      poolStats: this.poolStats,
+      connectionPool: Object.fromEntries(
+        Object.entries(this.connectionPool).map(([id, entry]) => [
+          id,
+          {
+            isActive: entry.isActive,
+            lastUsed: entry.lastUsed,
+            retryCount: entry.retryCount,
+            healthCheckCount: entry.healthCheckCount,
+            circuitBreakerState: entry.circuitBreakerState,
+            consecutiveFailures: entry.consecutiveFailures,
+            lastFailure: entry.lastFailure
+          }
+        ])
+      ),
+      healthMetrics: {
+        totalHealthChecks: Object.values(this.connectionPool)
+          .reduce((sum, entry) => sum + entry.healthCheckCount, 0),
+        averageResponseTime: this.poolStats.averageResponseTime,
+        circuitBreakersOpen: this.poolStats.circuitBreakerOpen
       },
-      intervals: {
-        main: this.intervalId !== null,
-        cleanup: this.cleanupIntervalId !== null,
-        healthCheck: this.healthCheckIntervalId !== null
-      },
-      retryManager: this.retryManager.getRetryStats()
+      retryStats: this.retryManager.getRetryStats()
     };
-  }
-  
-  /**
-   * Obtém estatísticas de todos os departamentos
-   */
-  getStats(): DepartmentStats[] {
-    return Array.from(this.departmentStats.values());
-  }
-  
-  /**
-   * Atualiza configuração do worker
-   */
-  updateConfig(newConfig: Partial<AutomationConfig>): void {
-    this.config = { ...this.config, ...newConfig };
-    
-    // Se o intervalo mudou e o worker está rodando, reiniciar o intervalo
-    if (newConfig.checkInterval && this.isRunning && this.intervalId) {
-      clearInterval(this.intervalId);
-      this.intervalId = setInterval(async () => {
-        if (this.isRunning) {
-          await this.processAllDepartments();
-        }
-      }, this.config.checkInterval * 60 * 1000);
-    }
-    
-    console.log('Configuração atualizada:', this.config);
-  }
-  
-  /**
-   * Atualiza estatísticas de um departamento
-   */
-  private updateDepartmentStats(
-    departmentId: string, 
-    type: 'emailsProcessed' | 'ticketsCreated' | 'emailsIgnored' | 'clientsAssociated' | 'clientsCreated' | 'errors',
-    increment: number = 1
-  ): void {
-    const stats = this.departmentStats.get(departmentId);
-    if (stats) {
-      stats[type] += increment;
-    }
   }
 }
 

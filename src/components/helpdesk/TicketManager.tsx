@@ -11,6 +11,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
+import { format, parseISO, isValid } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import { 
   Search, 
   Plus, 
@@ -44,7 +46,7 @@ interface Ticket {
   departamento: {
     id: string;
     nome: string;
-    cor: string;
+    cor?: string;
     grupoHierarquicoId?: string;
     grupoHierarquico?: {
       id: string;
@@ -62,17 +64,21 @@ interface Ticket {
   };
   responsavel?: {
     id: string;
-    name: string;
+    nome: string;
     email: string;
   };
-  emailRemetente?: string;
-  nomeRemetente?: string;
-  criadoEm: string;
-  atualizadoEm: string;
+  solicitanteEmail?: string;
+  solicitanteNome?: string;
+  solicitanteTelefone?: string;
+  dataAbertura: string;
+  dataFechamento?: string;
+  dataUltimaResposta?: string;
+  createdAt: string;
+  updatedAt: string;
   mensagens?: Message[];
   _count: {
     mensagens: number;
-    anexos: number;
+    anexos?: number;
   };
 }
 
@@ -87,7 +93,7 @@ interface Message {
   remetenteEmail?: string;
   autor?: {
     id: string;
-    name: string;
+    nome: string;
     email: string;
   };
   anexos?: {
@@ -108,13 +114,24 @@ interface Department {
   };
 }
 
+interface TicketCardProps {
+  id: string;
+  numero: string;
+  assunto: string;
+  departamento: {
+    id: string;
+    nome: string;
+    cor: string;
+  };
+}
+
 interface CreateTicketData {
   assunto: string;
   conteudo: string;
   departamentoId: string;
   prioridade: 'BAIXA' | 'MEDIA' | 'ALTA' | 'URGENTE';
-  emailRemetente?: string;
-  nomeRemetente?: string;
+  solicitanteEmail?: string;
+  solicitanteNome?: string;
 }
 
 interface EditingTicketState {
@@ -124,8 +141,8 @@ interface EditingTicketState {
   prioridade?: 'BAIXA' | 'MEDIA' | 'ALTA' | 'URGENTE';
   // departamentoId removido - tickets devem permanecer no departamento original
   responsavelId?: string;
-  emailRemetente?: string;
-  nomeRemetente?: string;
+  solicitanteEmail?: string;
+  solicitanteNome?: string;
 }
 
 interface TicketManagerProps {
@@ -358,8 +375,8 @@ export function TicketManager({ className }: TicketManagerProps) {
       prioridade: ticket.prioridade,
       // departamentoId removido - tickets permanecem no departamento original
       responsavelId: ticket.responsavel?.id,
-      emailRemetente: ticket.emailRemetente,
-      nomeRemetente: ticket.nomeRemetente
+      solicitanteEmail: ticket.solicitanteEmail,
+      solicitanteNome: ticket.solicitanteNome
     });
     setShowEditDialog(true);
   };
@@ -381,8 +398,8 @@ export function TicketManager({ className }: TicketManagerProps) {
           prioridade: editingTicket.prioridade,
           // departamentoId removido - tickets permanecem no departamento original
           responsavelId: editingTicket.responsavelId,
-          emailRemetente: editingTicket.emailRemetente,
-          nomeRemetente: editingTicket.nomeRemetente
+          solicitanteEmail: editingTicket.solicitanteEmail,
+          solicitanteNome: editingTicket.solicitanteNome
         }),
       });
       
@@ -488,7 +505,15 @@ export function TicketManager({ className }: TicketManagerProps) {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleString('pt-BR');
+    if (!dateString) return '-';
+    
+    try {
+      const date = parseISO(dateString);
+      if (!isValid(date)) return '-';
+      return format(date, 'dd/MM/yyyy HH:mm', { locale: ptBR });
+    } catch {
+      return '-';
+    }
   };
 
   return (
@@ -628,8 +653,8 @@ export function TicketManager({ className }: TicketManagerProps) {
                         <Input
                           id="email"
                           type="email"
-                          value={createForm.emailRemetente || ''}
-                          onChange={(e) => setCreateForm(prev => ({ ...prev, emailRemetente: e.target.value }))}
+                          value={createForm.solicitanteEmail || ''}
+                          onChange={(e) => setCreateForm(prev => ({ ...prev, solicitanteEmail: e.target.value }))}
                           placeholder="email@exemplo.com"
                         />
                       </div>
@@ -639,8 +664,8 @@ export function TicketManager({ className }: TicketManagerProps) {
                       <Label htmlFor="nome">Nome do Solicitante</Label>
                       <Input
                         id="nome"
-                        value={createForm.nomeRemetente || ''}
-                        onChange={(e) => setCreateForm(prev => ({ ...prev, nomeRemetente: e.target.value }))}
+                        value={createForm.solicitanteNome || ''}
+                        onChange={(e) => setCreateForm(prev => ({ ...prev, solicitanteNome: e.target.value }))}
                         placeholder="Nome completo"
                       />
                     </div>
@@ -835,11 +860,11 @@ export function TicketManager({ className }: TicketManagerProps) {
                         </td>
                         <td className="p-4">
                           <div className="text-sm">
-                            {ticket.nomeRemetente && (
-                              <div className="font-medium text-gray-900">{ticket.nomeRemetente}</div>
+                            {ticket.solicitanteNome && (
+                              <div className="font-medium text-gray-900">{ticket.solicitanteNome}</div>
                             )}
-                            {ticket.emailRemetente && (
-                              <div className="text-gray-500">{ticket.emailRemetente}</div>
+                            {ticket.solicitanteEmail && (
+                              <div className="text-gray-500">{ticket.solicitanteEmail}</div>
                             )}
                           </div>
                         </td>
@@ -874,7 +899,7 @@ export function TicketManager({ className }: TicketManagerProps) {
                         </td>
                         <td className="p-4">
                           <div className="text-sm text-gray-600">
-                            {formatDate(ticket.criadoEm)}
+                            {formatDate(ticket.dataAbertura || ticket.createdAt)}
                           </div>
                         </td>
                         <td className="p-4">
@@ -885,7 +910,7 @@ export function TicketManager({ className }: TicketManagerProps) {
                                 {ticket._count.mensagens}
                               </div>
                             )}
-                            {ticket._count.anexos > 0 && (
+                            {ticket._count.anexos && ticket._count.anexos > 0 && (
                               <div className="flex items-center gap-1">
                                 <Paperclip className="h-4 w-4" />
                                 {ticket._count.anexos}
@@ -1015,8 +1040,8 @@ export function TicketManager({ className }: TicketManagerProps) {
                   <Label htmlFor="edit-nome">Nome do Solicitante</Label>
                   <Input
                     id="edit-nome"
-                    value={editingTicket.nomeRemetente || ''}
-                    onChange={(e) => setEditingTicket(prev => ({ ...prev, nomeRemetente: e.target.value }))}
+                    value={editingTicket.solicitanteNome || ''}
+                    onChange={(e) => setEditingTicket(prev => ({ ...prev, solicitanteNome: e.target.value }))}
                     placeholder="Nome completo"
                   />
                 </div>
@@ -1025,8 +1050,8 @@ export function TicketManager({ className }: TicketManagerProps) {
                   <Input
                     id="edit-email"
                     type="email"
-                    value={editingTicket.emailRemetente || ''}
-                    onChange={(e) => setEditingTicket(prev => ({ ...prev, emailRemetente: e.target.value }))}
+                    value={editingTicket.solicitanteEmail || ''}
+                    onChange={(e) => setEditingTicket(prev => ({ ...prev, solicitanteEmail: e.target.value }))}
                     placeholder="email@exemplo.com"
                   />
                 </div>
@@ -1102,7 +1127,7 @@ export function TicketManager({ className }: TicketManagerProps) {
                         <div className="flex items-start justify-between mb-2">
                           <div className="flex items-center gap-2">
                             <strong>
-                              {message.autor?.name || message.remetenteNome || 'Sistema'}
+                              {message.autor?.nome || message.remetenteNome || 'Sistema'}
                             </strong>
                             {message.visibilidade === 'INTERNA' && (
                               <Badge variant="secondary" className="text-xs">
@@ -1192,7 +1217,13 @@ export function TicketManager({ className }: TicketManagerProps) {
                   <div className="grid grid-cols-1 gap-4">
                     {/* Card de Grupo Hierárquico */}
                     <GrupoHierarquicoCard 
-                      ticket={selectedTicket}
+                      ticket={{
+                        ...selectedTicket,
+                        departamento: {
+                          ...selectedTicket.departamento,
+                          cor: selectedTicket.departamento.cor || '#6B7280'
+                        }
+                      }}
                       onEncaminhar={async (novoGrupoId: string, observacao: string) => {
                         // Implementar lógica de encaminhamento
                         await encaminharTicket(selectedTicket.id, novoGrupoId, observacao);
@@ -1219,32 +1250,32 @@ export function TicketManager({ className }: TicketManagerProps) {
                     
                     <div>
                       <Label className="text-sm font-medium">Criado em</Label>
-                      <p className="text-sm mt-1">{formatDate(selectedTicket.criadoEm)}</p>
+                      <p className="text-sm mt-1">{formatDate(selectedTicket.dataAbertura || selectedTicket.createdAt)}</p>
                     </div>
                     
                     <div>
                       <Label className="text-sm font-medium">Atualizado em</Label>
-                      <p className="text-sm mt-1">{formatDate(selectedTicket.atualizadoEm)}</p>
+                      <p className="text-sm mt-1">{formatDate(selectedTicket.updatedAt)}</p>
                     </div>
                     
-                    {selectedTicket.nomeRemetente && (
+                    {selectedTicket.solicitanteNome && (
                       <div>
                         <Label className="text-sm font-medium">Solicitante</Label>
-                        <p className="text-sm mt-1">{selectedTicket.nomeRemetente}</p>
+                        <p className="text-sm mt-1">{selectedTicket.solicitanteNome}</p>
                       </div>
                     )}
                     
-                    {selectedTicket.emailRemetente && (
+                    {selectedTicket.solicitanteEmail && (
                       <div>
                         <Label className="text-sm font-medium">Email</Label>
-                        <p className="text-sm mt-1">{selectedTicket.emailRemetente}</p>
+                        <p className="text-sm mt-1">{selectedTicket.solicitanteEmail}</p>
                       </div>
                     )}
                     
                     {selectedTicket.responsavel && (
                       <div>
                         <Label className="text-sm font-medium">Responsável</Label>
-                        <p className="text-sm mt-1">{selectedTicket.responsavel.name}</p>
+                        <p className="text-sm mt-1">{selectedTicket.responsavel.nome}</p>
                       </div>
                     )}
                   </div>
@@ -1322,8 +1353,8 @@ export function TicketManager({ className }: TicketManagerProps) {
                 <Label htmlFor="nome-remetente">Nome do Solicitante</Label>
                 <Input
                   id="nome-remetente"
-                  value={createForm.nomeRemetente || ''}
-                  onChange={(e) => setCreateForm(prev => ({ ...prev, nomeRemetente: e.target.value }))}
+                  value={createForm.solicitanteNome || ''}
+                  onChange={(e) => setCreateForm(prev => ({ ...prev, solicitanteNome: e.target.value }))}
                   placeholder="Nome completo"
                 />
               </div>
@@ -1333,8 +1364,8 @@ export function TicketManager({ className }: TicketManagerProps) {
                 <Input
                   id="email-remetente"
                   type="email"
-                  value={createForm.emailRemetente || ''}
-                  onChange={(e) => setCreateForm(prev => ({ ...prev, emailRemetente: e.target.value }))}
+                  value={createForm.solicitanteEmail || ''}
+                  onChange={(e) => setCreateForm(prev => ({ ...prev, solicitanteEmail: e.target.value }))}
                   placeholder="email@exemplo.com"
                 />
               </div>

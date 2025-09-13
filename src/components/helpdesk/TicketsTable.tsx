@@ -72,10 +72,11 @@ interface HelpdeskTicket {
   };
   categoria?: string;
   tags?: string;
-  criadoEm: Date;
-  atualizadoEm: Date;
-  resolvidoEm?: Date;
-  fechadoEm?: Date;
+  dataAbertura: Date;
+  dataFechamento?: Date;
+  dataUltimaResposta?: Date;
+  createdAt: Date;
+  updatedAt: Date;
   responsavelId?: number;
   responsavel?: {
     id: number;
@@ -166,7 +167,7 @@ export function TicketsTable({
   const permissions = useHelpdeskPermissions();
   const [filters, setFilters] = useState<FilterConfig>(INITIAL_FILTERS);
   const [sortConfig, setSortConfig] = useState<SortConfig>({
-    key: 'criadoEm',
+    key: 'dataAbertura',
     direction: 'desc',
   });
   const [showFilters, setShowFilters] = useState(false);
@@ -193,7 +194,7 @@ export function TicketsTable({
   // Extrair opções únicas para os filtros baseado nos tickets acessíveis
   const filterOptions = useMemo(() => {
     const departamentos = Array.from(
-      new Set(accessibleTickets.map(t => t.departamento?.nome).filter(Boolean))
+      new Set(accessibleTickets.map(t => t.departamento?.nome).filter((nome): nome is string => Boolean(nome)))
     ).sort();
     
     const categorias = Array.from(
@@ -251,13 +252,13 @@ export function TicketsTable({
       // Filtros de data
       if (filters.dataInicio) {
         const dataInicio = new Date(filters.dataInicio);
-        if (ticket.criadoEm < dataInicio) return false;
+        if (ticket.dataAbertura < dataInicio) return false;
       }
       
       if (filters.dataFim) {
         const dataFim = new Date(filters.dataFim);
         dataFim.setHours(23, 59, 59, 999); // Incluir o dia todo
-        if (ticket.criadoEm > dataFim) return false;
+        if (ticket.dataAbertura > dataFim) return false;
       }
 
       return true;
@@ -618,12 +619,12 @@ export function TicketsTable({
                 
                 <TableHead 
                   className="cursor-pointer hover:bg-gray-50"
-                  onClick={() => handleSort('criadoEm')}
+                  onClick={() => handleSort('dataAbertura')}
                 >
                   <div className="flex items-center gap-1">
                     <Calendar className="h-4 w-4" />
                     Criado em
-                    {sortConfig.key === 'criadoEm' && (
+                    {sortConfig.key === 'dataAbertura' && (
                       <span className="text-xs">
                         {sortConfig.direction === 'asc' ? '↑' : '↓'}
                       </span>
@@ -657,8 +658,11 @@ export function TicketsTable({
                   </TableCell>
                 </TableRow>
               ) : (
-                filteredAndSortedTickets.map((ticket) => (
-                  <TableRow key={ticket.id} className="hover:bg-gray-50">
+                filteredAndSortedTickets.map((ticket, index) => (
+                  <TableRow 
+                    key={ticket.id} 
+                    className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}
+                  >
                     <TableCell className="font-medium">
                       #{ticket.numero}
                     </TableCell>
@@ -676,8 +680,8 @@ export function TicketsTable({
                     
                     <TableCell>
                       <div>
-                        <div className="font-medium">{ticket.solicitanteNome}</div>
-                        <div className="text-sm text-gray-500">{ticket.solicitanteEmail}</div>
+                        <div className="font-medium">{ticket.solicitanteNome || '-'}</div>
+                        <div className="text-sm text-gray-500">{ticket.solicitanteEmail || '-'}</div>
                       </div>
                     </TableCell>
                     
@@ -695,10 +699,10 @@ export function TicketsTable({
                     
                     <TableCell>
                       <div className="text-sm">
-                        {formatSafeDate(ticket.criadoEm, 'dd/MM/yyyy')}
+                        {formatSafeDate(ticket.dataAbertura, 'dd/MM/yyyy')}
                       </div>
                       <div className="text-xs text-gray-500">
-                        {formatSafeDate(ticket.criadoEm, 'HH:mm')}
+                        {formatSafeDate(ticket.dataAbertura, 'HH:mm')}
                       </div>
                     </TableCell>
                     

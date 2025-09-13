@@ -12,7 +12,8 @@
     "db:migrate": "prisma migrate dev",
     "db:reset": "prisma migrate reset",
     "db:seed": "tsx prisma/seed.ts",
-    "pm2:start": "pm2 start ecosystem.config.js",
+    "pm2:start": "./scripts/pm2-safe-start.sh",
+    "pm2:start-unsafe": "pm2 start ecosystem.config.js",
     "pm2:stop": "pm2 stop ecosystem.config.js",
     "pm2:restart": "pm2 restart ecosystem.config.js",
     "pm2:reload": "pm2 reload ecosystem.config.js",
@@ -20,8 +21,9 @@
     "pm2:logs": "pm2 logs",
     "pm2:monit": "pm2 monit",
     "pm2:status": "pm2 status",
-    "pm2:dev": "pm2 start ecosystem.config.js --env development",
-    "pm2:prod": "pm2 start ecosystem.config.js --env production"
+    "pm2:dev": "./scripts/pm2-safe-start.sh",
+    "pm2:prod": "./scripts/pm2-safe-start-prod.sh",
+    "pm2:clean-restart": "pm2 stop all && pm2 delete all && rm -rf .next && npm run build && pm2 start ecosystem.config.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",
