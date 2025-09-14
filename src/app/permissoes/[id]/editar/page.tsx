@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft, Save, Shield } from 'lucide-react';
 import Link from 'next/link';
+import { useRecursos } from '@/hooks/useRecursos';
 
 // Dados mockados para exemplo
 const mockPermissao = {
@@ -21,16 +22,7 @@ const mockPermissao = {
   createdAt: '2024-01-15'
 };
 
-// Opções para recursos e ações
-const recursos = [
-  'clientes',
-  'colaboradores',
-  'grupos',
-  'perfis',
-  'sistema',
-  'relatorios',
-  'webmail'
-];
+// Opções para ações
 
 const acoes = [
   { value: 'criar', label: 'Criar' },
@@ -46,6 +38,9 @@ export default function EditarPermissaoPage() {
   const router = useRouter();
   const [formData, setFormData] = useState(mockPermissao);
   const [loading, setLoading] = useState(true);
+  
+  // Buscar recursos dinamicamente
+  const { recursos, loading: recursosLoading } = useRecursos();
 
   useEffect(() => {
     // Simulando busca da permissão pelo ID
@@ -151,9 +146,9 @@ export default function EditarPermissaoPage() {
               <CardContent className="space-y-4">
                 <div>
                   <Label htmlFor="recurso">Recurso *</Label>
-                  <Select value={formData.recurso} onValueChange={(value) => handleChange('recurso', value)}>
+                  <Select value={formData.recurso} onValueChange={(value) => handleChange('recurso', value)} disabled={recursosLoading}>
                     <SelectTrigger>
-                      <SelectValue />
+                      <SelectValue placeholder={recursosLoading ? "Carregando recursos..." : "Selecione o recurso"} />
                     </SelectTrigger>
                     <SelectContent>
                       {recursos.map((recurso) => (

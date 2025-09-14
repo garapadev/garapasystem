@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, Search, Edit, Trash2, Eye, Shield, Loader2, Filter } from 'lucide-react';
 import { usePermissoes } from '@/hooks/usePermissoes';
+import { useRecursos } from '@/hooks/useRecursos';
 import { useAuth } from '@/hooks/useAuth';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -71,18 +72,8 @@ export default function PermissoesPage() {
     recurso: recursoFilter || undefined
   });
 
-  // Lista de recursos disponíveis
-  const recursos = [
-    'clientes',
-    'colaboradores', 
-    'dashboard',
-    'grupos',
-    'perfis',
-    'permissoes',
-    'sistema',
-    'usuarios',
-    'webmail'
-  ];
+  // Buscar recursos dinamicamente
+  const { recursos, loading: recursosLoading } = useRecursos();
 
   const handleSearch = (value: string) => {
     setSearchTerm(value);

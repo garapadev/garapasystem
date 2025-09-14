@@ -9,19 +9,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft, Save, Shield } from 'lucide-react';
+import { useRecursos } from '@/hooks/useRecursos';
 import Link from 'next/link';
 
-// Opções para recursos e ações
-const recursos = [
-  'clientes',
-  'colaboradores',
-  'grupos',
-  'perfis',
-  'sistema',
-  'relatorios',
-  'webmail'
-];
-
+// Opções para ações
 const acoes = [
   { value: 'criar', label: 'Criar' },
   { value: 'ler', label: 'Ler/Visualizar' },
@@ -33,6 +24,7 @@ const acoes = [
 
 export default function NovaPermissaoPage() {
   const router = useRouter();
+  const { recursos, loading: recursosLoading } = useRecursos();
   const [formData, setFormData] = useState({
     nome: '',
     descricao: '',
@@ -136,9 +128,9 @@ export default function NovaPermissaoPage() {
               <CardContent className="space-y-4">
                 <div>
                   <Label htmlFor="recurso">Recurso *</Label>
-                  <Select value={formData.recurso} onValueChange={(value) => handleChange('recurso', value)}>
+                  <Select value={formData.recurso} onValueChange={(value) => handleChange('recurso', value)} disabled={recursosLoading}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Selecione o recurso" />
+                      <SelectValue placeholder={recursosLoading ? "Carregando recursos..." : "Selecione o recurso"} />
                     </SelectTrigger>
                     <SelectContent>
                       {recursos.map((recurso) => (
