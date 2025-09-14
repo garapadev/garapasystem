@@ -104,10 +104,18 @@ export default function TicketViewPage() {
   useEffect(() => {
     const fetchObservers = async () => {
       try {
-        const response = await fetch(`/api/helpdesk/tickets/${ticketId}/observers`);
+        const response = await fetch(`/api/helpdesk/tickets/${ticketId}/observers`, {
+          method: 'GET',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
         if (response.ok) {
           const data = await response.json();
           setObservers(data.observers || []);
+        } else {
+          console.error('Erro ao buscar observadores:', response.status, response.statusText);
         }
       } catch (error) {
         console.error('Erro ao buscar observadores:', error);
@@ -126,7 +134,13 @@ export default function TicketViewPage() {
   useEffect(() => {
     const fetchTimelineEvents = async () => {
       try {
-        const response = await fetch(`/api/helpdesk/tickets/${ticketId}/logs`);
+        const response = await fetch(`/api/helpdesk/tickets/${ticketId}/logs`, {
+          method: 'GET',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
         if (response.ok) {
           const data = await response.json();
           // Converter logs para formato do timeline
@@ -146,6 +160,8 @@ export default function TicketViewPage() {
             }
           }));
           setTimelineEvents(events);
+        } else {
+          console.error('Erro ao buscar logs do timeline:', response.status, response.statusText);
         }
       } catch (error) {
         console.error('Erro ao buscar eventos do timeline:', error);

@@ -56,14 +56,20 @@ export function useUsuarios(params: UseUsuariosParams = {}): UseUsuariosReturn {
       if (params.limit) searchParams.append('limit', params.limit.toString())
       if (params.search) searchParams.append('search', params.search)
 
-      const response = await fetch(`/api/usuarios?${searchParams.toString()}`)
+      const response = await fetch(`/api/usuarios?${searchParams.toString()}`, {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
       
       if (!response.ok) {
         throw new Error(`Erro ${response.status}: ${response.statusText}`)
       }
 
       const data = await response.json()
-      setUsuarios(data.usuarios || [])
+      setUsuarios(data.data || [])
       setMeta(data.meta || null)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro desconhecido')
@@ -77,6 +83,10 @@ export function useUsuarios(params: UseUsuariosParams = {}): UseUsuariosReturn {
   const deleteUsuario = async (id: string) => {
     const response = await fetch(`/api/usuarios/${id}`, {
       method: 'DELETE',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
     })
 
     if (!response.ok) {
@@ -123,6 +133,7 @@ export async function updateUsuario(id: string, data: {
 }) {
   const response = await fetch(`/api/usuarios/${id}`, {
     method: 'PUT',
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
     },
@@ -148,7 +159,13 @@ export function useUsuario(id: string) {
       setLoading(true)
       setError(null)
 
-      const response = await fetch(`/api/usuarios/${id}`)
+      const response = await fetch(`/api/usuarios/${id}`, {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
       
       if (!response.ok) {
         if (response.status === 404) {

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import bcrypt from 'bcryptjs';
 
 export async function GET(
   request: NextRequest,
@@ -133,9 +134,8 @@ export async function PUT(
 
     // Atualizar senha apenas se fornecida
     if (body.senha) {
-      // Em produção, você deve hash a nova senha
-      // updateData.senha = await bcrypt.hash(body.senha, 10);
-      updateData.senha = body.senha;
+      // Hash da nova senha com bcrypt
+      updateData.senha = await bcrypt.hash(body.senha, 10);
     }
 
     // Atualizar usuário

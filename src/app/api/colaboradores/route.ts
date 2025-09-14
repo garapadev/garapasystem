@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import bcrypt from 'bcryptjs';
 
 export async function GET(request: NextRequest) {
   try {
@@ -99,6 +100,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Se criarUsuario for true, senha é obrigatória
+    if (body.criarUsuario && !body.senhaAcesso) {
+      return NextResponse.json(
+        { error: 'Senha é obrigatória quando criar usuário está marcado' },
+        { status: 400 }
+      );
+    }
+
     // Verificar se email já existe
     const existingColaborador = await db.colaborador.findUnique({
       where: { email: body.email }
@@ -179,9 +188,47 @@ export async function POST(request: NextRequest) {
             nome: true,
             descricao: true
           }
+        },
+        usuarios: {
+          select: {
+            id: true,
+            email: true,
+            ativo: true
+          }
         }
       }
     });
+
+    // Criar usuário apenas se solicitado
+    if (body.criarUsuario) {
+      try {
+        let senhaUsuario = body.senhaAcesso;
+        
+        // Se não foi fornecida uma senha específica, gerar uma senha padrão
+        if (!senhaUsuario) {
+          senhaUsuario = '123456'; // Senha padrão que pode ser alterada depois
+        }
+        
+        const hashedPassword = await bcrypt.hash(senhaUsuario, 10);
+        
+        await db.usuario.create({
+          data: {
+            email: body.email,
+            senha: hashedPassword,
+            nome: body.nome,
+            ativo: true,
+            colaboradorId: colaborador.id
+          }
+        });
+      } catch (userError) {
+        console.error('Erro ao criar usuário:', userError);
+        // Não falha a criação do colaborador, apenas avisa
+        return NextResponse.json({
+          ...colaborador,
+          warning: 'Colaborador criado, mas houve erro ao criar usuário de acesso'
+        }, { status: 201 });
+      }
+    }
 
     return NextResponse.json(colaborador, { status: 201 });
   } catch (error) {

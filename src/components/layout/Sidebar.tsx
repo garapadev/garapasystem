@@ -39,13 +39,13 @@ const navigation: NavigationItem[] = [
     name: 'Webmail', 
     href: '/webmail', 
     icon: Mail,
-    requiredPermission: { recurso: 'emails', acao: 'ler' }
+    requiredPermission: { recurso: 'webmail', acao: 'email.read' }
   },
   { 
     name: 'Helpdesk', 
     href: '/helpdesk', 
     icon: Headphones,
-    requiredPermission: { recurso: 'helpdesk', acao: 'ler' }
+    requiredPermission: { recurso: 'helpdesk', acao: 'visualizar' }
   },
   { 
     name: 'Clientes', 

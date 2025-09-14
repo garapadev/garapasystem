@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { ArrowLeft, Save, UserCircle, Building2, Shield, Loader2 } from 'lucide-react';
+import { ArrowLeft, Save, UserCircle, Building2, Shield, Loader2, Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 import { createColaborador } from '@/hooks/useColaboradores';
 import { usePerfis } from '@/hooks/usePerfis';
@@ -23,6 +23,7 @@ export default function NovoColaboradorPage() {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     nome: '',
     email: '',
@@ -32,7 +33,9 @@ export default function NovoColaboradorPage() {
     dataAdmissao: '',
     ativo: true,
     perfilId: '',
-    grupoHierarquicoId: ''
+    grupoHierarquicoId: '',
+    senhaAcesso: '',
+    criarUsuario: false
   });
 
   const { perfis, loading: perfisLoading } = usePerfis({ page: 1, limit: 100 });
@@ -53,7 +56,8 @@ export default function NovoColaboradorPage() {
         ...(formData.telefone && { telefone: formData.telefone }),
         ...(formData.documento && { documento: formData.documento }),
         ...(formData.perfilId && { perfilId: formData.perfilId }),
-        ...(formData.grupoHierarquicoId && { grupoHierarquicoId: formData.grupoHierarquicoId })
+        ...(formData.grupoHierarquicoId && { grupoHierarquicoId: formData.grupoHierarquicoId }),
+        ...(formData.criarUsuario && formData.senhaAcesso && { senhaAcesso: formData.senhaAcesso, criarUsuario: true })
       };
 
       await createColaborador(colaboradorData);
@@ -119,6 +123,7 @@ export default function NovoColaboradorPage() {
                   <Label htmlFor="nome">Nome Completo *</Label>
                   <Input
                     id="nome"
+                    name="nome"
                     value={formData.nome}
                     onChange={(e) => handleChange('nome', e.target.value)}
                     required
@@ -128,6 +133,7 @@ export default function NovoColaboradorPage() {
                   <Label htmlFor="email">Email *</Label>
                   <Input
                     id="email"
+                    name="email"
                     type="email"
                     value={formData.email}
                     onChange={(e) => handleChange('email', e.target.value)}
@@ -138,6 +144,7 @@ export default function NovoColaboradorPage() {
                   <Label htmlFor="telefone">Telefone</Label>
                   <Input
                     id="telefone"
+                    name="telefone"
                     value={formData.telefone}
                     onChange={(e) => handleChange('telefone', e.target.value)}
                   />
@@ -146,6 +153,7 @@ export default function NovoColaboradorPage() {
                   <Label htmlFor="documento">CPF</Label>
                   <Input
                     id="documento"
+                    name="documento"
                     value={formData.documento}
                     onChange={(e) => handleChange('documento', e.target.value)}
                     placeholder="000.000.000-00"
@@ -167,6 +175,7 @@ export default function NovoColaboradorPage() {
                   <Label htmlFor="cargo">Cargo *</Label>
                   <Input
                     id="cargo"
+                    name="cargo"
                     value={formData.cargo}
                     onChange={(e) => handleChange('cargo', e.target.value)}
                     required
@@ -176,6 +185,7 @@ export default function NovoColaboradorPage() {
                   <Label htmlFor="dataAdmissao">Data de Admissão</Label>
                   <Input
                     id="dataAdmissao"
+                    name="dataAdmissao"
                     type="date"
                     value={formData.dataAdmissao}
                     onChange={(e) => handleChange('dataAdmissao', e.target.value)}
@@ -226,13 +236,60 @@ export default function NovoColaboradorPage() {
                     </SelectContent>
                   </Select>
                 </div>
+                
+                {/* Checkbox para criar usuário */}
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="criarUsuario"
+                    checked={formData.criarUsuario}
+                    onChange={(e) => handleChange('criarUsuario', e.target.checked)}
+                    className="rounded border-gray-300"
+                  />
+                  <Label htmlFor="criarUsuario" className="text-sm font-medium">
+                    Criar usuário de acesso ao sistema
+                  </Label>
+                </div>
+                
+                {/* Campo de senha - só aparece se checkbox estiver marcado */}
+                {formData.criarUsuario && (
+                  <div>
+                    <Label htmlFor="senhaAcesso">Senha de Acesso *</Label>
+                    <div className="relative">
+                      <Input
+                        id="senhaAcesso"
+                        name="senhaAcesso"
+                        type={showPassword ? 'text' : 'password'}
+                        value={formData.senhaAcesso}
+                        onChange={(e) => handleChange('senhaAcesso', e.target.value)}
+                        placeholder="Digite a senha de acesso"
+                        required={formData.criarUsuario}
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                )}
+                
                 <div className="p-4 bg-gray-50 rounded-lg">
-                  <h4 className="font-medium mb-2">Informações sobre Perfis</h4>
+                  <h4 className="font-medium mb-2">Informações sobre Perfis e Acesso</h4>
                   <ul className="text-sm text-gray-600 space-y-1">
                     <li>• O perfil define as permissões do colaborador</li>
                     <li>• Perfis são criados na seção de Permissões</li>
                     <li>• Um colaborador só pode ter um perfil</li>
-                    <li>• As permissões podem ser alteradas a qualquer momento</li>
+                    <li>• Marque "Criar usuário" para gerar acesso ao sistema automaticamente</li>
+                    <li>• O usuário será criado com o email do colaborador</li>
                   </ul>
                 </div>
               </CardContent>

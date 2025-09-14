@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import bcrypt from 'bcryptjs';
 
 export async function GET(request: NextRequest) {
   try {
@@ -118,11 +119,14 @@ export async function POST(request: NextRequest) {
     // Em uma implementação real, você deve hash a senha
     // const hashedPassword = await bcrypt.hash(body.senha, 10);
 
+    // Criptografar senha antes de salvar
+    const hashedPassword = await bcrypt.hash(body.senha, 10);
+    
     // Criar usuário
     const usuario = await db.usuario.create({
       data: {
         email: body.email,
-        senha: body.senha, // Em produção, usar hash
+        senha: hashedPassword,
         nome: body.nome,
         ativo: body.ativo !== false, // padrão true
         colaboradorId: body.colaboradorId || null

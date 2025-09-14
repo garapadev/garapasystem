@@ -114,15 +114,10 @@ export default function UsuariosPage() {
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Usuários</h1>
             <p className="text-muted-foreground">
-              Gerencie os usuários do sistema
+              Visualize os usuários do sistema. Para editar, acesse o colaborador associado.
             </p>
           </div>
-          {canAccess.usuarios.create && (
-            <Button onClick={() => router.push('/usuarios/novo')}>
-              <Plus className="mr-2 h-4 w-4" />
-              Novo Usuário
-            </Button>
-          )}
+          {/* Botão removido - usuários são criados através do cadastro de colaboradores */}
         </div>
 
         {/* Filtros */}
@@ -222,15 +217,16 @@ export default function UsuariosPage() {
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center space-x-2">
-                            {canAccess.usuarios.update && (
-                              <Button 
-                                variant="ghost" 
-                                size="sm"
-                                onClick={() => router.push(`/usuarios/${usuario.id}/editar`)}
-                              >
-                                <Edit className="h-4 w-4" />
-                              </Button>
-                            )}
+                            {canAccess.usuarios.update && usuario.colaborador && (
+                               <Button 
+                                 variant="ghost" 
+                                 size="sm"
+                                 onClick={() => router.push(`/colaboradores/${usuario.colaborador!.id}/editar`)}
+                                 title="Editar colaborador associado"
+                               >
+                                 <Edit className="h-4 w-4" />
+                               </Button>
+                             )}
                             {canAccess.usuarios.delete && (
                               <AlertDialog>
                                 <AlertDialogTrigger asChild>
