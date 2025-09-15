@@ -162,13 +162,31 @@ O sistema utiliza PM2 para gerenciar múltiplos processos:
 
 ## 📸 Screenshots
 
-As capturas de tela das funcionalidades estão disponíveis na pasta `/screenshots/`:
+### 🏠 Homepage e Dashboard
+<img src="screenshots/homepage-2025-09-15T12-59-00-285Z.png" alt="Homepage" width="400"/>
+<img src="screenshots/dashboard-principal-2025-09-06T14-11-55-405Z.png" alt="Dashboard Principal" width="400"/>
 
-- Homepage da aplicação
-- Sistema de tarefas
-- Interface do helpdesk
-- Gestão de clientes
-- Interface de webmail
+### 📋 Sistema de Tarefas
+<img src="screenshots/tasks-page-2025-09-15T12-59-09-537Z.png" alt="Sistema de Tarefas" width="400"/>
+
+### 🎫 Helpdesk
+<img src="screenshots/helpdesk-page-2025-09-15T12-59-22-092Z.png" alt="Sistema de Helpdesk" width="400"/>
+
+### 👥 Gestão de Clientes
+<img src="screenshots/clientes-page-2025-09-15T12-59-32-897Z.png" alt="Gestão de Clientes" width="400"/>
+<img src="screenshots/clientes-gestao-2025-09-06T14-12-07-966Z.png" alt="Interface de Clientes" width="400"/>
+
+### 📧 Webmail
+<img src="screenshots/webmail-page-2025-09-15T12-59-43-594Z.png" alt="Interface de Webmail" width="400"/>
+<img src="screenshots/webmail_initial_state-2025-09-10T14-37-02-030Z.png" alt="Estado Inicial do Webmail" width="400"/>
+<img src="screenshots/email_clicked_state-2025-09-10T14-37-30-141Z.png" alt="Email Selecionado" width="400"/>
+
+### 🔐 Autenticação
+<img src="screenshots/login_page-2025-09-10T14-38-36-919Z.png" alt="Página de Login" width="400"/>
+
+### ⚙️ Configurações e API
+<img src="screenshots/api-config-completo-2025-09-06T14-18-41-758Z.png" alt="Configuração de API" width="400"/>
+<img src="screenshots/pipeline-vendas-completo-2025-09-06T14-18-23-046Z.png" alt="Pipeline de Vendas" width="400"/>
 
 ## 🔒 Segurança
 
