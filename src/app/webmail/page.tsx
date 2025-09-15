@@ -28,9 +28,11 @@ import {
   Paperclip,
   ChevronLeft,
   ChevronRight,
-  Edit
+  Edit,
+  CheckSquare
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { EmailToTaskDialog } from '@/components/tasks/EmailToTaskDialog';
 
 interface EmailFolder {
   id: string;
@@ -789,6 +791,23 @@ export default function WebmailPage() {
                       >
                         <Forward className="h-3 w-3" />
                       </Button>
+                      
+                      <EmailToTaskDialog
+                        emailId={selectedEmail.id}
+                        emailSubject={selectedEmail.subject}
+                        onTaskCreated={(task) => {
+                          toast.success('Tarefa criada com sucesso!');
+                        }}
+                      >
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-7 w-7 p-0"
+                          title="Transformar em Tarefa"
+                        >
+                          <CheckSquare className="h-3 w-3" />
+                        </Button>
+                      </EmailToTaskDialog>
                       
                       <Button
                         onClick={() => deleteEmail(selectedEmail.id)}

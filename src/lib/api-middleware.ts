@@ -170,7 +170,23 @@ export class ApiMiddleware {
       'PUT:/api/webhooks',
       'DELETE:/api/webhooks',
       'GET:/api/logs',
-      'POST:/api/webhooks/test'
+      'POST:/api/webhooks/test',
+      // Endpoints de tarefas
+      'GET:/api/tasks',
+      'POST:/api/tasks',
+      'PUT:/api/tasks',
+      'PATCH:/api/tasks',
+      'DELETE:/api/tasks',
+      'GET:/api/tasks/dashboard',
+      'GET:/api/tasks/calendar',
+      'PATCH:/api/tasks/calendar',
+      'GET:/api/tasks/recurrence',
+      'POST:/api/tasks/recurrence',
+      'PUT:/api/tasks/recurrence',
+      'DELETE:/api/tasks/recurrence',
+      'GET:/api/tasks/automation/stats',
+      'GET:/api/tasks/automation/summary',
+      'POST:/api/tasks/from-email'
     ];
 
     const endpointKey = `${method}:${endpoint}`;
@@ -249,7 +265,14 @@ export class ApiMiddleware {
       'PUT:/api/configuracoes': ['configuracoes.write'],
       
       // Logs (somente leitura)
-      'GET:/api/logs': ['logs.read']
+      'GET:/api/logs': ['logs.read'],
+      
+      // Tarefas
+      'GET:/api/tasks': ['tasks.read', 'tasks.write'],
+      'POST:/api/tasks': ['tasks.write'],
+      'PUT:/api/tasks': ['tasks.write'],
+      'PATCH:/api/tasks': ['tasks.write'],
+      'DELETE:/api/tasks': ['tasks.delete']
     };
 
     const permissionKey = `${method}:${endpoint}`;
@@ -422,7 +445,12 @@ export const API_PERMISSIONS = {
   CONFIGURACOES_WRITE: 'configuracoes.write',
   
   // Logs
-  LOGS_READ: 'logs.read'
+  LOGS_READ: 'logs.read',
+  
+  // Tarefas
+  TASKS_READ: 'tasks.read',
+  TASKS_WRITE: 'tasks.write',
+  TASKS_DELETE: 'tasks.delete'
 } as const;
 
 export type ApiPermission = typeof API_PERMISSIONS[keyof typeof API_PERMISSIONS];

@@ -413,13 +413,13 @@ export function TicketsTable({
               <label className="text-sm font-medium mb-1 block">Status</label>
               <Select
                 value={filters.status}
-                onValueChange={(value) => setFilters(prev => ({ ...prev, status: value }))}
+                onValueChange={(value) => setFilters(prev => ({ ...prev, status: value === 'all' ? '' : value }))}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Todos" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos</SelectItem>
+                  <SelectItem value="all">Todos</SelectItem>
                   {Object.entries(STATUS_CONFIG).map(([key, config]) => (
                     <SelectItem key={key} value={key}>
                       {config.label}
@@ -434,13 +434,13 @@ export function TicketsTable({
               <label className="text-sm font-medium mb-1 block">Prioridade</label>
               <Select
                 value={filters.prioridade}
-                onValueChange={(value) => setFilters(prev => ({ ...prev, prioridade: value }))}
+                onValueChange={(value) => setFilters(prev => ({ ...prev, prioridade: value === 'all' ? '' : value }))}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Todas" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todas</SelectItem>
+                  <SelectItem value="all">Todas</SelectItem>
                   {Object.entries(PRIORIDADE_CONFIG).map(([key, config]) => (
                     <SelectItem key={key} value={key}>
                       {config.label}
@@ -455,13 +455,13 @@ export function TicketsTable({
               <label className="text-sm font-medium mb-1 block">Departamento</label>
               <Select
                 value={filters.departamento}
-                onValueChange={(value) => setFilters(prev => ({ ...prev, departamento: value || '' }))}
+                onValueChange={(value) => setFilters(prev => ({ ...prev, departamento: value === 'all' ? '' : value }))}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Todos" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos</SelectItem>
+                  <SelectItem value="all">Todos</SelectItem>
                   {filterOptions.departamentos.map(dept => (
                     <SelectItem key={dept} value={dept}>
                       {dept}
@@ -476,13 +476,13 @@ export function TicketsTable({
               <label className="text-sm font-medium mb-1 block">Categoria</label>
               <Select
                 value={filters.categoria}
-                onValueChange={(value) => setFilters(prev => ({ ...prev, categoria: value || '' }))}
+                onValueChange={(value) => setFilters(prev => ({ ...prev, categoria: value === 'all' ? '' : value }))}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Todas" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todas</SelectItem>
+                  <SelectItem value="all">Todas</SelectItem>
                   {filterOptions.categorias.map(cat => (
                     <SelectItem key={cat || 'empty'} value={cat || ''}>
                       {cat || 'Sem categoria'}

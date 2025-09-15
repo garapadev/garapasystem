@@ -87,6 +87,9 @@ model Cliente {
   // Tickets do Helpdesk
   helpdeskTickets HelpdeskTicket[]
   
+  // Tarefas
+  tasks Task[]
+  
   @@map("clientes")
 }
 
@@ -187,6 +190,14 @@ model Colaborador {
   helpdeskMensagens HelpdeskMensagem[]
   helpdeskTicketLogs HelpdeskTicketLog[]
   
+  // Tarefas
+  tasksResponsavel Task[]
+  tasksCriadas Task[] @relation("TaskCriador")
+  taskComments TaskComment[]
+  taskAttachments TaskAttachment[]
+  taskLogs TaskLog[]
+  taskNotifications TaskNotification[]
+  
   @@map("colaboradores")
 }
 
@@ -230,6 +241,9 @@ model Oportunidade {
   
   // Histórico
   historico      HistoricoOportunidade[]
+  
+  // Tarefas
+  tasks Task[]
   
   @@map("oportunidades")
 }
@@ -478,6 +492,9 @@ model Email {
   
   attachments       EmailAttachment[]
   
+  // Tarefas
+  tasks Task[]
+  
   @@unique([emailConfigId, messageId])
   @@unique([emailConfigId, folderId, uid])
   @@map("emails")
@@ -591,6 +608,9 @@ model HelpdeskTicket {
   mensagens         HelpdeskMensagem[]
   logs              HelpdeskTicketLog[]
   
+  // Tarefas
+  tasks Task[]
+  
   @@map("helpdesk_tickets")
 }
 
@@ -697,4 +717,218 @@ model HelpdeskTicketLog {
   autor             Colaborador? @relation(fields: [autorId], references: [id])
   
   @@map("helpdesk_ticket_logs")
+}
+
+// Sistema de Tarefas
+
+// Tarefas
+model Task {
+  id                String   @id @default(cuid())
+  titulo            String
+  descricao         String?  // Suporte a Markdown
+  prioridade        TaskPrioridade @default(MEDIA)
+  status            TaskStatus @default(PENDENTE)
+  
+  // Datas
+  dataVencimento    DateTime
+  dataInicio        DateTime?
+  dataConclusao     DateTime?
+  
+  // Configurações
+  isRecorrente      Boolean  @default(false)
+  tempoEstimado     Int?     // Em minutos
+  tempoGasto        Int?     // Em minutos
+  
+  // Metadados
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  // Relacionamentos
+  responsavelId     String
+  responsavel       Colaborador @relation(fields: [responsavelId], references: [id])
+  
+  criadoPorId       String
+  criadoPor         Colaborador @relation("TaskCriador", fields: [criadoPorId], references: [id])
+  
+  // Associações opcionais
+  clienteId         String?
+  cliente           Cliente? @relation(fields: [clienteId], references: [id])
+  
+  oportunidadeId    String?
+  oportunidade      Oportunidade? @relation(fields: [oportunidadeId], references: [id])
+  
+  emailId           String?
+  email             Email? @relation(fields: [emailId], references: [id])
+  
+  helpdeskTicketId  String?
+  helpdeskTicket    HelpdeskTicket? @relation(fields: [helpdeskTicketId], references: [id])
+  
+  // Recorrência
+  recorrenciaId     String?
+  recorrencia       TaskRecurrence? @relation(fields: [recorrenciaId], references: [id])
+  
+  // Relacionamentos filhos
+  comentarios       TaskComment[]
+  anexos            TaskAttachment[]
+  logs              TaskLog[]
+  notificacoes      TaskNotification[]
+  
+  @@map("tasks")
+}
+
+// Comentários das tarefas
+model TaskComment {
+  id                String   @id @default(cuid())
+  conteudo          String
+  isInterno         Boolean  @default(false) // Comentário interno da equipe
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  // Relacionamentos
+  taskId            String
+  task              Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  
+  autorId           String
+  autor             Colaborador @relation(fields: [autorId], references: [id])
+  
+  @@map("task_comments")
+}
+
+// Anexos das tarefas
+model TaskAttachment {
+  id                String   @id @default(cuid())
+  nomeArquivo       String
+  tipoConteudo      String
+  tamanho           Int
+  caminhoArquivo    String   // Caminho no sistema de arquivos
+  
+  createdAt         DateTime @default(now())
+  
+  // Relacionamentos
+  taskId            String
+  task              Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  
+  uploadPorId       String
+  uploadPor         Colaborador @relation(fields: [uploadPorId], references: [id])
+  
+  @@map("task_attachments")
+}
+
+// Configuração de recorrência
+model TaskRecurrence {
+  id                String   @id @default(cuid())
+  tipo              TaskRecurrenceType
+  intervalo         Int      @default(1) // A cada X dias/semanas/meses
+  diasSemana        String?  // JSON array para recorrência semanal [1,2,3,4,5]
+  diaMes            Int?     // Dia do mês para recorrência mensal
+  dataFim           DateTime? // Data limite para parar a recorrência
+  maxOcorrencias    Int?     // Número máximo de ocorrências
+  
+  // Controle
+  ativo             Boolean  @default(true)
+  proximaExecucao   DateTime?
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  // Relacionamentos
+  tasks             Task[]
+  
+  @@map("task_recurrences")
+}
+
+// Log de alterações das tarefas
+model TaskLog {
+  id                String   @id @default(cuid())
+  tipo              TaskLogType
+  descricao         String   // Descrição da alteração
+  valorAnterior     String?  // Valor anterior (JSON)
+  valorNovo         String?  // Novo valor (JSON)
+  
+  createdAt         DateTime @default(now())
+  
+  // Relacionamentos
+  taskId            String
+  task              Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  
+  autorId           String
+  autor             Colaborador @relation(fields: [autorId], references: [id])
+  
+  @@map("task_logs")
+}
+
+// Notificações de tarefas
+model TaskNotification {
+  id                String   @id @default(cuid())
+  tipo              TaskNotificationType
+  titulo            String
+  mensagem          String
+  
+  // Controle de envio
+  enviado           Boolean  @default(false)
+  dataEnvio         DateTime?
+  tentativas        Int      @default(0)
+  
+  // Agendamento
+  agendadoPara      DateTime
+  
+  createdAt         DateTime @default(now())
+  
+  // Relacionamentos
+  taskId            String
+  task              Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  
+  destinatarioId    String
+  destinatario      Colaborador @relation(fields: [destinatarioId], references: [id])
+  
+  @@map("task_notifications")
+}
+
+// Enums do sistema de tarefas
+enum TaskPrioridade {
+  BAIXA
+  MEDIA
+  ALTA
+  URGENTE
+}
+
+enum TaskStatus {
+  PENDENTE
+  EM_ANDAMENTO
+  AGUARDANDO
+  CONCLUIDA
+  CANCELADA
+}
+
+enum TaskRecurrenceType {
+  DIARIA
+  SEMANAL
+  MENSAL
+  ANUAL
+}
+
+enum TaskLogType {
+  CRIACAO
+  STATUS_ALTERADO
+  PRIORIDADE_ALTERADA
+  RESPONSAVEL_ALTERADO
+  VENCIMENTO_ALTERADO
+  TITULO_ALTERADO
+  DESCRICAO_ALTERADA
+  COMENTARIO_ADICIONADO
+  ANEXO_ADICIONADO
+  CONCLUSAO
+  CANCELAMENTO
+  REABERTURA
+}
+
+enum TaskNotificationType {
+  LEMBRETE_VENCIMENTO
+  TAREFA_ATRASADA
+  TAREFA_ATRIBUIDA
+  STATUS_ALTERADO
+  COMENTARIO_ADICIONADO
+  LEMBRETE_SEM_ATUALIZACAO
+  ALERTA_GESTOR
 }

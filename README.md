@@ -1,584 +1,203 @@
-# 🚀 GarapaSystem
+# GarapaSystem
 
-**Sistema de Gestão Empresarial Moderno**
+**Versão:** 0.1.34
 
-Plataforma completa de gestão empresarial desenvolvida com Next.js 15, TypeScript e arquitetura Domain-Driven Design (DDD). Oferece funcionalidades avançadas para administração de usuários, clientes, colaboradores e processos de negócio com interface moderna e comunicação em tempo real.
+Sistema integrado de gestão empresarial desenvolvido com Next.js, TypeScript e Prisma, oferecendo funcionalidades completas para gerenciamento de clientes, tarefas, helpdesk e webmail.
 
-![Dashboard Principal](./screenshots/dashboard-principal-2025-09-06T14-11-55-405Z.png)
+## 🚀 Funcionalidades Principais
 
-## ✨ Principais Funcionalidades
+### 📋 Sistema de Tarefas
+- Criação e gerenciamento de tarefas
+- Dashboard com visualização de tarefas
+- Calendário de tarefas
+- Sistema de comentários e anexos
+- Recorrência de tarefas
+- Notificações em tempo real
 
-### 🎫 Sistema de Helpdesk Avançado
+### 🎫 Helpdesk
+- Sistema completo de tickets
+- Gerenciamento de departamentos
+- Automação de tickets
+- Sincronização com email
+- Logs de atividades
 
-O GarapaSystem oferece um sistema completo de helpdesk com automação inteligente e integração total com email.
+### 👥 Gestão de Clientes
+- Cadastro completo de clientes
+- Histórico de interações
+- Integração com sistema de tarefas
+- Endereços e informações de contato
 
-**Características:**
-- **Criação Automática de Tickets**: Integração IMAP para criação automática via email
-- **Sistema de Auditoria**: Rastreamento completo de todas as alterações nos tickets
-- **Dashboard de Métricas**: Estatísticas em tempo real com gráficos interativos
-- **Notificações Inteligentes**: Sistema de notificações para observadores e responsáveis
-- **Integração com Clientes**: Associação automática de tickets com base de clientes
-- **Respostas Automáticas**: Confirmação automática por email na criação de tickets
-- **Gerenciamento de Departamentos**: Organização por departamentos com emails específicos
-- **Histórico Completo**: Registro detalhado de todas as interações e mudanças
+### 📧 Webmail
+- Interface de webmail integrada
+- Sincronização com servidores IMAP
+- Composição de emails
+- Configuração de contas de email
+- Permissões granulares
 
-### 🔐 Sistema de Autenticação e Segurança
+### 👤 Gestão de Usuários
+- Sistema de autenticação
+- Perfis e permissões
+- Colaboradores e hierarquia
+- Grupos hierárquicos
 
-O GarapaSystem oferece um sistema robusto de autenticação com NextAuth.js, garantindo segurança e controle de acesso granular.
+### 🔧 Administração
+- Configurações do sistema
+- Chaves de API
+- Webhooks
+- Logs do sistema
+- Documentação Swagger
 
-**Características:**
-- Autenticação segura com JWT tokens
-- Sistema de sessões persistentes
-- Controle de permissões por perfil de usuário
-- Rate limiting para proteção contra ataques
-- Middleware de segurança em todas as rotas
-
-![Página de Login](./screenshots/login_page-2025-09-10T14-38-36-919Z.png)
-
-### 👥 Gestão Completa de Pessoas
-
-Gerenciamento centralizado de todos os stakeholders do seu negócio com interface intuitiva e funcionalidades avançadas.
-
-**Funcionalidades:**
-- **Usuários**: Cadastro completo com perfis e permissões personalizáveis
-- **Clientes**: Base de clientes com histórico completo e múltiplos endereços
-- **Colaboradores**: Controle de funcionários com informações detalhadas
-- **Perfis e Permissões**: Sistema granular de controle de acesso
-- **Integração ViaCEP**: Preenchimento automático de endereços
-
-![Gestão de Clientes](./screenshots/clientes-gestao-2025-09-06T14-12-07-966Z.png)
-
-### 🏢 Gestão Estratégica de Negócios
-
-Ferramentas completas para gestão de vendas e acompanhamento de performance empresarial.
-
-**Recursos:**
-- **Pipeline de Vendas**: Gestão visual de oportunidades com drag & drop
-- **Dashboard Interativo**: Métricas em tempo real com gráficos dinâmicos
-- **Grupos Hierárquicos**: Organização estrutural da empresa
-- **Relatórios Avançados**: Análises detalhadas com exportação
-- **KPIs Personalizáveis**: Indicadores customizados por setor
-
-![Pipeline de Vendas](./screenshots/pipeline-vendas-completo-2025-09-06T14-18-23-046Z.png)
-
-### ⚙️ Integrações e Automação Avançada
-
-Ecossistema completo de integrações para conectar o GarapaSystem com outras ferramentas.
-
-**Capacidades:**
-- **Sistema de Webhooks**: Configuração flexível de integrações em tempo real
-- **API RESTful Completa**: Endpoints documentados com Swagger UI
-- **Chaves API**: Geração e gerenciamento seguro de acesso
-- **Logs Detalhados**: Monitoramento completo de atividades do sistema
-- **Sistema de Versioning**: Controle de versões da aplicação e API
-- **Rate Limiting**: Proteção contra abuso de recursos
-
-![Configurações de API](./screenshots/api-config-completo-2025-09-06T14-18-41-758Z.png)
-
-### 📧 Sistema de Webmail Profissional
-
-Cliente de email completo integrado ao sistema, oferecendo uma experiência moderna e eficiente.
-
-**Funcionalidades Principais:**
-- **Interface Moderna**: Design responsivo e intuitivo
-- **Suporte IMAP/SMTP**: Configuração flexível de múltiplas contas
-- **Composição Rica**: Editor avançado para criação de emails
-- **Sincronização em Tempo Real**: Atualização automática de pastas e mensagens
-- **Gerenciamento de Pastas**: Organização completa (Inbox, Enviados, Rascunhos, Lixeira)
-- **Busca Avançada**: Pesquisa rápida e eficiente com filtros
-- **Configurações Flexíveis**: Suporte a SSL/TLS e autenticação segura
-
-![Webmail - Estado Inicial](./screenshots/webmail_initial_state-2025-09-10T14-37-02-030Z.png)
-
-![Webmail - Email Selecionado](./screenshots/email_clicked_state-2025-09-10T14-37-30-141Z.png)
-
-### 🔄 Comunicação em Tempo Real
-
-Sistema avançado de comunicação bidirecional para atualizações instantâneas.
-
-**Recursos:**
-- **WebSocket**: Conexões persistentes para atualizações em tempo real
-- **Notificações Push**: Sistema de alertas instantâneos
-- **Sincronização Automática**: Dados sempre atualizados em todos os dispositivos
-- **Status de Conexão**: Indicadores visuais de conectividade
-
-### ⚙️ Configurações e Monitoramento
-
-Painel completo de configurações e monitoramento do sistema.
-
-**Características:**
-- **Aba Sobre**: Informações detalhadas da aplicação e verificação de atualizações
-- **Configurações de Sistema**: Painel completo de configurações
-- **Monitoramento em Tempo Real**: Status do sistema e performance
-- **Logs de Auditoria**: Rastreamento completo de ações do usuário
-
-## 🛠️ Stack Tecnológico
+## 🛠️ Tecnologias Utilizadas
 
 ### Frontend
-- **Next.js 15** - Framework React com App Router
-- **TypeScript** - Tipagem estática para maior segurança
-- **Tailwind CSS** - Framework CSS utilitário moderno
-- **shadcn/ui** - Componentes UI acessíveis e customizáveis
-- **Framer Motion** - Animações fluidas e interativas
-- **React Hook Form + Zod** - Formulários com validação robusta
+- **Next.js 15.3.5** - Framework React
+- **TypeScript** - Tipagem estática
+- **Tailwind CSS** - Estilização
+- **Radix UI** - Componentes acessíveis
+- **React Hook Form** - Gerenciamento de formulários
+- **Socket.IO Client** - Comunicação em tempo real
 
 ### Backend
-- **Prisma ORM** - Gerenciamento type-safe do banco de dados
-- **PostgreSQL** - Banco de dados relacional robusto
-- **NextAuth.js** - Autenticação e autorização segura
-- **Socket.IO** - Comunicação bidirecional em tempo real
-- **Nodemailer** - Envio de emails via SMTP
-- **IMAP Client** - Conexão e sincronização com servidores IMAP
-- **Email Parser** - Processamento e análise de mensagens de email
-
-### Arquitetura
-- **Domain-Driven Design (DDD)** - Arquitetura orientada ao domínio
-- **Clean Architecture** - Separação clara de responsabilidades
-- **Repository Pattern** - Abstração da camada de dados
-- **Service Layer** - Lógica de negócio centralizada
-- **Event-Driven Architecture** - Comunicação assíncrona entre módulos
+- **Node.js** - Runtime JavaScript
+- **Prisma** - ORM para banco de dados
+- **PostgreSQL** - Banco de dados
+- **NextAuth.js** - Autenticação
+- **Socket.IO** - WebSockets
+- **Nodemailer** - Envio de emails
+- **ImapFlow** - Sincronização IMAP
 
 ### Infraestrutura
-- **PM2** - Gerenciador de processos para produção
-- **Docker** - Containerização para deploy consistente
-- **Rate Limiting** - Proteção contra abuso de API
-- **Middleware de Segurança** - Proteção de rotas e endpoints
+- **PM2** - Gerenciamento de processos
+- **Docker** - Containerização
+- **Redis** - Cache e sessões
 
-## 🚀 Como Utilizar
+## 📦 Instalação
 
-### 📋 Pré-requisitos
+### Pré-requisitos
+- Node.js 18+
+- PostgreSQL
+- Redis (opcional)
 
-Antes de começar, certifique-se de ter instalado em sua máquina:
+### Configuração
 
-- **Node.js 18+** - [Download aqui](https://nodejs.org/)
-- **PostgreSQL 14+** - [Download aqui](https://www.postgresql.org/download/)
-- **Git** - [Download aqui](https://git-scm.com/)
-- **Docker** (opcional, para ambiente containerizado) - [Download aqui](https://www.docker.com/)
-
-### 🔧 Instalação e Configuração
-
-#### 1. Clone o Repositório
+1. **Clone o repositório**
 ```bash
-git clone https://github.com/garapadev/garapasystem.git
-cd garapasystem
+git clone <repository-url>
+cd GarapaSystem
 ```
 
-#### 2. Instale as Dependências
+2. **Instale as dependências**
 ```bash
 npm install
-# ou
-yarn install
 ```
 
-#### 3. Configure o Banco de Dados
-
-**Opção A: PostgreSQL Local**
+3. **Configure o banco de dados**
 ```bash
-# Crie um banco de dados PostgreSQL
-creatdb garapasystem
+npm run db:push
+npm run db:seed
 ```
 
-**Opção B: Docker (Recomendado)**
-```bash
-# Inicie o PostgreSQL via Docker
-docker-compose up -d postgres
-```
+4. **Configure as variáveis de ambiente**
+Crie um arquivo `.env` baseado no `.env.example`
 
-#### 4. Configure as Variáveis de Ambiente
-```bash
-# Copie o arquivo de exemplo
-cp .env.example .env.local
+## 🚀 Execução
 
-# Edite o arquivo .env.local com suas configurações
-nano .env.local
-```
-
-**Variáveis principais a configurar:**
-```env
-# Banco de Dados
-DATABASE_URL="postgresql://usuario:senha@localhost:5432/garapasystem"
-
-# NextAuth
-NEXTAUTH_SECRET="seu-secret-aqui"
-NEXTAUTH_URL="http://localhost:3000"
-
-# Email (para webmail)
-IMAP_HOST="seu-servidor-imap"
-IMAP_PORT=993
-SMTP_HOST="seu-servidor-smtp"
-SMTP_PORT=587
-```
-
-#### 5. Execute as Migrações do Banco
-```bash
-# Gere o cliente Prisma
-npx prisma generate
-
-# Execute as migrações
-npx prisma migrate dev
-
-# (Opcional) Popule com dados de exemplo
-npx prisma db seed
-```
-
-#### 6. Inicie a Aplicação
-
-**Desenvolvimento:**
+### Desenvolvimento
 ```bash
 npm run dev
 ```
 
-**Produção:**
+### Produção com PM2
 ```bash
 npm run build
-npm start
-```
-
-### 🌐 Acessando a Aplicação
-
-1. **Aplicação Principal**: `http://localhost:3000`
-2. **Prisma Studio** (Gerenciamento do BD): `http://localhost:5555`
-3. **API Documentation**: `http://localhost:3000/api/docs`
-
-### 📧 Configuração do Webmail
-
-1. Acesse "Configurações" → "Email"
-2. Configure os servidores IMAP/SMTP:
-   - **Host IMAP**: servidor de entrada
-   - **Porta IMAP**: 993 (SSL) ou 143 (STARTTLS)
-   - **Host SMTP**: servidor de saída
-   - **Porta SMTP**: 587 (STARTTLS) ou 465 (SSL)
-3. Teste a conexão
-4. Acesse o webmail em "Email" no menu principal
-
-### 🔧 Comandos Úteis
-
-#### Desenvolvimento
-```bash
-# Resetar banco de dados
-npx prisma migrate reset
-
-# Visualizar banco de dados
-npx prisma studio
-
-# Executar testes
-npm test
-
-# Verificar tipos TypeScript
-npm run type-check
-
-# Executar linting
-npm run lint
-
-# Formatar código
-npm run format
-```
-
-#### Produção com PM2
-```bash
-# Iniciar todos os serviços
 npm run pm2:start
-
-# Verificar status dos processos
-npm run pm2:status
-
-# Ver logs em tempo real
-npm run pm2:logs
-
-# Reiniciar serviços
-npm run pm2:restart
-
-# Parar todos os serviços
-npm run pm2:stop
-
-# Remover processos do PM2
-npm run pm2:delete
 ```
 
-### 🐳 Execução com Docker
+### Scripts Disponíveis
 
-```bash
-# Construir e executar todos os serviços
-docker-compose up -d
+- `npm run dev` - Inicia o servidor de desenvolvimento
+- `npm run build` - Gera build de produção
+- `npm run start` - Inicia servidor de produção
+- `npm run pm2:start` - Inicia com PM2 (seguro)
+- `npm run pm2:stop` - Para processos PM2
+- `npm run pm2:restart` - Reinicia processos PM2
+- `npm run pm2:logs` - Visualiza logs do PM2
+- `npm run pm2:status` - Status dos processos
 
-# Executar apenas o banco de dados
-docker-compose up -d postgres
+### Banco de Dados
+- `npm run db:push` - Aplica schema ao banco
+- `npm run db:generate` - Gera cliente Prisma
+- `npm run db:migrate` - Executa migrações
+- `npm run db:seed` - Popula dados iniciais
 
-# Ver logs dos containers
-docker-compose logs -f
+## 🏗️ Arquitetura
 
-# Parar todos os serviços
-docker-compose down
+### Estrutura do Projeto
+```
+├── src/
+│   ├── app/                 # Páginas e rotas da aplicação
+│   │   ├── api/             # Endpoints da API
+│   │   ├── auth/            # Páginas de autenticação
+│   │   ├── clientes/        # Gestão de clientes
+│   │   ├── helpdesk/        # Sistema de helpdesk
+│   │   ├── tasks/           # Sistema de tarefas
+│   │   ├── webmail/         # Interface de webmail
+│   │   └── ...
+│   ├── components/          # Componentes React
+│   ├── hooks/               # Custom hooks
+│   ├── lib/                 # Utilitários e configurações
+│   └── types/               # Definições de tipos
+├── prisma/                  # Schema e migrações do banco
+├── public/                  # Arquivos estáticos
+└── scripts/                 # Scripts de automação
 ```
 
-### ⚠️ Solução de Problemas
+### Processos PM2
 
-**Erro de conexão com banco:**
-- Verifique se o PostgreSQL está rodando
-- Confirme as credenciais no `.env.local`
-- Execute `npx prisma db push` para sincronizar o schema
+O sistema utiliza PM2 para gerenciar múltiplos processos:
 
-**Erro de autenticação:**
-- Verifique se `NEXTAUTH_SECRET` está definido
-- Confirme se `NEXTAUTH_URL` está correto
+- **garapasystem-server** - Servidor principal da aplicação
+- **helpdesk-worker** - Worker para processamento de tickets
+- **webmail-sync-worker** - Worker para sincronização de emails
 
-**Problemas com webmail:**
-- Verifique as configurações IMAP/SMTP
-- Confirme se as portas estão abertas
-- Teste a conectividade com `telnet servidor porta`
+## 📸 Screenshots
 
-##### 🆕 Atualizações Recentes
+As capturas de tela das funcionalidades estão disponíveis na pasta `/screenshots/`:
 
-#### Versão 0.1.34 - Janeiro 2025
-- 🎫 **Sistema de Helpdesk Completo**: Gestão avançada de tickets com automação
-- 🤖 **Automação IMAP**: Criação automática de tickets via monitoramento de email
-- 📊 **Dashboard de Helpdesk**: Métricas e estatísticas em tempo real
-- 🔍 **Sistema de Auditoria**: Rastreamento completo de alterações nos tickets
-- 🔔 **Notificações Inteligentes**: Sistema de notificações para observadores
-- 📧 **Integração com Email**: Respostas automáticas e confirmações
-- 🏢 **Gestão de Departamentos**: Organização por departamentos com emails específicos
-- ⚙️ **Migração para PM2**: Gerenciamento profissional de processos em produção
-- 🧹 **Limpeza de Código**: Remoção de scripts desnecessários e otimizações
+- Homepage da aplicação
+- Sistema de tarefas
+- Interface do helpdesk
+- Gestão de clientes
+- Interface de webmail
 
-#### Versão 0.1.33 - Janeiro 2025
-- 📧 **Sistema de Webmail Completo**: Cliente de email integrado com suporte IMAP/SMTP
-- ✉️ **Composição de Emails**: Editor rico para criação e envio de mensagens
-- 📁 **Gerenciamento de Pastas**: Organização automática de emails (Inbox, Enviados, Rascunhos, Lixeira)
-- 🔄 **Sincronização em Tempo Real**: Atualização automática de pastas e mensagens
-- 🔍 **Busca de Emails**: Sistema de pesquisa avançada integrado
-- 🛠️ **Configurações de Email**: Interface para configuração de contas IMAP/SMTP
-- 🎨 **Interface Moderna**: Design responsivo e intuitivo para o webmail
-- 🔧 **Correções de Tipos TypeScript**: Melhorias na tipagem e estabilidade do código
+## 🔒 Segurança
 
-#### Versão 0.1.32 - Setembro 2025
-- ✨ **Nova Aba Sobre**: Informações detalhadas da aplicação, API e verificação de atualizações
-- 🏠 **Múltiplos Endereços**: Clientes agora podem ter vários endereços cadastrados
-- 📊 **Sistema de Versioning**: API para controle de versões e verificação de atualizações
-- 🔧 **Melhorias na Interface**: Componentes otimizados e experiência do usuário aprimorada
-- 🐛 **Correções de Bugs**: Diversos ajustes e melhorias de estabilidade
-- 📱 **Responsividade**: Interface totalmente responsiva para dispositivos móveis
-- 🔒 **Segurança**: Implementação de rate limiting e middleware de segurança
+- Autenticação baseada em sessões
+- Middleware de segurança para APIs
+- Validação de permissões granulares
+- Rate limiting
+- Sanitização de dados
 
-## 📖 Primeiro Acesso
+## 📝 API Documentation
 
-**Credenciais padrão:**
-- Email: `admin@garapasystem.com`
-- Senha: `password`
-
-> ⚠️ **Importante**: Altere a senha imediatamente após o primeiro login!
-
-### 📧 Acessando o Webmail
-
-Após fazer login no sistema, você pode acessar o webmail através do menu lateral ou diretamente em:
-- **Desenvolvimento**: [http://localhost:3000/webmail](http://localhost:3000/webmail)
-- **Produção**: `https://seu-dominio.com/webmail`
-
-**Configuração de Email:**
-1. Acesse o webmail
-2. Clique em "Settings" (Configurações)
-3. Configure suas credenciais IMAP/SMTP:
-   - **Servidor IMAP**: `imap.seu-provedor.com`
-   - **Porta IMAP**: `993` (SSL) ou `143` (STARTTLS)
-   - **Servidor SMTP**: `smtp.seu-provedor.com`
-   - **Porta SMTP**: `465` (SSL) ou `587` (STARTTLS)
-   - **Email e Senha**: Suas credenciais de email
-
-**Funcionalidades Disponíveis:**
-- ✉️ Composição e envio de emails
-- 📁 Gerenciamento de pastas (Inbox, Enviados, Rascunhos, Lixeira)
-- 🔍 Busca avançada de mensagens
-- 🔄 Sincronização automática em tempo real
-- 📎 Suporte a anexos (em desenvolvimento)
-
-## 🔌 API e Documentação
-
-### Documentação Swagger
-- **Desenvolvimento**: [http://localhost:3000/api/docs](http://localhost:3000/api/docs)
-- **Produção**: `https://seu-dominio.com/api/docs`
-
-### Principais Endpoints
-
-| Método | Endpoint | Descrição |
-|--------|----------|----------|
-| `GET` | `/api/clientes` | Listar clientes |
-| `POST` | `/api/clientes` | Criar cliente |
-| `GET` | `/api/negocios` | Listar negócios |
-| `POST` | `/api/negocios` | Criar negócio |
-| `GET` | `/api/webhooks` | Listar webhooks |
-| `POST` | `/api/webhooks` | Criar webhook |
-| `GET` | `/api/email/folders` | Listar pastas de email |
-| `POST` | `/api/email/send` | Enviar email |
-| `GET` | `/api/email/messages` | Listar mensagens |
-| `POST` | `/api/email/config` | Configurar conta de email |
-
-### Exemplo de Uso da API
-
-```javascript
-// Criar um novo cliente
-const cliente = {
-  nome: "Empresa XYZ Ltda",
-  email: "contato@empresaxyz.com",
-  telefone: "+55 11 99999-9999"
-};
-
-const response = await fetch('/api/clientes', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-    'Authorization': 'Bearer sua-api-key'
-  },
-  body: JSON.stringify(cliente)
-});
-```
-
-## 📁 Estrutura do Projeto
-
-```
-garapasystem/
-├── 📁 src/
-│   ├── 📁 app/                    # Páginas e rotas (App Router)
-│   │   ├── 📁 api/                # Endpoints da API
-│   │   │   ├── 📁 helpdesk/       # APIs do sistema de helpdesk
-│   │   │   ├── 📁 clientes/       # APIs de clientes
-│   │   │   ├── 📁 email/          # APIs de webmail
-│   │   │   └── 📁 auth/           # APIs de autenticação
-│   │   ├── 📁 helpdesk/           # Interface do sistema de helpdesk
-│   │   ├── 📁 clientes/           # Interface de clientes
-│   │   ├── 📁 colaboradores/      # Interface de colaboradores
-│   │   ├── 📁 configuracoes/      # Configurações do sistema
-│   │   ├── 📁 usuarios/           # Interface de usuários
-│   │   └── 📁 webmail/            # Sistema de webmail
-│   ├── 📁 components/             # Componentes reutilizáveis
-│   │   ├── 📁 helpdesk/           # Componentes do helpdesk
-│   │   ├── 📁 ui/                 # Componentes base (shadcn/ui)
-│   │   └── 📁 webmail/            # Componentes do webmail
-│   ├── 📁 hooks/                  # Hooks customizados
-│   │   ├── useHelpdesk.ts         # Hook para gestão de helpdesk
-│   │   ├── useTickets.ts          # Hook para gestão de tickets
-│   │   └── useWebmail.ts          # Hook para webmail
-│   ├── 📁 lib/                    # Utilitários e configurações
-│   │   ├── 📁 helpdesk/           # Serviços do helpdesk
-│   │   │   ├── ticket-automation-service.ts
-│   │   │   ├── email-response-system.ts
-│   │   │   └── notification-service.ts
-│   │   ├── 📁 email/              # Serviços de email
-│   │   ├── 📁 auth/               # Configurações de autenticação
-│   │   └── db.ts                  # Configuração do Prisma
-│   └── 📁 types/                  # Definições de tipos TypeScript
-├── 📁 prisma/                     # Configuração do banco de dados
-│   ├── schema.prisma              # Schema do banco
-│   ├── 📁 migrations/             # Migrações do banco
-│   └── seed.ts                    # Dados iniciais
-├── 📁 public/                     # Arquivos estáticos
-├── 📁 screenshots/                # Screenshots da aplicação
-├── ecosystem.config.js            # Configuração do PM2
-├── docker-compose.yml             # Orquestração Docker
-├── server.ts                      # Servidor customizado
-└── package.json                   # Dependências e scripts
-```
-
-## 🧪 Scripts Disponíveis
-
-```bash
-# Desenvolvimento
-npm run dev          # Servidor de desenvolvimento
-npm run build        # Build para produção
-npm run start        # Servidor de produção
-
-# Banco de Dados
-npm run db:generate  # Gera cliente Prisma
-npm run db:migrate   # Executa migrações
-npm run db:seed      # Popula banco com dados iniciais
-
-# PM2 (Produção)
-npm run pm2:start           # Inicia todos os processos
-npm run pm2:stop            # Para todos os processos
-npm run pm2:restart         # Reinicia todos os processos
-npm run pm2:reload          # Recarrega sem downtime
-npm run pm2:status          # Status dos processos
-npm run pm2:logs            # Logs em tempo real
-npm run pm2:start:server    # Apenas servidor web
-npm run pm2:start:helpdesk  # Apenas worker helpdesk
-npm run pm2:start:email     # Apenas worker email
-
-# Docker
-docker-compose up -d    # Inicia todos os serviços
-docker-compose down     # Para todos os serviços
-```
-
-## 🚀 Deploy
-
-### Deploy com Docker
-```bash
-# Build da imagem
-docker build -t garapasystem:latest .
-
-# Executar container
-docker run -d \
-  --name garapasystem \
-  -p 3000:3000 \
-  --env-file .env \
-  garapasystem:latest
-```
-
-### Variáveis de Ambiente de Produção
-```env
-NODE_ENV=production
-DATABASE_URL=postgresql://user:pass@host:5432/db
-NEXTAUTH_SECRET=sua-chave-super-segura
-NEXTAUTH_URL=https://seu-dominio.com
-```
+A documentação completa da API está disponível em `/swagger` quando o servidor estiver em execução.
 
 ## 🤝 Contribuição
 
-Contribuições são bem-vindas! Por favor:
-
 1. Faça um fork do projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/nova-funcionalidade`)
-3. Commit suas mudanças (`git commit -m 'feat: adiciona nova funcionalidade'`)
-4. Push para a branch (`git push origin feature/nova-funcionalidade`)
+2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
+3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
+4. Push para a branch (`git push origin feature/AmazingFeature`)
 5. Abra um Pull Request
-
-### Padrões de Commit
-Utilizamos [Conventional Commits](https://www.conventionalcommits.org/):
-- `feat:` nova funcionalidade
-- `fix:` correção de bug
-- `docs:` atualização de documentação
-- `style:` formatação de código
-- `refactor:` refatoração
-- `test:` adição de testes
 
 ## 📄 Licença
 
-Este projeto está licenciado sob a **Licença MIT**. Veja o arquivo [LICENSE](LICENSE) para detalhes.
+Este projeto é privado e proprietário.
 
 ## 📞 Suporte
 
-- **Issues**: [GitHub Issues](https://github.com/garapadev/garapasystem/issues)
-- **Discussões**: [GitHub Discussions](https://github.com/garapadev/garapasystem/discussions)
-- **Email**: suporte@garapadev.com
-
-## 📈 Status do Projeto
-
-### ✅ Funcionalidades Implementadas
-- **Arquitetura DDD**: Implementada com padrões modernos
-- **Sistema de Autenticação**: NextAuth.js configurado e funcional
-- **Banco de Dados**: PostgreSQL com Prisma ORM e migrações
-- **Interface Moderna**: Tailwind CSS + shadcn/ui responsiva
-- **WebSocket**: Comunicação em tempo real implementada
-- **Containerização**: Docker e Docker Compose configurados
-- **Sistema de Versioning**: API de versões e verificação de atualizações
-- **Múltiplos Endereços**: Suporte completo para clientes com vários endereços
-- **Configurações Avançadas**: Painel de configurações com aba Sobre
-- **API RESTful**: Endpoints completos com documentação Swagger
-- **Sistema de Logs**: Monitoramento detalhado de atividades
-- **Sistema de Webmail**: Cliente de email completo com IMAP/SMTP
-- **Composição de Emails**: Editor rico para criação de mensagens
-- **Sincronização de Email**: Atualização automática em tempo real
-- **Gerenciamento de Pastas**: Organização completa de emails
+Para suporte técnico, consulte a documentação interna ou entre em contato com a equipe de desenvolvimento.
 
 ---
 
-**GarapaSystem** - Sistema de gestão empresarial moderno e eficiente 🚀
-
-*Desenvolvido com ❤️ pela equipe GarapaDev* do ceara para o Mundo!
+**GarapaSystem** - Sistema integrado de gestão empresarial

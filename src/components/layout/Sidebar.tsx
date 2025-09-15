@@ -19,7 +19,12 @@ import {
   Webhook,
   KeyRound,
   Mail,
-  Headphones
+  Headphones,
+  CheckSquare,
+  BarChart3,
+  Calendar,
+  ChevronDown,
+  ChevronRight
 } from 'lucide-react';
 
 interface NavigationItem {
@@ -31,6 +36,7 @@ interface NavigationItem {
     acao: string;
   };
   requireAdmin?: boolean;
+  subItems?: NavigationItem[];
 }
 
 const navigation: NavigationItem[] = [
@@ -46,6 +52,26 @@ const navigation: NavigationItem[] = [
     href: '/helpdesk', 
     icon: Headphones,
     requiredPermission: { recurso: 'helpdesk', acao: 'visualizar' }
+  },
+  { 
+    name: 'Tarefas', 
+    href: '/tasks', 
+    icon: CheckSquare,
+    requiredPermission: { recurso: 'tasks', acao: 'ler' },
+    subItems: [
+      {
+        name: 'Dashboard',
+        href: '/tasks/dashboard',
+        icon: BarChart3,
+        requiredPermission: { recurso: 'tasks', acao: 'ler' }
+      },
+      {
+        name: 'Calendário',
+        href: '/tasks/calendar',
+        icon: Calendar,
+        requiredPermission: { recurso: 'tasks', acao: 'ler' }
+      }
+    ]
   },
   { 
     name: 'Clientes', 
@@ -114,6 +140,7 @@ export function Sidebar() {
   const { hasPermission, isAdmin, isAuthenticated } = useAuth();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [expandedItems, setExpandedItems] = useState<string[]>([]);
 
   if (!isAuthenticated) {
     return null;
@@ -133,6 +160,115 @@ export function Sidebar() {
     
     return true;
   });
+
+  const toggleExpanded = (itemName: string) => {
+    setExpandedItems(prev => 
+      prev.includes(itemName) 
+        ? prev.filter(name => name !== itemName)
+        : [...prev, itemName]
+    );
+  };
+
+  const renderNavigationItem = (item: NavigationItem, isSubItem = false) => {
+    const isActive = pathname === item.href || 
+      (item.href !== '/' && pathname.startsWith(item.href));
+    const isExpanded = expandedItems.includes(item.name);
+    const hasSubItems = item.subItems && item.subItems.length > 0;
+
+    return (
+      <div key={item.name}>
+        {hasSubItems ? (
+          <div className="relative">
+            {/* Link principal para navegação */}
+            <Link
+              href={item.href}
+              onClick={() => setIsMobileOpen(false)}
+              className={cn(
+                'flex items-center rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200',
+                'hover:scale-105 active:scale-95 group',
+                isSubItem && 'ml-6 bg-gray-50 border-l-2 border-gray-200',
+                isActive
+                  ? 'bg-primary text-primary-foreground shadow-sm'
+                  : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+              )}
+              title={isCollapsed ? item.name : undefined}
+            >
+              <item.icon className={cn(
+                "h-5 w-5 flex-shrink-0",
+                isCollapsed ? "" : "mr-3"
+              )} />
+              <span className={cn(
+                "transition-all duration-300 overflow-hidden flex-1",
+                isCollapsed ? "lg:hidden" : "block"
+              )}>
+                {item.name}
+              </span>
+            </Link>
+            
+            {/* Botão separado para expansão/recolhimento */}
+            {!isCollapsed && (
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  toggleExpanded(item.name);
+                }}
+                className={cn(
+                  'absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded hover:bg-gray-200 transition-colors',
+                  'opacity-0 group-hover:opacity-100 focus:opacity-100'
+                )}
+                title={isExpanded ? 'Recolher submenu' : 'Expandir submenu'}
+              >
+                {isExpanded ? (
+                  <ChevronDown className="h-4 w-4" />
+                ) : (
+                  <ChevronRight className="h-4 w-4" />
+                )}
+              </button>
+            )}
+          </div>
+        ) : (
+          <Link
+            href={item.href}
+            onClick={() => setIsMobileOpen(false)}
+            className={cn(
+              'flex items-center rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200',
+              'hover:scale-105 active:scale-95',
+              isSubItem && 'ml-6 bg-gray-50 border-l-2 border-gray-200 text-gray-600',
+              isActive
+                ? 'bg-primary text-primary-foreground shadow-sm'
+                : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+            )}
+            title={isCollapsed ? item.name : undefined}
+          >
+            <item.icon className={cn(
+              "h-5 w-5 flex-shrink-0",
+              isCollapsed ? "" : "mr-3",
+              isSubItem && "h-4 w-4"
+            )} />
+            <span className={cn(
+              "transition-all duration-300 overflow-hidden",
+              isCollapsed ? "lg:hidden" : "block"
+            )}>
+              {item.name}
+            </span>
+          </Link>
+        )}
+        
+        {hasSubItems && isExpanded && !isCollapsed && (
+          <div className="ml-2 mt-1 space-y-1 border-l-2 border-gray-100 pl-2">
+            {item.subItems!.filter(subItem => {
+              if (subItem.requireAdmin && !isAdmin) return false;
+              if (subItem.requiredPermission) {
+                return hasPermission(subItem.requiredPermission.recurso, subItem.requiredPermission.acao);
+              }
+              return true;
+            }).map(subItem => renderNavigationItem(subItem, true))}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <>
@@ -180,37 +316,7 @@ export function Sidebar() {
           </button>
         </div>
         <nav className="flex-1 space-y-1 px-2 lg:px-3 py-4 overflow-y-auto">
-          {filteredNavigation.map((item) => {
-            const isActive = pathname === item.href || 
-              (item.href !== '/' && pathname.startsWith(item.href));
-            
-            return (
-              <Link
-                key={item.name}
-                href={item.href}
-                onClick={() => setIsMobileOpen(false)}
-                className={cn(
-                  'flex items-center rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200',
-                  'hover:scale-105 active:scale-95',
-                  isActive
-                    ? 'bg-primary text-primary-foreground shadow-sm'
-                    : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
-                )}
-                title={isCollapsed ? item.name : undefined}
-              >
-                <item.icon className={cn(
-                  "h-5 w-5 flex-shrink-0",
-                  isCollapsed ? "" : "mr-3"
-                )} />
-                <span className={cn(
-                  "transition-all duration-300 overflow-hidden",
-                  isCollapsed ? "lg:hidden" : "block"
-                )}>
-                  {item.name}
-                </span>
-              </Link>
-            );
-          })}
+          {filteredNavigation.map(item => renderNavigationItem(item))}
         </nav>
       </div>
     </>
