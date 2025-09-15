@@ -60,11 +60,48 @@ export const useBusinessIntegration = () => {
     try {
       // Implementar chamada para API do servidor
       const response = await fetch('/api/tasks/automation/rules');
+      
+      // Verificar se a resposta foi bem-sucedida
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        
+        // Tratamento específico para erro de formato de dados inválido
+        if (response.status === 400 && errorData.code === 'INVALID_RULE_DATA') {
+          console.error('Formato de dados inválido detectado:', errorData);
+          setError(`Formato de dados inválido: ${errorData.details || 'Dados malformados na API'}`);
+          setRules([]);
+          return;
+        }
+        
+        throw new Error(`Erro HTTP ${response.status}: ${errorData.error || 'Erro desconhecido'}`);
+      }
+      
       const automationRules = await response.json();
-      setRules(automationRules);
+      
+      // Validar se os dados retornados são um array
+      if (Array.isArray(automationRules)) {
+        // Validar estrutura de cada regra
+        const validRules = automationRules.filter(rule => {
+          if (!rule || typeof rule !== 'object') return false;
+          if (!rule.id || !rule.nome) return false;
+          return true;
+        });
+        
+        if (validRules.length !== automationRules.length) {
+          console.warn(`${automationRules.length - validRules.length} regras com formato inválido foram filtradas`);
+        }
+        
+        setRules(validRules);
+      } else {
+        console.warn('API retornou dados inválidos para regras de automação:', automationRules);
+        setRules([]);
+        setError('Formato de dados inválido recebido da API: esperado array de regras');
+      }
     } catch (err) {
-      setError('Erro ao carregar regras de automação');
+      const errorMessage = err instanceof Error ? err.message : 'Erro desconhecido';
+      setError(`Erro ao carregar regras de automação: ${errorMessage}`);
       console.error('Erro ao carregar regras:', err);
+      setRules([]); // Garantir que rules seja sempre um array
     }
   }, []);
 
@@ -73,15 +110,29 @@ export const useBusinessIntegration = () => {
    */
   const toggleRule = useCallback(async (ruleId: string, ativo: boolean) => {
     try {
-      await fetch('/api/tasks/automation/rules/toggle', {
+      const response = await fetch('/api/tasks/automation/rules/toggle', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ruleId, ativo })
       });
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        
+        // Tratamento específico para erro de formato de dados inválido
+        if (response.status === 400 && errorData.code === 'INVALID_RULE_DATA') {
+          setError(`Formato de dados inválido: ${errorData.details || 'Dados da regra malformados'}`);
+          return;
+        }
+        
+        throw new Error(`Erro HTTP ${response.status}: ${errorData.error || 'Erro ao alterar regra'}`);
+      }
+      
       await loadRules(); // Recarregar regras
       await loadStats(); // Recarregar estatísticas
     } catch (err) {
-      setError('Erro ao alterar status da regra');
+      const errorMessage = err instanceof Error ? err.message : 'Erro desconhecido';
+      setError(`Erro ao alterar status da regra: ${errorMessage}`);
       console.error('Erro ao alterar regra:', err);
     }
   }, [loadRules, loadStats]);
@@ -104,10 +155,24 @@ export const useBusinessIntegration = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(movimento)
       });
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        
+        // Tratamento específico para erro de formato de dados inválido
+        if (response.status === 400 && errorData.code === 'INVALID_RULE_DATA') {
+          setError(`Formato de dados inválido: ${errorData.details || 'Dados do movimento malformados'}`);
+          return;
+        }
+        
+        throw new Error(`Erro HTTP ${response.status}: ${errorData.error || 'Erro na simulação'}`);
+      }
+      
       await response.json();
       await loadStats(); // Recarregar estatísticas após processamento
     } catch (err) {
-      setError('Erro ao processar movimento de oportunidade');
+      const errorMessage = err instanceof Error ? err.message : 'Erro desconhecido';
+      setError(`Erro ao processar movimento de oportunidade: ${errorMessage}`);
       console.error('Erro ao processar movimento:', err);
     } finally {
       setLoading(false);
@@ -139,6 +204,15 @@ export const useBusinessIntegration = () => {
         NOTIFICAR: 0
       }
     };
+
+    // Validar se rules é um array antes de usar forEach
+    if (!Array.isArray(rules)) {
+      console.warn('Rules não é um array:', rules);
+      return {
+        ...summary,
+        etapasComAutomacao: []
+      };
+    }
 
     rules.forEach(rule => {
       if (rule.ativo) {

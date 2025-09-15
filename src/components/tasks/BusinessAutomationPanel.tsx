@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
 import { useBusinessIntegration } from '@/hooks/useBusinessIntegration';
+import { useRouter } from 'next/navigation';
 import { 
   Settings, 
   TrendingUp, 
@@ -21,7 +22,9 @@ import {
   Activity,
   ArrowRight,
   Play,
-  Pause
+  Pause,
+  Plus,
+  Edit
 } from 'lucide-react';
 
 const BusinessAutomationPanel: React.FC = () => {
@@ -35,6 +38,8 @@ const BusinessAutomationPanel: React.FC = () => {
     getApplicableRules,
     getAutomationSummary
   } = useBusinessIntegration();
+
+  const router = useRouter();
 
   const [simulationData, setSimulationData] = useState({
     oportunidadeId: '',
@@ -56,6 +61,10 @@ const BusinessAutomationPanel: React.FC = () => {
       return;
     }
     await simulateOportunidadeMovement(simulationData);
+  };
+
+  const handleCreateAutomation = () => {
+    router.push('/tasks/automation/new');
   };
 
   const getPriorityColor = (prioridade: string) => {
@@ -157,13 +166,24 @@ const BusinessAutomationPanel: React.FC = () => {
         <TabsContent value="rules" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Settings className="h-5 w-5" />
-                <span>Configuração de Regras</span>
-              </CardTitle>
-              <CardDescription>
-                Configure as regras de automação para criação de tarefas baseadas no pipeline de vendas.
-              </CardDescription>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center space-x-2">
+                    <Settings className="h-5 w-5" />
+                    <span>Configuração de Regras</span>
+                  </CardTitle>
+                  <CardDescription>
+                    Configure as regras de automação para criação de tarefas baseadas no pipeline de vendas.
+                  </CardDescription>
+                </div>
+                <Button 
+                  onClick={handleCreateAutomation}
+                  className="flex items-center gap-2"
+                >
+                  <Plus className="h-4 w-4" />
+                  Nova Automação
+                </Button>
+              </div>
             </CardHeader>
             <CardContent className="space-y-4">
               {rules.map((rule) => (
@@ -182,10 +202,19 @@ const BusinessAutomationPanel: React.FC = () => {
                         {rule.ativo ? 'Ativa' : 'Inativa'}
                       </Badge>
                     </div>
-                    <Switch
-                      checked={rule.ativo}
-                      onCheckedChange={(checked) => handleToggleRule(rule.id, checked)}
-                    />
+                    <div className="flex items-center gap-2">
+                      <Switch
+                        checked={rule.ativo}
+                        onCheckedChange={(checked) => handleToggleRule(rule.id, checked)}
+                      />
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => router.push(`/tasks/automation/${rule.id}/edit`)}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
 
                   <div className="flex items-center space-x-2 text-sm text-gray-600">
