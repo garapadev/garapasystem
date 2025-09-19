@@ -32,6 +32,12 @@ async function createCustomServer() {
     }, (req, res) => {
       // Skip socket.io requests from Next.js handler
       if (req.url?.startsWith('/api/socketio')) {
+        // Let Socket.IO handle these requests
+        res.writeHead(404, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ 
+          error: 'Socket.IO endpoint - use WebSocket connection',
+          message: 'This endpoint is reserved for Socket.IO WebSocket connections.'
+        }));
         return;
       }
       handle(req, res);

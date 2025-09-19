@@ -198,6 +198,11 @@ model Colaborador {
   taskLogs TaskLog[]
   taskNotifications TaskNotification[]
   
+  // WhatsApp
+  whatsappConversations WhatsAppConversation[]
+  whatsappMessages WhatsAppMessage[]
+  whatsappSession WhatsAppSession?
+  
   @@map("colaboradores")
 }
 
@@ -931,4 +936,184 @@ enum TaskNotificationType {
   COMENTARIO_ADICIONADO
   LEMBRETE_SEM_ATUALIZACAO
   ALERTA_GESTOR
+}
+
+// ===== MÓDULO WHATSAPP =====
+
+// Conexões WhatsApp
+model WhatsAppConnection {
+  id          String   @id @default(cuid())
+  sessionId   String   @unique
+  phoneNumber String?
+  isConnected Boolean  @default(false)
+  qrCode      String?
+  lastSeen    DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relacionamentos
+  messages    WhatsAppMessage[]
+  contacts    WhatsAppContact[]
+  groups      WhatsAppGroup[]
+  
+  @@map("whatsapp_connections")
+}
+
+// Conversas WhatsApp
+model WhatsAppConversation {
+  id            String   @id @default(cuid())
+  colaboradorId String
+  chatId        String   // ID do chat (contato ou grupo)
+  nome          String
+  telefone      String
+  avatar        String?
+  tipo          WhatsAppChatType @default(INDIVIDUAL)
+  lastMessageAt DateTime @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  // Relacionamentos
+  colaborador   Colaborador @relation(fields: [colaboradorId], references: [id], onDelete: Cascade)
+  messages      WhatsAppMessage[]
+  
+  @@unique([colaboradorId, chatId])
+  @@map("whatsapp_conversations")
+}
+
+// Mensagens WhatsApp
+model WhatsAppMessage {
+  id           String   @id @default(cuid())
+  messageId    String?  @unique // ID da mensagem do WhatsApp
+  connectionId String?
+  conversaId   String
+  colaboradorId String
+  from         String
+  to           String
+  body         String
+  messageType  WhatsAppMessageType @default(TEXT)
+  mediaUrl     String?
+  mediaType    String?
+  timestamp    DateTime @default(now())
+  isFromMe     Boolean  @default(false)
+  status       WhatsAppMessageStatus @default(SENT)
+  createdAt    DateTime @default(now())
+  
+  // Relacionamentos
+  connection   WhatsAppConnection? @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  conversa     WhatsAppConversation @relation(fields: [conversaId], references: [id], onDelete: Cascade)
+  colaborador  Colaborador @relation(fields: [colaboradorId], references: [id], onDelete: Cascade)
+  
+  @@map("whatsapp_messages")
+}
+
+// Contatos WhatsApp
+model WhatsAppContact {
+  id           String   @id @default(cuid())
+  connectionId String
+  contactId    String   // ID do contato no WhatsApp
+  name         String?
+  phoneNumber  String
+  profilePic   String?
+  isBlocked    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  // Relacionamentos
+  connection   WhatsAppConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  
+  @@unique([connectionId, contactId])
+  @@map("whatsapp_contacts")
+}
+
+// Grupos WhatsApp
+model WhatsAppGroup {
+  id           String   @id @default(cuid())
+  connectionId String
+  groupId      String   // ID do grupo no WhatsApp
+  name         String
+  description  String?
+  profilePic   String?
+  isAdmin      Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  // Relacionamentos
+  connection   WhatsAppConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  
+  @@unique([connectionId, groupId])
+  @@map("whatsapp_groups")
+}
+
+// Sessões WhatsApp (para controle de estado)
+model WhatsAppSession {
+  id            String   @id @default(cuid())
+  colaboradorId String   @unique
+  status        String   @default("not_connected")
+  qrCode        String?
+  phoneNumber   String?
+  sessionData   Json?
+  lastActivity  DateTime @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  // Relacionamentos
+  colaborador   Colaborador @relation(fields: [colaboradorId], references: [id], onDelete: Cascade)
+  
+  @@map("whatsapp_sessions")
+}
+
+// Automações WhatsApp
+model WhatsAppAutomation {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  isActive    Boolean  @default(true)
+  trigger     WhatsAppTriggerType
+  conditions  Json     // Condições em JSON
+  actions     Json     // Ações em JSON
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("whatsapp_automations")
+}
+
+// Enums WhatsApp
+enum WhatsAppMessageType {
+  TEXT
+  IMAGE
+  VIDEO
+  AUDIO
+  DOCUMENT
+  STICKER
+  LOCATION
+  CONTACT
+  
+  @@map("whatsapp_message_type")
+}
+
+enum WhatsAppMessageStatus {
+  SENT
+  DELIVERED
+  READ
+  RECEIVED
+  FAILED
+  
+  @@map("whatsapp_message_status")
+}
+
+enum WhatsAppChatType {
+  INDIVIDUAL
+  GROUP
+  
+  @@map("whatsapp_chat_type")
+}
+
+enum WhatsAppTriggerType {
+  MESSAGE_RECEIVED
+  CONTACT_ADDED
+  GROUP_JOINED
+  KEYWORD_DETECTED
+  SCHEDULE
+  
+  @@map("whatsapp_trigger_type")
 }

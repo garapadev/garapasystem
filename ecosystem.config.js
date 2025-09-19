@@ -82,6 +82,31 @@ module.exports = {
       restart_delay: 4000,
       cron_restart: '0 */4 * * *' // Restart a cada 4 horas para limpeza de memória
     },
+    {
+      name: 'whatsapp-worker',
+      script: './whatsapp-worker/main',
+      cwd: './whatsapp-worker',
+      instances: 1,
+      exec_mode: 'fork',
+      watch: false,
+      max_memory_restart: '512M',
+      interpreter: 'none',
+      env: {
+        NODE_ENV: 'development'
+      },
+      env_production: {
+        NODE_ENV: 'production'
+      },
+      error_file: './logs/whatsapp-worker-error.log',
+      out_file: './logs/whatsapp-worker-out.log',
+      log_file: './logs/whatsapp-worker-combined.log',
+      time: true,
+      autorestart: true,
+      max_restarts: 10,
+      min_uptime: '10s',
+      restart_delay: 4000,
+      pre_start: 'cd whatsapp-worker && go build -o main main.go'
+    }
 
   ],
 

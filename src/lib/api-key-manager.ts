@@ -411,5 +411,8 @@ export const AVAILABLE_PERMISSIONS = [
   { value: 'usuarios.delete', label: 'Usuários - Exclusão', description: 'Excluir usuários' },
   { value: 'configuracoes.read', label: 'Configurações - Leitura', description: 'Visualizar configurações' },
   { value: 'configuracoes.write', label: 'Configurações - Escrita', description: 'Alterar configurações' },
-  { value: 'logs.read', label: 'Logs - Leitura', description: 'Visualizar logs do sistema' }
+  { value: 'logs.read', label: 'Logs - Leitura', description: 'Visualizar logs do sistema' },
+  { value: 'gazapi.read', label: 'Gazapi - Leitura', description: 'Visualizar status e informações do WhatsApp' },
+  { value: 'gazapi.write', label: 'Gazapi - Escrita', description: 'Enviar mensagens e gerenciar sessões do WhatsApp' },
+  { value: 'gazapi.admin', label: 'Gazapi - Administração', description: 'Acesso completo ao sistema WhatsApp' }
 ];

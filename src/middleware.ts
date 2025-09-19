@@ -11,7 +11,7 @@ export default withAuth(
     const publicRoutes = ['/auth/login', '/auth/error', '/api/auth', '/swagger', '/api/docs']
     
     // Rotas de API que não precisam de autenticação (não usam ApiMiddleware)
-    const publicApiRoutes = ['/api/clientes', '/api/negocios', '/api/webhooks', '/api/grupos-hierarquicos', '/api/configuracoes', '/api/helpdesk/tickets/stats', '/api/helpdesk/tickets']
+    const publicApiRoutes = ['/api/clientes', '/api/negocios', '/api/webhooks', '/api/grupos-hierarquicos', '/api/configuracoes', '/api/helpdesk/tickets/stats', '/api/helpdesk/tickets', '/api/gazapi', '/api/api-keys']
     
     // Se é uma rota pública, permitir acesso
     if (publicRoutes.some(route => pathname.startsWith(route))) {
@@ -82,6 +82,6 @@ export const config = {
      * - favicon.ico (favicon file)
      * - public folder
      */
-    '/((?!api/auth|api/docs|swagger|_next/static|_next/image|favicon.ico|public).*)',
+    '/((?!api/auth|api/docs|api/gazapi|api/api-keys|swagger|_next/static|_next/image|favicon.ico|public).*)',
   ],
 }

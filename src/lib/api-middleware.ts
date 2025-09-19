@@ -186,7 +186,18 @@ export class ApiMiddleware {
       'DELETE:/api/tasks/recurrence',
       'GET:/api/tasks/automation/stats',
       'GET:/api/tasks/automation/summary',
-      'POST:/api/tasks/from-email'
+      'POST:/api/tasks/from-email',
+      // Endpoints Gazapi - WhatsApp
+      'POST:/api/gazapi/start',
+      'POST:/api/gazapi/getQrCode',
+      'POST:/api/gazapi/getSessionStatus',
+      'POST:/api/gazapi/sendText',
+      'POST:/api/gazapi/sendImage',
+      'POST:/api/gazapi/close',
+      // Endpoints WhatsApp
+      'GET:/api/whatsapp/status',
+      'POST:/api/whatsapp/connect',
+      'POST:/api/whatsapp/disconnect'
     ];
 
     const endpointKey = `${method}:${endpoint}`;
@@ -272,7 +283,16 @@ export class ApiMiddleware {
       'POST:/api/tasks': ['tasks.write'],
       'PUT:/api/tasks': ['tasks.write'],
       'PATCH:/api/tasks': ['tasks.write'],
-      'DELETE:/api/tasks': ['tasks.delete']
+      'DELETE:/api/tasks': ['tasks.delete'],
+      
+      // Gazapi - WhatsApp
+      'POST:/api/gazapi/start': ['gazapi.write', 'gazapi.admin'],
+      'POST:/api/gazapi/getQrCode': ['gazapi.read', 'gazapi.write', 'gazapi.admin'],
+      'POST:/api/gazapi/getSessionStatus': ['gazapi.read', 'gazapi.write', 'gazapi.admin'],
+      'POST:/api/gazapi/sendText': ['gazapi.write', 'gazapi.admin'],
+      'POST:/api/gazapi/sendImage': ['gazapi.write', 'gazapi.admin'],
+      'POST:/api/gazapi/close': ['gazapi.write', 'gazapi.admin'],
+      'POST:/api/gazapi/webhook': ['gazapi.admin'] // Webhook interno, apenas admin
     };
 
     const permissionKey = `${method}:${endpoint}`;
@@ -450,7 +470,12 @@ export const API_PERMISSIONS = {
   // Tarefas
   TASKS_READ: 'tasks.read',
   TASKS_WRITE: 'tasks.write',
-  TASKS_DELETE: 'tasks.delete'
+  TASKS_DELETE: 'tasks.delete',
+  
+  // Gazapi - WhatsApp
+  GAZAPI_READ: 'gazapi.read',
+  GAZAPI_WRITE: 'gazapi.write',
+  GAZAPI_ADMIN: 'gazapi.admin'
 } as const;
 
 export type ApiPermission = typeof API_PERMISSIONS[keyof typeof API_PERMISSIONS];

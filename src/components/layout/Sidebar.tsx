@@ -24,7 +24,8 @@ import {
   BarChart3,
   Calendar,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
+  MessageCircle
 } from 'lucide-react';
 
 interface NavigationItem {
@@ -52,6 +53,12 @@ const navigation: NavigationItem[] = [
     href: '/helpdesk', 
     icon: Headphones,
     requiredPermission: { recurso: 'helpdesk', acao: 'visualizar' }
+  },
+  { 
+    name: 'WhatsApp Chat', 
+    href: '/whatsappchat', 
+    icon: MessageCircle,
+    requiredPermission: { recurso: 'whatsapp', acao: 'usar' }
   },
   { 
     name: 'Tarefas', 

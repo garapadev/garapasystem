@@ -2,7 +2,7 @@
 
 import { useAuth } from '@/hooks/useAuth'
 import { useConfiguracoes } from '@/hooks/useConfiguracoes'
-import { signOut } from 'next-auth/react'
+// import { signOut } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -27,7 +27,9 @@ export function Header() {
   }
 
   const handleSignOut = async () => {
-    await signOut({ callbackUrl: '/auth/login' })
+    // await signOut({ callbackUrl: '/auth/login' })
+    // Mock para teste
+    router.push('/auth/login')
   }
 
   const handleProfileClick = () => {
