@@ -1,516 +1,774 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import { Activity, RefreshCw, Filter, Download, Eye, AlertCircle, CheckCircle } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { 
+  Download, 
+  RefreshCw, 
+  Search, 
+  Filter,
+  Play,
+  Square,
+  Trash2,
+  Settings,
+  Monitor,
+  Activity,
+  AlertCircle,
+  CheckCircle,
+  Clock,
+  Database,
+  Mail,
+  MessageSquare,
+  Users,
+  Briefcase,
+  Terminal,
+  Server
+} from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { toast } from 'sonner';
 
-interface ApiLog {
+// Interfaces para os dados
+interface SystemLog {
   id: string;
-  apiKeyId: string;
-  endpoint: string;
-  method: string;
-  statusCode: number;
-  responseTime: number;
-  userAgent?: string;
-  ipAddress?: string;
-  createdAt: string;
-  apiKey?: {
-    nome: string;
-  };
+  timestamp: string;
+  level: 'info' | 'warn' | 'error' | 'debug';
+  module: string;
+  message: string;
+  details?: any;
 }
 
-interface WebhookLog {
-  id: string;
-  webhookConfigId: string;
-  evento: string;
-  sucesso: boolean;
-  statusCode?: number;
-  responseTime?: number;
-  errorMessage?: string;
-  teste: boolean;
-  createdAt: string;
-  webhookConfig?: {
-    nome: string;
-    url: string;
-  };
+interface ModuleInfo {
+  name: string;
+  displayName: string;
+  status: 'online' | 'offline' | 'error';
+  pid?: number;
+  uptime?: string;
+  memory?: string;
+  cpu?: string;
+  restarts?: number;
+  icon: any;
+}
+
+interface DebugConfig {
+  module: string;
+  debug_enabled: boolean;
+  debug_level: 'error' | 'warn' | 'info' | 'debug';
+  log_retention_days: number;
 }
 
 interface LogFilters {
-  dateRange: string;
-  status?: string;
-  method?: string;
-  endpoint?: string;
-  evento?: string;
-  sucesso?: string;
-  teste?: string;
+  level: string;
+  search: string;
+  lines: number;
 }
 
-export function LogsSection() {
-  const [apiLogs, setApiLogs] = useState<ApiLog[]>([]);
-  const [webhookLogs, setWebhookLogs] = useState<WebhookLog[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState('api');
-  const [filters, setFilters] = useState<LogFilters>({
-    dateRange: '7d',
+interface RetentionConfig {
+  globalRetentionDays: number;
+  moduleConfigs: Record<string, {
+    retentionDays: number;
+    autoCleanup: boolean;
+  }>;
+  lastCleanup: string;
+}
+
+export default function LogsSection() {
+  const [selectedModule, setSelectedModule] = useState<string>('garapasystem');
+  const [logs, setLogs] = useState<SystemLog[]>([]);
+  const [modules, setModules] = useState<ModuleInfo[]>([]);
+  const [debugConfigs, setDebugConfigs] = useState<DebugConfig[]>([]);
+  const [retentionConfig, setRetentionConfig] = useState<RetentionConfig>({
+    globalRetentionDays: 30,
+    moduleConfigs: {},
+    lastCleanup: new Date().toISOString()
   });
+  const [filters, setFilters] = useState<LogFilters>({
+    level: 'all',
+    search: '',
+    lines: 50
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [autoRefresh, setAutoRefresh] = useState(false);
+  const [isCleaningLogs, setIsCleaningLogs] = useState(false);
+  const logsEndRef = useRef<HTMLDivElement>(null);
+
+  // Módulos disponíveis no sistema
+  const availableModules: ModuleInfo[] = [
+    {
+      name: 'garapasystem',
+      displayName: 'Sistema Principal',
+      status: 'online',
+      icon: Server
+    },
+    {
+      name: 'helpdesk-worker',
+      displayName: 'Helpdesk Worker',
+      status: 'online',
+      icon: MessageSquare
+    },
+    {
+      name: 'webmail-sync-worker',
+      displayName: 'Webmail Sync',
+      status: 'online',
+      icon: Mail
+    },
+    {
+      name: 'tasks-worker',
+      displayName: 'Tasks Worker',
+      status: 'offline',
+      icon: Briefcase
+    },
+    {
+      name: 'notifications-worker',
+      displayName: 'Notifications',
+      status: 'offline',
+      icon: Activity
+    }
+  ];
+
+  // Carregar logs do módulo selecionado
+  const loadModuleLogs = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch(`/api/logs/system?module=${selectedModule}&lines=${filters.lines}&level=${filters.level}`);
+      if (response.ok) {
+        const data = await response.json();
+        setLogs(data.logs || []);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar logs:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Carregar informações dos módulos
+  const loadModulesInfo = async () => {
+    try {
+      const response = await fetch('/api/logs/system/modules');
+      if (response.ok) {
+        const data = await response.json();
+        setModules(data.modules || availableModules);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar informações dos módulos:', error);
+      setModules(availableModules);
+    }
+  };
+
+  // Carregar configurações de debug
+  const loadDebugConfigs = async () => {
+    try {
+      const response = await fetch('/api/logs/debug-config');
+      if (response.ok) {
+        const data = await response.json();
+        setDebugConfigs(data.configs || []);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar configurações de debug:', error);
+    }
+  };
+
+  // Carregar configurações de retenção
+  const loadRetentionConfig = async () => {
+    try {
+      const response = await fetch('/api/logs/retention');
+      if (response.ok) {
+        const data = await response.json();
+        setRetentionConfig(data.config);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar configurações de retenção:', error);
+    }
+  };
+
+  // Atualizar configurações de retenção
+  const updateRetentionConfig = async (config: Partial<RetentionConfig>) => {
+    try {
+      const response = await fetch('/api/logs/retention', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(config),
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setRetentionConfig(data.config);
+      } else {
+        const errorData = await response.text();
+        console.error('Erro na resposta da API:', response.status, errorData);
+      }
+    } catch (error) {
+      console.error('Erro ao atualizar configurações de retenção:', error);
+    }
+  };
+
+  // Atualizar configuração de debug
+  const updateDebugConfig = async (module: string, config: Partial<DebugConfig>) => {
+    try {
+      const response = await fetch(`/api/logs/debug-config`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ module, ...config }),
+      });
+      
+      if (response.ok) {
+        loadDebugConfigs();
+      }
+    } catch (error) {
+      console.error('Erro ao atualizar configuração de debug:', error);
+    }
+  };
+
+  // Limpar logs do módulo
+  const clearModuleLogs = async () => {
+    try {
+      const response = await fetch(`/api/logs/system`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ module: selectedModule }),
+      });
+      
+      if (response.ok) {
+        setLogs([]);
+      }
+    } catch (error) {
+      console.error('Erro ao limpar logs:', error);
+    }
+  };
+
+  // Executar limpeza manual de logs baseada na retenção
+  const executeManualCleanup = async (module?: string) => {
+    setIsCleaningLogs(true);
+    try {
+      const response = await fetch('/api/logs/retention', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ module }),
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        alert(`Limpeza concluída: ${data.message}`);
+        loadRetentionConfig(); // Recarregar configurações para atualizar lastCleanup
+        if (!module || module === selectedModule) {
+          loadModuleLogs(); // Recarregar logs se afetou o módulo atual
+        }
+      }
+    } catch (error) {
+      console.error('Erro ao executar limpeza manual:', error);
+      alert('Erro ao executar limpeza manual');
+    } finally {
+      setIsCleaningLogs(false);
+    }
+  };
+
+  // Reiniciar módulo
+  const restartModule = async () => {
+    try {
+      const response = await fetch(`/api/logs/system/restart`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ module: selectedModule }),
+      });
+      
+      if (response.ok) {
+        loadModulesInfo();
+        setTimeout(loadModuleLogs, 2000); // Aguardar reinicialização
+      }
+    } catch (error) {
+      console.error('Erro ao reiniciar módulo:', error);
+    }
+  };
+
+  // Exportar logs
+  const exportLogs = () => {
+    const filteredLogs = logs.filter(log => {
+      const matchesLevel = filters.level === 'all' || log.level === filters.level;
+      const matchesSearch = !filters.search || 
+        log.message.toLowerCase().includes(filters.search.toLowerCase()) ||
+        log.module.toLowerCase().includes(filters.search.toLowerCase());
+      return matchesLevel && matchesSearch;
+    });
+
+    const logText = filteredLogs.map(log => 
+      `${log.timestamp} | ${log.level.toUpperCase()} | ${log.module} | ${log.message}`
+    ).join('\n');
+
+    const blob = new Blob([logText], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${selectedModule}-logs-${format(new Date(), 'yyyy-MM-dd-HH-mm')}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  // Auto scroll para o final dos logs
+  const scrollToBottom = () => {
+    logsEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  // Efeitos
+  useEffect(() => {
+    loadModulesInfo();
+    loadDebugConfigs();
+    loadRetentionConfig();
+  }, []);
 
   useEffect(() => {
-    if (activeTab === 'api') {
-      fetchApiLogs();
-    } else {
-      fetchWebhookLogs();
-    }
-  }, [activeTab, filters]);
+    loadModuleLogs();
+  }, [selectedModule, filters.lines, filters.level]);
 
-  const fetchApiLogs = async () => {
-    try {
-      setLoading(true);
-      const params = new URLSearchParams();
-      
-      if (filters.dateRange) params.append('dateRange', filters.dateRange);
-      if (filters.status) params.append('status', filters.status);
-      if (filters.method) params.append('method', filters.method);
-      if (filters.endpoint) params.append('endpoint', filters.endpoint);
-      
-      const response = await fetch(`/api/logs/api?${params.toString()}`);
-      
-      if (response.ok) {
-        const data = await response.json();
-        setApiLogs(data.logs || []);
-      } else {
-        throw new Error('Erro ao carregar logs da API');
-      }
-    } catch (error) {
-      console.error('Erro ao carregar logs da API:', error);
-      toast.error('Erro ao carregar logs da API');
-    } finally {
-      setLoading(false);
+  useEffect(() => {
+    if (autoRefresh) {
+      const interval = setInterval(loadModuleLogs, 5000);
+      return () => clearInterval(interval);
     }
+  }, [autoRefresh, selectedModule, filters]);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [logs]);
+
+  // Filtrar logs
+  const filteredLogs = logs.filter(log => {
+    const matchesLevel = filters.level === 'all' || log.level === filters.level;
+    const matchesSearch = !filters.search || 
+      log.message.toLowerCase().includes(filters.search.toLowerCase()) ||
+      log.module.toLowerCase().includes(filters.search.toLowerCase());
+    return matchesLevel && matchesSearch;
+  });
+
+  // Obter status do módulo
+  const getModuleStatus = (moduleName: string) => {
+    const module = modules.find(m => m.name === moduleName) || 
+                  availableModules.find(m => m.name === moduleName);
+    return module?.status || 'unknown';
   };
 
-  const fetchWebhookLogs = async () => {
-    try {
-      setLoading(true);
-      const params = new URLSearchParams();
-      
-      if (filters.dateRange) params.append('dateRange', filters.dateRange);
-      if (filters.evento) params.append('evento', filters.evento);
-      if (filters.sucesso) params.append('sucesso', filters.sucesso);
-      if (filters.teste) params.append('teste', filters.teste);
-      
-      const response = await fetch(`/api/logs/webhooks?${params.toString()}`);
-      
-      if (response.ok) {
-        const data = await response.json();
-        setWebhookLogs(data.logs || []);
-      } else {
-        throw new Error('Erro ao carregar logs de webhook');
-      }
-    } catch (error) {
-      console.error('Erro ao carregar logs de webhook:', error);
-      toast.error('Erro ao carregar logs de webhook');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const exportLogs = async () => {
-    try {
-      const logs = activeTab === 'api' ? apiLogs : webhookLogs;
-      const csvContent = generateCSV(logs, activeTab);
-      
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement('a');
-      const url = URL.createObjectURL(blob);
-      link.setAttribute('href', url);
-      link.setAttribute('download', `${activeTab}-logs-${format(new Date(), 'yyyy-MM-dd')}.csv`);
-      link.style.visibility = 'hidden';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      
-      toast.success('Logs exportados com sucesso!');
-    } catch (error) {
-      toast.error('Erro ao exportar logs');
-    }
-  };
-
-  const generateCSV = (logs: any[], type: string) => {
-    if (type === 'api') {
-      const headers = ['Data/Hora', 'Chave API', 'Endpoint', 'Método', 'Status', 'Tempo (ms)', 'IP', 'User Agent'];
-      const rows = logs.map(log => [
-        format(new Date(log.createdAt), 'dd/MM/yyyy HH:mm:ss', { locale: ptBR }),
-        log.apiKey?.nome || 'N/A',
-        log.endpoint,
-        log.method,
-        log.status,
-        log.responseTime,
-        log.ip || 'N/A',
-        log.userAgent || 'N/A'
-      ]);
-      return [headers, ...rows].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
-    } else {
-      const headers = ['Data/Hora', 'Webhook', 'Evento', 'Sucesso', 'Status', 'Tempo (ms)', 'Teste', 'Erro'];
-      const rows = logs.map(log => [
-        format(new Date(log.createdAt), 'dd/MM/yyyy HH:mm:ss', { locale: ptBR }),
-        log.webhookConfig?.nome || 'N/A',
-        log.evento,
-        log.sucesso ? 'Sim' : 'Não',
-        log.status || 'N/A',
-        log.responseTime || 'N/A',
-        log.teste ? 'Sim' : 'Não',
-        log.erro || 'N/A'
-      ]);
-      return [headers, ...rows].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
-    }
-  };
-
-  const getStatusColor = (status: number) => {
-    if (status >= 200 && status < 300) return 'bg-green-100 text-green-800 border-green-200';
-    if (status >= 400 && status < 500) return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-    if (status >= 500) return 'bg-red-100 text-red-800 border-red-200';
-    return 'bg-gray-100 text-gray-800 border-gray-200';
-  };
-
-  const clearFilters = () => {
-    setFilters({ dateRange: '7d' });
+  // Obter configuração de debug do módulo
+  const getDebugConfig = (moduleName: string) => {
+    return debugConfigs.find(config => config.module === moduleName);
   };
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-medium">Logs de Integração</h3>
-          <p className="text-sm text-muted-foreground">
-            Monitore o uso da API e envios de webhook
+          <h2 className="text-2xl font-bold">Logs do Sistema</h2>
+          <p className="text-muted-foreground">
+            Monitore logs e atividades dos módulos do sistema
           </p>
-        </div>
-        
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={exportLogs}>
-            <Download className="mr-2 h-4 w-4" />
-            Exportar CSV
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => activeTab === 'api' ? fetchApiLogs() : fetchWebhookLogs()}>
-            <RefreshCw className="mr-2 h-4 w-4" />
-            Atualizar
-          </Button>
         </div>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList>
-          <TabsTrigger value="api">Logs da API</TabsTrigger>
-          <TabsTrigger value="webhooks">Logs de Webhook</TabsTrigger>
+      <Tabs value={selectedModule} onValueChange={setSelectedModule} className="space-y-4">
+        <TabsList className="grid w-full grid-cols-6">
+          {availableModules.map((module) => {
+            const Icon = module.icon;
+            const status = getModuleStatus(module.name);
+            return (
+              <TabsTrigger key={module.name} value={module.name} className="flex items-center gap-2">
+                <Icon className="h-4 w-4" />
+                <span className="hidden sm:inline">{module.displayName}</span>
+                <Badge 
+                  variant={status === 'online' ? 'default' : status === 'error' ? 'destructive' : 'secondary'}
+                  className="ml-1 h-2 w-2 p-0"
+                />
+              </TabsTrigger>
+            );
+          })}
+          <TabsTrigger value="retention" className="flex items-center gap-2">
+            <Database className="h-4 w-4" />
+            <span className="hidden sm:inline">Retenção</span>
+          </TabsTrigger>
         </TabsList>
 
-        {/* Filters */}
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="text-base">Filtros</CardTitle>
-                <CardDescription>Filtre os logs por período e outros critérios</CardDescription>
-              </div>
-              <Button variant="ghost" size="sm" onClick={clearFilters}>
-                Limpar Filtros
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div>
-                <Label htmlFor="dateRange">Período</Label>
-                <Select value={filters.dateRange} onValueChange={(value) => setFilters(prev => ({ ...prev, dateRange: value }))}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="1d">Último dia</SelectItem>
-                    <SelectItem value="7d">Últimos 7 dias</SelectItem>
-                    <SelectItem value="30d">Últimos 30 dias</SelectItem>
-                    <SelectItem value="90d">Últimos 90 dias</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              {activeTab === 'api' ? (
-                <>
-                  <div>
-                    <Label htmlFor="method">Método</Label>
-                    <Select value={filters.method || 'all'} onValueChange={(value) => setFilters(prev => ({ ...prev, method: value === 'all' ? undefined : value }))}>
+        {availableModules.map((module) => (
+          <TabsContent key={module.name} value={module.name} className="space-y-4">
+            {/* Controles */}
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <module.icon className="h-5 w-5" />
+                    <div>
+                      <CardTitle className="text-lg">{module.displayName}</CardTitle>
+                      <CardDescription>
+                        Status: <Badge variant={getModuleStatus(module.name) === 'online' ? 'default' : 'destructive'}>
+                          {getModuleStatus(module.name)}
+                        </Badge>
+                      </CardDescription>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={restartModule}
+                      disabled={isLoading}
+                    >
+                      <Play className="h-4 w-4 mr-2" />
+                      Reiniciar
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={clearModuleLogs}
+                      disabled={isLoading}
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Limpar
+                    </Button>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  {/* Filtros */}
+                  <div className="space-y-2">
+                    <Label>Nível</Label>
+                    <Select value={filters.level} onValueChange={(value) => setFilters(prev => ({ ...prev, level: value }))}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Todos" />
+                        <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all">Todos</SelectItem>
-                        <SelectItem value="GET">GET</SelectItem>
-                        <SelectItem value="POST">POST</SelectItem>
-                        <SelectItem value="PUT">PUT</SelectItem>
-                        <SelectItem value="DELETE">DELETE</SelectItem>
+                        <SelectItem value="error">Error</SelectItem>
+                        <SelectItem value="warn">Warning</SelectItem>
+                        <SelectItem value="info">Info</SelectItem>
+                        <SelectItem value="debug">Debug</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
-                  <div>
-                    <Label htmlFor="status">Status</Label>
-                    <Select value={filters.status || 'all'} onValueChange={(value) => setFilters(prev => ({ ...prev, status: value === 'all' ? undefined : value }))}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Todos" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">Todos</SelectItem>
-                        <SelectItem value="2xx">2xx (Sucesso)</SelectItem>
-                        <SelectItem value="4xx">4xx (Erro do Cliente)</SelectItem>
-                        <SelectItem value="5xx">5xx (Erro do Servidor)</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label htmlFor="endpoint">Endpoint</Label>
-                    <Input
-                      id="endpoint"
-                      placeholder="Ex: /api/clientes"
-                      value={filters.endpoint || ''}
-                      onChange={(e) => setFilters(prev => ({ ...prev, endpoint: e.target.value || undefined }))}
-                    />
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div>
-                    <Label htmlFor="evento">Evento</Label>
-                    <Input
-                      id="evento"
-                      placeholder="Ex: cliente.criado"
-                      value={filters.evento || ''}
-                      onChange={(e) => setFilters(prev => ({ ...prev, evento: e.target.value || undefined }))}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="sucesso">Sucesso</Label>
-                    <Select value={filters.sucesso || 'all'} onValueChange={(value) => setFilters(prev => ({ ...prev, sucesso: value === 'all' ? undefined : value }))}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Todos" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">Todos</SelectItem>
-                        <SelectItem value="true">Sucesso</SelectItem>
-                        <SelectItem value="false">Falha</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label htmlFor="teste">Teste</Label>
-                    <Select value={filters.teste || 'all'} onValueChange={(value) => setFilters(prev => ({ ...prev, teste: value === 'all' ? undefined : value }))}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Todos" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">Todos</SelectItem>
-                        <SelectItem value="true">Teste</SelectItem>
-                        <SelectItem value="false">Produção</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </>
-              )}
-            </div>
-          </CardContent>
-        </Card>
 
-        <TabsContent value="api">
+                  <div className="space-y-2">
+                    <Label>Linhas</Label>
+                    <Select value={filters.lines.toString()} onValueChange={(value) => setFilters(prev => ({ ...prev, lines: parseInt(value) }))}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="20">20</SelectItem>
+                        <SelectItem value="50">50</SelectItem>
+                        <SelectItem value="100">100</SelectItem>
+                        <SelectItem value="200">200</SelectItem>
+                        <SelectItem value="500">500</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Buscar</Label>
+                    <div className="relative">
+                      <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        placeholder="Buscar nos logs..."
+                        value={filters.search}
+                        onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
+                        className="pl-8"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Controles</Label>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={loadModuleLogs}
+                        disabled={isLoading}
+                      >
+                        <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={exportLogs}
+                      >
+                        <Download className="h-4 w-4" />
+                      </Button>
+                      <div className="flex items-center space-x-2">
+                        <Switch
+                          checked={autoRefresh}
+                          onCheckedChange={setAutoRefresh}
+                        />
+                        <Label className="text-xs">Auto</Label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Configurações de Debug */}
+            {(() => {
+              const debugConfig = getDebugConfig(module.name);
+              return debugConfig && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-sm flex items-center gap-2">
+                      <Settings className="h-4 w-4" />
+                      Configurações de Debug
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="flex items-center space-x-2">
+                        <Switch
+                          checked={debugConfig.debug_enabled}
+                          onCheckedChange={(checked) => updateDebugConfig(module.name, { debug_enabled: checked })}
+                        />
+                        <Label>Debug Ativo</Label>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Nível de Debug</Label>
+                        <Select 
+                          value={debugConfig.debug_level} 
+                          onValueChange={(value) => updateDebugConfig(module.name, { debug_level: value as any })}
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="error">Error</SelectItem>
+                            <SelectItem value="warn">Warning</SelectItem>
+                            <SelectItem value="info">Info</SelectItem>
+                            <SelectItem value="debug">Debug</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Retenção (dias)</Label>
+                        <Input
+                          type="number"
+                          value={debugConfig.log_retention_days}
+                          onChange={(e) => updateDebugConfig(module.name, { log_retention_days: parseInt(e.target.value) })}
+                          min="1"
+                          max="365"
+                        />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })()}
+
+            {/* Logs */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <Terminal className="h-4 w-4" />
+                  Logs em Tempo Real ({filteredLogs.length} entradas)
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-4 rounded-lg font-mono text-sm h-96 overflow-y-auto">
+                  {filteredLogs.length === 0 ? (
+                    <div className="text-slate-500 dark:text-slate-400 text-center py-8">
+                      Nenhum log encontrado para os filtros selecionados
+                    </div>
+                  ) : (
+                    filteredLogs.map((log) => (
+                      <div key={log.id} className="mb-1 flex hover:bg-slate-100 dark:hover:bg-slate-800 px-2 py-1 rounded transition-colors">
+                        <span className="text-slate-500 dark:text-slate-400 mr-2 min-w-[60px]">
+                          {format(new Date(log.timestamp), 'HH:mm:ss', { locale: ptBR })}
+                        </span>
+                        <span className={`mr-2 font-semibold min-w-[60px] ${
+                          log.level === 'error' ? 'text-red-600 dark:text-red-400' :
+                          log.level === 'warn' ? 'text-yellow-600 dark:text-yellow-400' :
+                          log.level === 'info' ? 'text-blue-600 dark:text-blue-400' :
+                          'text-slate-600 dark:text-slate-400'
+                        }`}>
+                          [{log.level.toUpperCase()}]
+                        </span>
+                        <span className="text-purple-600 dark:text-purple-400 mr-2 min-w-[120px]">{log.module}:</span>
+                        <span className="text-slate-800 dark:text-slate-200 flex-1">{log.message}</span>
+                      </div>
+                    ))
+                  )}
+                  <div ref={logsEndRef} />
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        ))}
+
+        {/* Aba de Configuração de Retenção */}
+        <TabsContent value="retention" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Logs da API</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <Database className="h-5 w-5" />
+                Configuração de Retenção de Logs
+              </CardTitle>
               <CardDescription>
-                {apiLogs.length} registro{apiLogs.length !== 1 ? 's' : ''} encontrado{apiLogs.length !== 1 ? 's' : ''}
+                Configure o período de armazenamento dos logs e execute limpezas manuais
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              {loading ? (
-                <div className="flex justify-center p-8">
-                  <RefreshCw className="h-6 w-6 animate-spin" />
+            <CardContent className="space-y-6">
+              {/* Configuração Global */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Configuração Global</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="globalRetention">Retenção Global (dias)</Label>
+                    <Input
+                      id="globalRetention"
+                      type="number"
+                      min="1"
+                      max="365"
+                      value={retentionConfig.globalRetentionDays}
+                      onChange={(e) => setRetentionConfig(prev => ({
+                        ...prev,
+                        globalRetentionDays: parseInt(e.target.value) || 7
+                      }))}
+                      placeholder="7"
+                    />
+                    <p className="text-sm text-muted-foreground">
+                      Logs mais antigos que este período serão removidos automaticamente
+                    </p>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Última Limpeza</Label>
+                    <div className="p-2 bg-muted rounded-md text-sm">
+                      {retentionConfig.lastCleanup ? 
+                        format(new Date(retentionConfig.lastCleanup), 'dd/MM/yyyy HH:mm', { locale: ptBR }) :
+                        'Nunca executada'
+                      }
+                    </div>
+                  </div>
                 </div>
-              ) : apiLogs.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
-                  <Activity className="mx-auto h-12 w-12 mb-4 opacity-50" />
-                  <p>Nenhum log encontrado</p>
-                  <p className="text-sm">Ajuste os filtros ou aguarde novas requisições</p>
-                </div>
-              ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Data/Hora</TableHead>
-                      <TableHead>Chave API</TableHead>
-                      <TableHead>Endpoint</TableHead>
-                      <TableHead>Método</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Tempo</TableHead>
-                      <TableHead>IP</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {apiLogs.map((log) => (
-                      <TableRow key={log.id}>
-                        <TableCell>
-                          {format(new Date(log.createdAt), 'dd/MM/yyyy HH:mm:ss', { locale: ptBR })}
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline">
-                            {log.apiKey?.nome || 'N/A'}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <code className="text-sm">{log.endpoint}</code>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline">{log.method}</Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Badge className={`${getStatusColor(log.statusCode)} border`}>
-                            {log.statusCode}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <span className="text-sm text-muted-foreground">
-                            {log.responseTime}ms
-                          </span>
-                        </TableCell>
-                        <TableCell>
-                          <span className="text-sm text-muted-foreground">
-                            {log.ipAddress || 'N/A'}
-                          </span>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
+              </div>
 
-        <TabsContent value="webhooks">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Logs de Webhook</CardTitle>
-              <CardDescription>
-                {webhookLogs.length} registro{webhookLogs.length !== 1 ? 's' : ''} encontrado{webhookLogs.length !== 1 ? 's' : ''}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {loading ? (
-                <div className="flex justify-center p-8">
-                  <RefreshCw className="h-6 w-6 animate-spin" />
+              {/* Ações */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Ações</h3>
+                <div className="flex flex-wrap gap-3">
+                  <Button 
+                    onClick={() => updateRetentionConfig(retentionConfig)}
+                    variant="default"
+                  >
+                    <Settings className="h-4 w-4 mr-2" />
+                    Salvar Configurações
+                  </Button>
+                  <Button 
+                    onClick={() => executeManualCleanup()}
+                    variant="outline"
+                    disabled={isCleaningLogs}
+                  >
+                    {isCleaningLogs ? (
+                      <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                    ) : (
+                      <Trash2 className="h-4 w-4 mr-2" />
+                    )}
+                    {isCleaningLogs ? 'Limpando...' : 'Limpar Logs Antigos'}
+                  </Button>
                 </div>
-              ) : webhookLogs.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
-                  <Activity className="mx-auto h-12 w-12 mb-4 opacity-50" />
-                  <p>Nenhum log encontrado</p>
-                  <p className="text-sm">Ajuste os filtros ou aguarde novos envios</p>
-                </div>
-              ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Data/Hora</TableHead>
-                      <TableHead>Webhook</TableHead>
-                      <TableHead>Evento</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Tempo</TableHead>
-                      <TableHead>Tipo</TableHead>
-                      <TableHead>Erro</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {webhookLogs.map((log) => (
-                      <TableRow key={log.id}>
-                        <TableCell>
-                          {format(new Date(log.createdAt), 'dd/MM/yyyy HH:mm:ss', { locale: ptBR })}
-                        </TableCell>
-                        <TableCell>
-                          <div>
-                            <div className="font-medium text-sm">
-                              {log.webhookConfig?.nome || 'N/A'}
-                            </div>
-                            <div className="text-xs text-muted-foreground">
-                              {log.webhookConfig?.url}
+              </div>
+
+              {/* Configurações por Módulo */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Configurações por Módulo</h3>
+                <div className="grid gap-4">
+                  {availableModules.map((module) => {
+                    const moduleConfig = retentionConfig.moduleConfigs[module.name];
+                    const Icon = module.icon;
+                    
+                    return (
+                      <Card key={module.name} className="p-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <Icon className="h-5 w-5" />
+                            <div>
+                              <h4 className="font-medium">{module.displayName}</h4>
+                              <p className="text-sm text-muted-foreground">
+                                Retenção: {moduleConfig?.retentionDays || retentionConfig.globalRetentionDays} dias
+                              </p>
                             </div>
                           </div>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline">{log.evento}</Badge>
-                        </TableCell>
-                        <TableCell>
                           <div className="flex items-center gap-2">
-                            {log.sucesso ? (
-                              <CheckCircle className="h-4 w-4 text-green-500" />
-                            ) : (
-                              <AlertCircle className="h-4 w-4 text-red-500" />
-                            )}
-                            <Badge
-                              variant={log.sucesso ? 'default' : 'destructive'}
-                              className="text-xs"
+                            <Input
+                              type="number"
+                              min="1"
+                              max="365"
+                              value={moduleConfig?.retentionDays || ''}
+                              onChange={(e) => {
+                                const days = parseInt(e.target.value);
+                                setRetentionConfig(prev => ({
+                                  ...prev,
+                                  moduleConfigs: {
+                                    ...prev.moduleConfigs,
+                                    [module.name]: {
+                                      retentionDays: days || prev.globalRetentionDays,
+                                      autoCleanup: moduleConfig?.autoCleanup || false
+                                    }
+                                  }
+                                }));
+                              }}
+                              placeholder={retentionConfig.globalRetentionDays.toString()}
+                              className="w-20"
+                            />
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => executeManualCleanup(module.name)}
+                              disabled={isCleaningLogs}
                             >
-                              {log.sucesso ? 'Sucesso' : 'Falha'}
-                            </Badge>
-                            {log.statusCode && (
-                              <Badge className={`${getStatusColor(log.statusCode)} border text-xs`}>
-                                {log.statusCode}
-                              </Badge>
-                            )}
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
                           </div>
-                        </TableCell>
-                        <TableCell>
-                          <span className="text-sm text-muted-foreground">
-                            {log.responseTime ? `${log.responseTime}ms` : 'N/A'}
-                          </span>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant={log.teste ? 'secondary' : 'outline'}>
-                            {log.teste ? 'Teste' : 'Produção'}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          {log.errorMessage ? (
-                            <div className="max-w-xs">
-                              <span className="text-sm text-red-600 truncate block" title={log.errorMessage}>
-                                {log.errorMessage}
-                              </span>
-                            </div>
-                          ) : (
-                            <span className="text-sm text-muted-foreground">-</span>
-                          )}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              )}
+                        </div>
+                      </Card>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Informações sobre Limpeza Automática */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Limpeza Automática</h3>
+                <Card className="p-4 bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800">
+                  <div className="flex items-start gap-3">
+                    <Clock className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5" />
+                    <div>
+                      <h4 className="font-medium text-blue-900 dark:text-blue-100">
+                        Rotina Automática Configurada
+                      </h4>
+                      <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
+                        O sistema executa automaticamente a limpeza de logs diariamente às 02:00h, 
+                        removendo logs mais antigos que o período de retenção configurado.
+                      </p>
+                      <p className="text-sm text-blue-700 dark:text-blue-300 mt-2">
+                        Para configurar a rotina automática, execute o script: 
+                        <code className="bg-blue-100 dark:bg-blue-900 px-1 rounded ml-1">
+                          ./setup-log-cleanup.sh
+                        </code>
+                      </p>
+                    </div>
+                  </div>
+                </Card>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
