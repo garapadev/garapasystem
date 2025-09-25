@@ -34,7 +34,7 @@ interface ConsistencyStatus {
 }
 
 export default function WebmailAdminPage() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
@@ -45,10 +45,12 @@ export default function WebmailAdminPage() {
   const [isSendingTest, setIsSendingTest] = useState(false);
 
   useEffect(() => {
-    if (session) {
+    if (status === 'authenticated' && session) {
       loadAdminData();
+    } else if (status === 'unauthenticated') {
+      router.push('/auth/login');
     }
-  }, [session]);
+  }, [session, status, router]);
 
   const loadAdminData = async () => {
     try {

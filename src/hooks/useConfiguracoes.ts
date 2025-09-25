@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 interface Configuracao {
   id: string;
@@ -25,7 +25,7 @@ export function useConfiguracoes(): UseConfiguracoesReturn {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchConfiguracoes = async () => {
+  const fetchConfiguracoes = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -37,16 +37,22 @@ export function useConfiguracoes(): UseConfiguracoesReturn {
       }
       
       const data = await response.json();
-      setConfiguracoes(data);
+      setConfiguracoes(prev => {
+        // Evitar atualizações desnecessárias comparando o conteúdo
+        if (JSON.stringify(prev) === JSON.stringify(data)) {
+          return prev;
+        }
+        return data;
+      });
     } catch (err) {
       console.error('Erro ao buscar configurações:', err);
       setError(err instanceof Error ? err.message : 'Erro desconhecido');
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const updateConfiguracao = async (chave: string, valor: string, descricao?: string) => {
+  const updateConfiguracao = useCallback(async (chave: string, valor: string, descricao?: string) => {
     try {
       const response = await fetch('/api/configuracoes', {
         method: 'PUT',
@@ -79,19 +85,19 @@ export function useConfiguracoes(): UseConfiguracoesReturn {
       console.error('Erro ao atualizar configuração:', err);
       throw err;
     }
-  };
+  }, []);
 
-  const getConfiguracao = (chave: string): Configuracao | undefined => {
+  const getConfiguracao = useCallback((chave: string): Configuracao | undefined => {
     return configuracoes.find(config => config.chave === chave);
-  };
+  }, [configuracoes]);
 
-  const refetch = () => {
+  const refetch = useCallback(() => {
     fetchConfiguracoes();
-  };
+  }, [fetchConfiguracoes]);
 
   useEffect(() => {
     fetchConfiguracoes();
-  }, []);
+  }, []); // Removendo fetchConfiguracoes das dependências temporariamente
 
   return {
     configuracoes,

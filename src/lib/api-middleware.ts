@@ -27,6 +27,7 @@ interface AuthValidationResult {
 
   };
   error?: string;
+  status?: number;
   authType?: 'session' | 'apikey';
 }
 
@@ -58,13 +59,15 @@ export class ApiMiddleware {
 
       return {
         valid: false,
-        error: 'Autenticação necessária'
+        error: 'Autenticação necessária',
+        status: 401
       };
     } catch (error) {
       console.error('Erro na validação de autenticação:', error);
       return {
         valid: false,
-        error: 'Erro interno do servidor'
+        error: 'Erro interno do servidor',
+        status: 500
       };
     }
   }
@@ -171,6 +174,10 @@ export class ApiMiddleware {
       'DELETE:/api/webhooks',
       'GET:/api/logs',
       'POST:/api/webhooks/test',
+      // Colaboradores
+      'GET:/api/colaboradores/me',
+      'GET:/api/colaboradores/whatsapp-token',
+      'PUT:/api/colaboradores/whatsapp-token',
       // Endpoints de tarefas
       'GET:/api/tasks',
       'POST:/api/tasks',
@@ -261,6 +268,9 @@ export class ApiMiddleware {
       
       // Colaboradores
       'GET:/api/colaboradores': ['colaboradores.read', 'colaboradores.write'],
+      'GET:/api/colaboradores/me': ['colaboradores.read', 'colaboradores.write'],
+      'GET:/api/colaboradores/whatsapp-token': ['colaboradores.read', 'colaboradores.write'],
+      'PUT:/api/colaboradores/whatsapp-token': ['colaboradores.write'], // Permite acesso aos próprios dados
       'POST:/api/colaboradores': ['colaboradores.write'],
       'PUT:/api/colaboradores': ['colaboradores.write'],
       'DELETE:/api/colaboradores': ['colaboradores.delete'],
@@ -287,7 +297,9 @@ export class ApiMiddleware {
       
       // Gazapi - WhatsApp
       'POST:/api/gazapi/start': ['gazapi.write', 'gazapi.admin'],
+      'POST:/api/gazapi/startSession': ['gazapi.write', 'gazapi.admin'],
       'POST:/api/gazapi/getQrCode': ['gazapi.read', 'gazapi.write', 'gazapi.admin'],
+      'POST:/api/gazapi/qrcode': ['gazapi.read', 'gazapi.write', 'gazapi.admin'],
       'POST:/api/gazapi/getSessionStatus': ['gazapi.read', 'gazapi.write', 'gazapi.admin'],
       'POST:/api/gazapi/sendText': ['gazapi.write', 'gazapi.admin'],
       'POST:/api/gazapi/sendImage': ['gazapi.write', 'gazapi.admin'],
@@ -301,6 +313,16 @@ export class ApiMiddleware {
     // Verifica se tem pelo menos uma das permissões necessárias
     return requiredPermissions.some(permission => 
       permissoes.includes(permission)
+    );
+  }
+
+  /**
+   * Cria uma resposta de erro padronizada
+   */
+  static createErrorResponse(message: string, status: number): NextResponse {
+    return NextResponse.json(
+      { error: message },
+      { status }
     );
   }
 

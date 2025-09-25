@@ -1,0 +1,1 @@
+/usr/local/bin/postgres "-c" "config_file=/etc/postgresql/postgresql.conf" "-c" "log_destination=stderr" "-c" "logging_collector=on" "-c" "log_directory=/var/log/postgresql" "-c" "log_filename=postgresql-%Y-%m-%d_%H%M%S.log" "-c" "log_rotation_age=1d" "-c" "log_rotation_size=100MB"

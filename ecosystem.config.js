@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: 'garapasystem-server',
+      name: 'garapasystem',
       script: 'server.ts',
       interpreter: 'npx',
       interpreter_args: 'tsx',
@@ -9,6 +9,7 @@ module.exports = {
       exec_mode: 'fork',
       watch: false,
       max_memory_restart: '1G',
+      env_file: '.env.local', // Para desenvolvimento local
       env: {
         NODE_ENV: 'development',
         PORT: 3000
@@ -37,6 +38,7 @@ module.exports = {
       exec_mode: 'fork',
       watch: false,
       max_memory_restart: '512M',
+      env_file: '.env.local', // Para desenvolvimento local
       env: {
         NODE_ENV: 'development',
         WORKER_TYPE: 'consolidated_helpdesk'
@@ -64,6 +66,7 @@ module.exports = {
       exec_mode: 'fork',
       watch: false,
       max_memory_restart: '512M',
+      env_file: '.env.local', // Para desenvolvimento local
       env: {
         NODE_ENV: 'development',
         WORKER_TYPE: 'webmail_sync'
@@ -81,31 +84,6 @@ module.exports = {
       min_uptime: '10s',
       restart_delay: 4000,
       cron_restart: '0 */4 * * *' // Restart a cada 4 horas para limpeza de memória
-    },
-    {
-      name: 'whatsapp-worker',
-      script: './whatsapp-worker/main',
-      cwd: './whatsapp-worker',
-      instances: 1,
-      exec_mode: 'fork',
-      watch: false,
-      max_memory_restart: '512M',
-      interpreter: 'none',
-      env: {
-        NODE_ENV: 'development'
-      },
-      env_production: {
-        NODE_ENV: 'production'
-      },
-      error_file: './logs/whatsapp-worker-error.log',
-      out_file: './logs/whatsapp-worker-out.log',
-      log_file: './logs/whatsapp-worker-combined.log',
-      time: true,
-      autorestart: true,
-      max_restarts: 10,
-      min_uptime: '10s',
-      restart_delay: 4000,
-      pre_start: 'cd whatsapp-worker && go build -o main main.go'
     }
 
   ],
@@ -115,7 +93,7 @@ module.exports = {
       user: 'node',
       host: 'your-server.com',
       ref: 'origin/main',
-      repo: 'git@github.com:your-repo/garapasystem.git',
+      repo: 'git@github.com:garapadev /garapasystem.git',
       path: '/var/www/garapasystem',
       'pre-deploy-local': '',
       'post-deploy': 'npm install && npm run build && pm2 reload ecosystem.config.js --env production',

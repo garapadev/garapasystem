@@ -49,7 +49,7 @@ interface EmailAttachment {
 function ComposePageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [isHtmlMode, setIsHtmlMode] = useState(false);
@@ -72,10 +72,12 @@ function ComposePageContent() {
   const forwardId = searchParams.get('forward');
 
   useEffect(() => {
-    if (session?.user && (replyId || replyAllId || forwardId)) {
+    if (status === 'authenticated' && session?.user && (replyId || replyAllId || forwardId)) {
       loadOriginalEmail();
+    } else if (status === 'unauthenticated') {
+       router.push('/auth/login');
     }
-  }, [session, replyId, replyAllId, forwardId]);
+  }, [session, status, router, replyId, replyAllId, forwardId]);
 
   const loadOriginalEmail = async () => {
     try {

@@ -1,0 +1,1458 @@
+2025-09-15T11:30:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-15T12:32:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-15T13:32:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-15T14:32:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-15T15:34:00: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-15T16:03:43: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-15T16:14:30: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-15T17:16:16: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-15T17:35:33: Erro ao buscar departamentos: PrismaClientKnownRequestError: 
+2025-09-15T17:35:33: Invalid `this.db.helpdeskDepartamento.findMany()` invocation in
+2025-09-15T17:35:33: /app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:194:62
+2025-09-15T17:35:33: 
+2025-09-15T17:35:33:   191 
+2025-09-15T17:35:33:   192 private async processAllDepartments(): Promise<void> {
+2025-09-15T17:35:33:   193   try {
+2025-09-15T17:35:33: → 194     const departments = await this.db.helpdeskDepartamento.findMany(
+2025-09-15T17:35:33: Can't reach database server at `localhost:5434`
+2025-09-15T17:35:33: 
+2025-09-15T17:35:33: Please make sure your database server is running at `localhost:5434`.
+2025-09-15T17:35:33:     at ei.handleRequestError (/app/node_modules/@prisma/client/src/runtime/RequestHandler.ts:228:13)
+2025-09-15T17:35:33:     at ei.handleAndLogRequestError (/app/node_modules/@prisma/client/src/runtime/RequestHandler.ts:174:12)
+2025-09-15T17:35:33:     at ei.request (/app/node_modules/@prisma/client/src/runtime/RequestHandler.ts:143:12)
+2025-09-15T17:35:33:     at async a (/app/node_modules/@prisma/client/src/runtime/getPrismaClient.ts:833:24)
+2025-09-15T17:35:33:     at async ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:194:27)
+2025-09-15T17:35:33:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9) {
+2025-09-15T17:35:33:   code: 'P1001',
+2025-09-15T17:35:33:   meta: {
+2025-09-15T17:35:33:     modelName: 'HelpdeskDepartamento',
+2025-09-15T17:35:33:     database_location: 'localhost:5434'
+2025-09-15T17:35:33:   },
+2025-09-15T17:35:33:   clientVersion: '6.15.0'
+2025-09-15T17:35:33: }
+2025-09-15T17:35:33: Erro geral do worker: PrismaClientKnownRequestError: 
+2025-09-15T17:35:33: Invalid `this.db.helpdeskDepartamento.findMany()` invocation in
+2025-09-15T17:35:33: /app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:194:62
+2025-09-15T17:35:33: 
+2025-09-15T17:35:33:   191 
+2025-09-15T17:35:33:   192 private async processAllDepartments(): Promise<void> {
+2025-09-15T17:35:33:   193   try {
+2025-09-15T17:35:33: → 194     const departments = await this.db.helpdeskDepartamento.findMany(
+2025-09-15T17:35:33: Can't reach database server at `localhost:5434`
+2025-09-15T17:35:33: 
+2025-09-15T17:35:33: Please make sure your database server is running at `localhost:5434`.
+2025-09-15T17:35:33:     at ei.handleRequestError (/app/node_modules/@prisma/client/src/runtime/RequestHandler.ts:228:13)
+2025-09-15T17:35:33:     at ei.handleAndLogRequestError (/app/node_modules/@prisma/client/src/runtime/RequestHandler.ts:174:12)
+2025-09-15T17:35:33:     at ei.request (/app/node_modules/@prisma/client/src/runtime/RequestHandler.ts:143:12)
+2025-09-15T17:35:33:     at async a (/app/node_modules/@prisma/client/src/runtime/getPrismaClient.ts:833:24)
+2025-09-15T17:35:33:     at async ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:194:27)
+2025-09-15T17:35:33:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9) {
+2025-09-15T17:35:33:   code: 'P1001',
+2025-09-15T17:35:33:   meta: {
+2025-09-15T17:35:33:     modelName: 'HelpdeskDepartamento',
+2025-09-15T17:35:33:     database_location: 'localhost:5434'
+2025-09-15T17:35:33:   },
+2025-09-15T17:35:33:   clientVersion: '6.15.0'
+2025-09-15T17:35:33: }
+2025-09-15T17:35:33: Erro ao processar emails de Suporte ti: Error: Connection not available
+2025-09-15T17:35:33:     at ImapFlow.run (/app/node_modules/imapflow/lib/imap-flow.js:3216:27)
+2025-09-15T17:35:33:     at ImapFlow.mailboxOpen (/app/node_modules/imapflow/lib/imap-flow.js:2004:27)
+2025-09-15T17:35:33:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:267:24)
+2025-09-15T17:35:33:     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-09-15T17:35:33:     at async ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:11)
+2025-09-15T17:35:33:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9) {
+2025-09-15T17:35:33:   code: 'NoConnection'
+2025-09-15T17:35:33: }
+2025-09-15T17:35:33: Erro de conexão para departamento cmfee6p230001o0of71xpsksd: Error: Connection not available
+2025-09-15T17:35:33:     at ImapFlow.run (/app/node_modules/imapflow/lib/imap-flow.js:3216:27)
+2025-09-15T17:35:33:     at ImapFlow.mailboxOpen (/app/node_modules/imapflow/lib/imap-flow.js:2004:27)
+2025-09-15T17:35:33:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:267:24)
+2025-09-15T17:35:33:     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-09-15T17:35:33:     at async ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:11)
+2025-09-15T17:35:33:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9) {
+2025-09-15T17:35:33:   code: 'NoConnection'
+2025-09-15T17:35:33: }
+2025-09-15T17:35:33: Erro ao processar emails de Suporte ti: Error: Connection not available
+2025-09-15T17:35:33:     at ImapFlow.run (/app/node_modules/imapflow/lib/imap-flow.js:3216:27)
+2025-09-15T17:35:33:     at ImapFlow.mailboxOpen (/app/node_modules/imapflow/lib/imap-flow.js:2004:27)
+2025-09-15T17:35:33:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:267:24)
+2025-09-15T17:35:33:     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-09-15T17:35:33:     at async ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:11)
+2025-09-15T17:35:33:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9) {
+2025-09-15T17:35:33:   code: 'NoConnection'
+2025-09-15T17:35:33: }
+2025-09-15T17:35:33: Erro de conexão para departamento cmfee6p230001o0of71xpsksd: Error: Connection not available
+2025-09-15T17:35:33:     at ImapFlow.run (/app/node_modules/imapflow/lib/imap-flow.js:3216:27)
+2025-09-15T17:35:33:     at ImapFlow.mailboxOpen (/app/node_modules/imapflow/lib/imap-flow.js:2004:27)
+2025-09-15T17:35:33:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:267:24)
+2025-09-15T17:35:33:     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-09-15T17:35:33:     at async ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:11)
+2025-09-15T17:35:33:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9) {
+2025-09-15T17:35:33:   code: 'NoConnection'
+2025-09-15T17:35:33: }
+2025-09-15T18:16:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-15T19:18:12: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-15T20:18:13: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-15T21:20:15: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-15T23:20:25: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-16T00:20:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-16T01:22:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-16T02:04:32: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-16T02:06:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-16T02:07:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-16T02:11:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-16T02:14:32: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-16T02:16:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-16T02:16:32: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-16T02:17:32: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-16T02:19:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-16T03:20:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-16T04:05:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-16T04:22:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-16T05:05:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-16T05:22:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-16T06:05:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-16T06:22:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-16T08:17:33: Uncaught Exception: Error: read ECONNRESET
+2025-09-16T08:17:33:     at TLSWrap.onStreamRead (node:internal/stream_base_commons:218:20) {
+2025-09-16T08:17:33:   errno: -104,
+2025-09-16T08:17:33:   code: 'ECONNRESET',
+2025-09-16T08:17:33:   syscall: 'read',
+2025-09-16T08:17:33:   _connId: 'o25g4tvc51e0sot7hk06'
+2025-09-16T08:17:33: }
+2025-09-16T08:17:33: Erro ao processar emails de Suporte ti: Error: Connection not available
+2025-09-16T08:17:33:     at ImapFlow.run (/app/node_modules/imapflow/lib/imap-flow.js:3216:27)
+2025-09-16T08:17:33:     at ImapFlow.mailboxOpen (/app/node_modules/imapflow/lib/imap-flow.js:2004:27)
+2025-09-16T08:17:33:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:267:24)
+2025-09-16T08:17:33:     at processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-09-16T08:17:33:     at runNextTicks (node:internal/process/task_queues:64:3)
+2025-09-16T08:17:33:     at process.processImmediate (node:internal/timers:454:9)
+2025-09-16T08:17:33:     at async ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:11)
+2025-09-16T08:17:33:     at async Timeout.<anonymous> (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9) {
+2025-09-16T08:17:33:   code: 'NoConnection'
+2025-09-16T08:17:33: }
+2025-09-16T08:17:33: Erro de conexão para departamento cmfee6p230001o0of71xpsksd: Error: Connection not available
+2025-09-16T08:17:33:     at ImapFlow.run (/app/node_modules/imapflow/lib/imap-flow.js:3216:27)
+2025-09-16T08:17:33:     at ImapFlow.mailboxOpen (/app/node_modules/imapflow/lib/imap-flow.js:2004:27)
+2025-09-16T08:17:33:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:267:24)
+2025-09-16T08:17:33:     at processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-09-16T08:17:33:     at runNextTicks (node:internal/process/task_queues:64:3)
+2025-09-16T08:17:33:     at process.processImmediate (node:internal/timers:454:9)
+2025-09-16T08:17:33:     at async ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:11)
+2025-09-16T08:17:33:     at async Timeout.<anonymous> (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9) {
+2025-09-16T08:17:33:   code: 'NoConnection'
+2025-09-16T08:17:33: }
+2025-09-16T08:24:32: Erro ao buscar departamentos: PrismaClientKnownRequestError: 
+2025-09-16T08:24:32: Invalid `this.db.helpdeskDepartamento.findMany()` invocation in
+2025-09-16T08:24:32: /app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:194:62
+2025-09-16T08:24:32: 
+2025-09-16T08:24:32:   191 
+2025-09-16T08:24:32:   192 private async processAllDepartments(): Promise<void> {
+2025-09-16T08:24:32:   193   try {
+2025-09-16T08:24:32: → 194     const departments = await this.db.helpdeskDepartamento.findMany(
+2025-09-16T08:24:32: Can't reach database server at `localhost:5434`
+2025-09-16T08:24:32: 
+2025-09-16T08:24:32: Please make sure your database server is running at `localhost:5434`.
+2025-09-16T08:24:32:     at ei.handleRequestError (/app/node_modules/@prisma/client/src/runtime/RequestHandler.ts:228:13)
+2025-09-16T08:24:32:     at ei.handleAndLogRequestError (/app/node_modules/@prisma/client/src/runtime/RequestHandler.ts:174:12)
+2025-09-16T08:24:32:     at ei.request (/app/node_modules/@prisma/client/src/runtime/RequestHandler.ts:143:12)
+2025-09-16T08:24:32:     at async a (/app/node_modules/@prisma/client/src/runtime/getPrismaClient.ts:833:24)
+2025-09-16T08:24:32:     at async ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:194:27)
+2025-09-16T08:24:32:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9) {
+2025-09-16T08:24:32:   code: 'P1001',
+2025-09-16T08:24:32:   meta: {
+2025-09-16T08:24:32:     modelName: 'HelpdeskDepartamento',
+2025-09-16T08:24:32:     database_location: 'localhost:5434'
+2025-09-16T08:24:32:   },
+2025-09-16T08:24:32:   clientVersion: '6.15.0'
+2025-09-16T08:24:32: }
+2025-09-16T08:24:32: Erro geral do worker: PrismaClientKnownRequestError: 
+2025-09-16T08:24:32: Invalid `this.db.helpdeskDepartamento.findMany()` invocation in
+2025-09-16T08:24:32: /app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:194:62
+2025-09-16T08:24:32: 
+2025-09-16T08:24:32:   191 
+2025-09-16T08:24:32:   192 private async processAllDepartments(): Promise<void> {
+2025-09-16T08:24:32:   193   try {
+2025-09-16T08:24:32: → 194     const departments = await this.db.helpdeskDepartamento.findMany(
+2025-09-16T08:24:32: Can't reach database server at `localhost:5434`
+2025-09-16T08:24:32: 
+2025-09-16T08:24:32: Please make sure your database server is running at `localhost:5434`.
+2025-09-16T08:24:32:     at ei.handleRequestError (/app/node_modules/@prisma/client/src/runtime/RequestHandler.ts:228:13)
+2025-09-16T08:24:32:     at ei.handleAndLogRequestError (/app/node_modules/@prisma/client/src/runtime/RequestHandler.ts:174:12)
+2025-09-16T08:24:32:     at ei.request (/app/node_modules/@prisma/client/src/runtime/RequestHandler.ts:143:12)
+2025-09-16T08:24:32:     at async a (/app/node_modules/@prisma/client/src/runtime/getPrismaClient.ts:833:24)
+2025-09-16T08:24:32:     at async ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:194:27)
+2025-09-16T08:24:32:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9) {
+2025-09-16T08:24:32:   code: 'P1001',
+2025-09-16T08:24:32:   meta: {
+2025-09-16T08:24:32:     modelName: 'HelpdeskDepartamento',
+2025-09-16T08:24:32:     database_location: 'localhost:5434'
+2025-09-16T08:24:32:   },
+2025-09-16T08:24:32:   clientVersion: '6.15.0'
+2025-09-16T08:24:32: }
+2025-09-16T08:24:33: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-16T09:05:19: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-16T09:24:19: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-16T10:05:20: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-16T10:24:20: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-16T11:05:20: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-16T11:26:19: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-16T12:05:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-16T12:26:14: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-16T13:05:14: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-16T13:26:15: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-16T14:05:15: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-16T14:26:16: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-16T15:05:21: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-16T15:26:07: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-16T16:05:04: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-16T18:17:46: Uncaught Exception: Error: read ETIMEDOUT
+2025-09-16T18:17:46:     at TLSWrap.onStreamRead (node:internal/stream_base_commons:218:20) {
+2025-09-16T18:17:46:   errno: -110,
+2025-09-16T18:17:46:   code: 'ETIMEDOUT',
+2025-09-16T18:17:46:   syscall: 'read',
+2025-09-16T18:17:46:   _connId: 'dhqtadg6neehj7qqlybf'
+2025-09-16T18:17:46: }
+2025-09-16T18:17:46: Unhandled Rejection at: Promise {
+2025-09-16T18:17:46:   <rejected> Error: Connection not available
+2025-09-16T18:17:46:       at ImapFlow.close (/app/node_modules/imapflow/lib/imap-flow.js:1694:35)
+2025-09-16T18:17:46:       at Immediate.<anonymous> (/app/node_modules/imapflow/lib/imap-flow.js:1651:33)
+2025-09-16T18:17:46:       at process.processImmediate (node:internal/timers:483:21) {
+2025-09-16T18:17:46:     code: 'NoConnection',
+2025-09-16T18:17:46:     _connId: 'dhqtadg6neehj7qqlybf'
+2025-09-16T18:17:46:   }
+2025-09-16T18:17:46: } reason: Error: Connection not available
+2025-09-16T18:17:46:     at ImapFlow.close (/app/node_modules/imapflow/lib/imap-flow.js:1694:35)
+2025-09-16T18:17:46:     at Immediate.<anonymous> (/app/node_modules/imapflow/lib/imap-flow.js:1651:33)
+2025-09-16T18:17:46:     at process.processImmediate (node:internal/timers:483:21) {
+2025-09-16T18:17:46:   code: 'NoConnection',
+2025-09-16T18:17:46:   _connId: 'dhqtadg6neehj7qqlybf'
+2025-09-16T18:17:46: }
+2025-09-16T18:26:22: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-16T19:05:22: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-16T19:26:23: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-16T20:05:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-16T20:28:04: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-16T21:05:04: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-16T21:30:04: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-16T22:05:05: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-16T22:30:05: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-16T23:05:05: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-16T23:30:05: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-17T00:05:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-17T00:28:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-17T00:34:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-17T01:36:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-17T02:05:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-17T02:06:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-17T02:06:33: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-17T02:07:33: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-17T02:08:33: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-17T02:09:33: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-17T02:12:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-17T02:14:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-17T02:15:33: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-17T02:16:33: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-17T02:17:33: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-17T02:18:33: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-17T02:19:33: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-17T02:20:33: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-17T03:05:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-17T03:22:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-17T04:05:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-17T04:22:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-17T05:05:04: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-17T05:22:04: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-17T06:05:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-17T06:22:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-17T07:10:32: Uncaught Exception: Error: read ETIMEDOUT
+2025-09-17T07:10:32:     at TLSWrap.onStreamRead (node:internal/stream_base_commons:218:20) {
+2025-09-17T07:10:32:   errno: -110,
+2025-09-17T07:10:32:   code: 'ETIMEDOUT',
+2025-09-17T07:10:32:   syscall: 'read',
+2025-09-17T07:10:32:   _connId: '12xgqiqolfoi2r3480pc'
+2025-09-17T07:10:32: }
+2025-09-17T07:10:32: Unhandled Rejection at: Promise {
+2025-09-17T07:10:32:   <rejected> Error: Connection not available
+2025-09-17T07:10:32:       at ImapFlow.close (/app/node_modules/imapflow/lib/imap-flow.js:1694:35)
+2025-09-17T07:10:32:       at Immediate.<anonymous> (/app/node_modules/imapflow/lib/imap-flow.js:1651:33)
+2025-09-17T07:10:32:       at process.processImmediate (node:internal/timers:483:21) {
+2025-09-17T07:10:32:     code: 'NoConnection',
+2025-09-17T07:10:32:     _connId: '12xgqiqolfoi2r3480pc'
+2025-09-17T07:10:32:   }
+2025-09-17T07:10:32: } reason: Error: Connection not available
+2025-09-17T07:10:32:     at ImapFlow.close (/app/node_modules/imapflow/lib/imap-flow.js:1694:35)
+2025-09-17T07:10:32:     at Immediate.<anonymous> (/app/node_modules/imapflow/lib/imap-flow.js:1651:33)
+2025-09-17T07:10:32:     at process.processImmediate (node:internal/timers:483:21) {
+2025-09-17T07:10:32:   code: 'NoConnection',
+2025-09-17T07:10:32:   _connId: '12xgqiqolfoi2r3480pc'
+2025-09-17T07:10:32: }
+2025-09-17T07:11:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T07:11:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T07:11:25:     at async ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:14)
+2025-09-17T07:11:25:     at async ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:12)
+2025-09-17T07:11:25:     at async ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:24)
+2025-09-17T07:11:25:     at async ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:11)
+2025-09-17T07:11:25:     at async ConsolidatedHelpdeskWorker.start (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:143:5)
+2025-09-17T07:11:25:     at async main (/app/src/scripts/start-consolidated-worker.ts:59:5)
+2025-09-17T07:11:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T07:12:54: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Operação imap-connection-cmfee6p230001o0of71xpsksd falhou após 5 tentativas. Último erro: getaddrinfo EAI_AGAIN mail.garapasystem.com
+2025-09-17T07:12:54:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:207:17)
+2025-09-17T07:12:54:     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-09-17T07:12:54:     at async ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:14)
+2025-09-17T07:12:54:     at async ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:12)
+2025-09-17T07:12:54:     at async ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:24)
+2025-09-17T07:12:54:     at async ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:11)
+2025-09-17T07:12:54:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T07:12:54: Não foi possível obter conexão para Suporte ti
+2025-09-17T07:13:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T07:13:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T07:13:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T07:13:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T07:13:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T07:13:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T07:13:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T07:13:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T07:14:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T07:14:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T07:14:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T07:14:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T07:14:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T07:14:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T07:14:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T07:14:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T07:15:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T07:15:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T07:15:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T07:15:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T07:15:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T07:15:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T07:15:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T07:15:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T07:16:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T07:16:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T07:16:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T07:16:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T07:16:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T07:16:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T07:16:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T07:16:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T07:17:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T07:17:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T07:17:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T07:17:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T07:17:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T07:17:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T07:17:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T07:17:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T07:18:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T07:18:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T07:18:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T07:18:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T07:18:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T07:18:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T07:18:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T07:18:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T07:19:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T07:19:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T07:19:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T07:19:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T07:19:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T07:19:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T07:19:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T07:19:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T07:20:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T07:20:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T07:20:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T07:20:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T07:20:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T07:20:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T07:20:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T07:20:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T07:21:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T07:21:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T07:21:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T07:21:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T07:21:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T07:21:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T07:21:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T07:21:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T07:22:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T07:22:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T07:22:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T07:22:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T07:22:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T07:22:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T07:22:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T07:22:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T07:23:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T07:23:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T07:23:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T07:23:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T07:23:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T07:23:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T07:23:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T07:23:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T07:24:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T07:24:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T07:24:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T07:24:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T07:24:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T07:24:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T07:24:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T07:24:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T07:25:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T07:25:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T07:25:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T07:25:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T07:25:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T07:25:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T07:25:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T07:25:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T07:26:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T07:26:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T07:26:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T07:26:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T07:26:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T07:26:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T07:26:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T07:26:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T07:27:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T07:27:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T07:27:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T07:27:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T07:27:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T07:27:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T07:27:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T07:27:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T07:28:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T07:28:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T07:28:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T07:28:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T07:28:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T07:28:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T07:28:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T07:28:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T07:29:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T07:29:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T07:29:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T07:29:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T07:29:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T07:29:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T07:29:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T07:29:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T07:30:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T07:30:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T07:30:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T07:30:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T07:30:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T07:30:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T07:30:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T07:30:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T07:31:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T07:31:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T07:31:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T07:31:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T07:31:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T07:31:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T07:31:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T07:31:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T07:32:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T07:32:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T07:32:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T07:32:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T07:32:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T07:32:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T07:32:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T07:32:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T07:33:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T07:33:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T07:33:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T07:33:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T07:33:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T07:33:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T07:33:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T07:33:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T07:34:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T07:34:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T07:34:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T07:34:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T07:34:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T07:34:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T07:34:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T07:34:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T07:35:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T07:35:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T07:35:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T07:35:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T07:35:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T07:35:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T07:35:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T07:35:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T07:36:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T07:36:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T07:36:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T07:36:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T07:36:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T07:36:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T07:36:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T07:36:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T07:37:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T07:37:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T07:37:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T07:37:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T07:37:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T07:37:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T07:37:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T07:37:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T07:38:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T07:38:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T07:38:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T07:38:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T07:38:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T07:38:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T07:38:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T07:38:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T07:39:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T07:39:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T07:39:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T07:39:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T07:39:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T07:39:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T07:39:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T07:39:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T07:40:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T07:40:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T07:40:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T07:40:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T07:40:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T07:40:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T07:40:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T07:40:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T07:41:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T07:41:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T07:41:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T07:41:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T07:41:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T07:41:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T07:41:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T07:41:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T07:42:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T07:42:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T07:42:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T07:42:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T07:42:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T07:42:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T07:42:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T07:42:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T07:43:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T07:43:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T07:43:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T07:43:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T07:43:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T07:43:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T07:43:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T07:43:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T07:44:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T07:44:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T07:44:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T07:44:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T07:44:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T07:44:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T07:44:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T07:44:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T07:45:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T07:45:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T07:45:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T07:45:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T07:45:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T07:45:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T07:45:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T07:45:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T07:46:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T07:46:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T07:46:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T07:46:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T07:46:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T07:46:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T07:46:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T07:46:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T07:47:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T07:47:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T07:47:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T07:47:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T07:47:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T07:47:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T07:47:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T07:47:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T07:48:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T07:48:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T07:48:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T07:48:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T07:48:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T07:48:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T07:48:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T07:48:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T07:49:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T07:49:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T07:49:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T07:49:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T07:49:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T07:49:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T07:49:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T07:49:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T07:50:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T07:50:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T07:50:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T07:50:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T07:50:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T07:50:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T07:50:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T07:50:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T07:51:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T07:51:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T07:51:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T07:51:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T07:51:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T07:51:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T07:51:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T07:51:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T07:52:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T07:52:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T07:52:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T07:52:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T07:52:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T07:52:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T07:52:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T07:52:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T07:53:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T07:53:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T07:53:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T07:53:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T07:53:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T07:53:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T07:53:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T07:53:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T07:54:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T07:54:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T07:54:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T07:54:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T07:54:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T07:54:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T07:54:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T07:54:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T07:55:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T07:55:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T07:55:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T07:55:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T07:55:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T07:55:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T07:55:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T07:55:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T07:56:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T07:56:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T07:56:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T07:56:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T07:56:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T07:56:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T07:56:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T07:56:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T07:57:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T07:57:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T07:57:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T07:57:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T07:57:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T07:57:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T07:57:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T07:57:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T07:58:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T07:58:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T07:58:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T07:58:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T07:58:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T07:58:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T07:58:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T07:58:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T07:59:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T07:59:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T07:59:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T07:59:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T07:59:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T07:59:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T07:59:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T07:59:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T08:00:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T08:00:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T08:00:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T08:00:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T08:00:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T08:00:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T08:00:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T08:00:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T08:01:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T08:01:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T08:01:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T08:01:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T08:01:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T08:01:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T08:01:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T08:01:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T08:02:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T08:02:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T08:02:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T08:02:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T08:02:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T08:02:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T08:02:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T08:02:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T08:03:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T08:03:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T08:03:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T08:03:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T08:03:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T08:03:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T08:03:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T08:03:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T08:04:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T08:04:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T08:04:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T08:04:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T08:04:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T08:04:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T08:04:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T08:04:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T08:05:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T08:05:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T08:05:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T08:05:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T08:05:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T08:05:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T08:05:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T08:05:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T08:06:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T08:06:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T08:06:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T08:06:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T08:06:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T08:06:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T08:06:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T08:06:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T08:07:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T08:07:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T08:07:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T08:07:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T08:07:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T08:07:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T08:07:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T08:07:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T08:08:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T08:08:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T08:08:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T08:08:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T08:08:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T08:08:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T08:08:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T08:08:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T08:09:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T08:09:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T08:09:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T08:09:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T08:09:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T08:09:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T08:09:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T08:09:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T08:10:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T08:10:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T08:10:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T08:10:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T08:10:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T08:10:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T08:10:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T08:10:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T08:11:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T08:11:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T08:11:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T08:11:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T08:11:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T08:11:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T08:11:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T08:11:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T08:12:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T08:12:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T08:12:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T08:12:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T08:12:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T08:12:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T08:12:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T08:12:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T08:13:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T08:13:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T08:13:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T08:13:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T08:13:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T08:13:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T08:13:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T08:13:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T08:14:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T08:14:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T08:14:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T08:14:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T08:14:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T08:14:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T08:14:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T08:14:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T08:15:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T08:15:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T08:15:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T08:15:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T08:15:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T08:15:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T08:15:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T08:15:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T08:17:31: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Operação imap-connection-cmfee6p230001o0of71xpsksd falhou após 5 tentativas. Último erro: getaddrinfo EAI_AGAIN mail.garapasystem.com
+2025-09-17T08:17:31:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:207:17)
+2025-09-17T08:17:31:     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-09-17T08:17:31:     at async ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:14)
+2025-09-17T08:17:31:     at async ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:12)
+2025-09-17T08:17:31:     at async ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:24)
+2025-09-17T08:17:31:     at async ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:11)
+2025-09-17T08:17:31:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T08:17:31: Não foi possível obter conexão para Suporte ti
+2025-09-17T08:17:35: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Operação imap-connection-cmfee6p230001o0of71xpsksd falhou após 6 tentativas. Último erro: getaddrinfo EAI_AGAIN mail.garapasystem.com
+2025-09-17T08:17:35:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:207:17)
+2025-09-17T08:17:35:     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-09-17T08:17:35:     at async ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:14)
+2025-09-17T08:17:35:     at async ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:12)
+2025-09-17T08:17:35:     at async ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:24)
+2025-09-17T08:17:35:     at async ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:11)
+2025-09-17T08:17:35:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T08:17:35: Não foi possível obter conexão para Suporte ti
+2025-09-17T08:18:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T08:18:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T08:18:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T08:18:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T08:18:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T08:18:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T08:18:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T08:18:25: Não foi possível obter conexão para Suporte ti
+2025-09-17T08:19:25: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-17T08:19:25:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-17T08:19:25:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-17T08:19:25:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-17T08:19:25:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-17T08:19:25:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-17T08:19:25:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-17T08:19:25: Não foi possível obter conexão para Suporte ti
+2025-09-19T08:38:28: Falha ao conectar com IMAP após 5 tentativas para Suporte ti: Error: Não é possível tentar novamente a operação imap-connection-cmfee6p230001o0of71xpsksd
+2025-09-19T08:38:28:     at RetryManager.executeWithRetry (/app/src/lib/helpdesk/retry-manager.ts:224:11)
+2025-09-19T08:38:28:     at ConsolidatedHelpdeskWorker.createConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:343:38)
+2025-09-19T08:38:28:     at ConsolidatedHelpdeskWorker.getConnection (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:335:23)
+2025-09-19T08:38:28:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:260:35)
+2025-09-19T08:38:28:     at ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:22)
+2025-09-19T08:38:28:     at async Timeout._onTimeout (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9)
+2025-09-19T08:38:28: Não foi possível obter conexão para Suporte ti
+2025-09-19T08:46:24: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-19T09:05:24: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-19T11:30:08: Uncaught Exception: Error: Socket timeout
+2025-09-19T11:30:08:     at TLSSocket._socketTimeout (/app/node_modules/imapflow/lib/imap-flow.js:789:29)
+2025-09-19T11:30:08:     at TLSSocket.emit (node:events:524:28)
+2025-09-19T11:30:08:     at Socket._onTimeout (node:net:595:8)
+2025-09-19T11:30:08:     at listOnTimeout (node:internal/timers:581:17)
+2025-09-19T11:30:08:     at process.processTimers (node:internal/timers:519:7) {
+2025-09-19T11:30:08:   code: 'ETIMEOUT',
+2025-09-19T11:30:08:   _connId: 'vjd2fbanu5jxb1u201ze'
+2025-09-19T11:30:08: }
+2025-09-19T11:30:08: Erro ao processar emails de Suporte ti: Error: Connection not available
+2025-09-19T11:30:08:     at ImapFlow.run (/app/node_modules/imapflow/lib/imap-flow.js:3216:27)
+2025-09-19T11:30:08:     at ImapFlow.mailboxOpen (/app/node_modules/imapflow/lib/imap-flow.js:2004:27)
+2025-09-19T11:30:08:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:267:24)
+2025-09-19T11:30:08:     at processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-09-19T11:30:08:     at runNextTicks (node:internal/process/task_queues:64:3)
+2025-09-19T11:30:08:     at process.processImmediate (node:internal/timers:454:9)
+2025-09-19T11:30:08:     at async ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:11)
+2025-09-19T11:30:08:     at async Timeout.<anonymous> (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9) {
+2025-09-19T11:30:08:   code: 'NoConnection'
+2025-09-19T11:30:08: }
+2025-09-19T11:30:08: Erro de conexão para departamento cmfee6p230001o0of71xpsksd: Error: Connection not available
+2025-09-19T11:30:08:     at ImapFlow.run (/app/node_modules/imapflow/lib/imap-flow.js:3216:27)
+2025-09-19T11:30:08:     at ImapFlow.mailboxOpen (/app/node_modules/imapflow/lib/imap-flow.js:2004:27)
+2025-09-19T11:30:08:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:267:24)
+2025-09-19T11:30:08:     at processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-09-19T11:30:08:     at runNextTicks (node:internal/process/task_queues:64:3)
+2025-09-19T11:30:08:     at process.processImmediate (node:internal/timers:454:9)
+2025-09-19T11:30:08:     at async ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:11)
+2025-09-19T11:30:08:     at async Timeout.<anonymous> (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9) {
+2025-09-19T11:30:08:   code: 'NoConnection'
+2025-09-19T11:30:08: }
+2025-09-19T11:30:08: Erro ao processar emails de Suporte ti: Error: Connection not available
+2025-09-19T11:30:08:     at ImapFlow.run (/app/node_modules/imapflow/lib/imap-flow.js:3216:27)
+2025-09-19T11:30:08:     at ImapFlow.mailboxOpen (/app/node_modules/imapflow/lib/imap-flow.js:2004:27)
+2025-09-19T11:30:08:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:267:24)
+2025-09-19T11:30:08:     at processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-09-19T11:30:08:     at runNextTicks (node:internal/process/task_queues:64:3)
+2025-09-19T11:30:08:     at process.processImmediate (node:internal/timers:454:9)
+2025-09-19T11:30:08:     at async ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:11)
+2025-09-19T11:30:08:     at async Timeout.<anonymous> (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9) {
+2025-09-19T11:30:08:   code: 'NoConnection'
+2025-09-19T11:30:08: }
+2025-09-19T11:30:08: Erro de conexão para departamento cmfee6p230001o0of71xpsksd: Error: Connection not available
+2025-09-19T11:30:08:     at ImapFlow.run (/app/node_modules/imapflow/lib/imap-flow.js:3216:27)
+2025-09-19T11:30:08:     at ImapFlow.mailboxOpen (/app/node_modules/imapflow/lib/imap-flow.js:2004:27)
+2025-09-19T11:30:08:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:267:24)
+2025-09-19T11:30:08:     at processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-09-19T11:30:08:     at runNextTicks (node:internal/process/task_queues:64:3)
+2025-09-19T11:30:08:     at process.processImmediate (node:internal/timers:454:9)
+2025-09-19T11:30:08:     at async ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:11)
+2025-09-19T11:30:08:     at async Timeout.<anonymous> (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9) {
+2025-09-19T11:30:08:   code: 'NoConnection'
+2025-09-19T11:30:08: }
+2025-09-19T11:30:08: Erro ao processar emails de Suporte ti: Error: Connection not available
+2025-09-19T11:30:08:     at ImapFlow.run (/app/node_modules/imapflow/lib/imap-flow.js:3216:27)
+2025-09-19T11:30:08:     at ImapFlow.mailboxOpen (/app/node_modules/imapflow/lib/imap-flow.js:2004:27)
+2025-09-19T11:30:08:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:267:24)
+2025-09-19T11:30:08:     at processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-09-19T11:30:08:     at runNextTicks (node:internal/process/task_queues:64:3)
+2025-09-19T11:30:08:     at process.processImmediate (node:internal/timers:454:9)
+2025-09-19T11:30:08:     at async ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:11)
+2025-09-19T11:30:08:     at async Timeout.<anonymous> (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9) {
+2025-09-19T11:30:08:   code: 'NoConnection'
+2025-09-19T11:30:08: }
+2025-09-19T11:30:08: Erro de conexão para departamento cmfee6p230001o0of71xpsksd: Error: Connection not available
+2025-09-19T11:30:08:     at ImapFlow.run (/app/node_modules/imapflow/lib/imap-flow.js:3216:27)
+2025-09-19T11:30:08:     at ImapFlow.mailboxOpen (/app/node_modules/imapflow/lib/imap-flow.js:2004:27)
+2025-09-19T11:30:08:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:267:24)
+2025-09-19T11:30:08:     at processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-09-19T11:30:08:     at runNextTicks (node:internal/process/task_queues:64:3)
+2025-09-19T11:30:08:     at process.processImmediate (node:internal/timers:454:9)
+2025-09-19T11:30:08:     at async ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:11)
+2025-09-19T11:30:08:     at async Timeout.<anonymous> (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9) {
+2025-09-19T11:30:08:   code: 'NoConnection'
+2025-09-19T11:30:08: }
+2025-09-19T11:30:08: Erro ao processar emails de Suporte ti: Error: Connection not available
+2025-09-19T11:30:08:     at ImapFlow.run (/app/node_modules/imapflow/lib/imap-flow.js:3216:27)
+2025-09-19T11:30:08:     at ImapFlow.mailboxOpen (/app/node_modules/imapflow/lib/imap-flow.js:2004:27)
+2025-09-19T11:30:08:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:267:24)
+2025-09-19T11:30:08:     at processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-09-19T11:30:08:     at runNextTicks (node:internal/process/task_queues:64:3)
+2025-09-19T11:30:08:     at process.processImmediate (node:internal/timers:454:9)
+2025-09-19T11:30:08:     at async ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:11)
+2025-09-19T11:30:08:     at async Timeout.<anonymous> (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9) {
+2025-09-19T11:30:08:   code: 'NoConnection'
+2025-09-19T11:30:08: }
+2025-09-19T11:30:08: Erro de conexão para departamento cmfee6p230001o0of71xpsksd: Error: Connection not available
+2025-09-19T11:30:08:     at ImapFlow.run (/app/node_modules/imapflow/lib/imap-flow.js:3216:27)
+2025-09-19T11:30:08:     at ImapFlow.mailboxOpen (/app/node_modules/imapflow/lib/imap-flow.js:2004:27)
+2025-09-19T11:30:08:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:267:24)
+2025-09-19T11:30:08:     at processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-09-19T11:30:08:     at runNextTicks (node:internal/process/task_queues:64:3)
+2025-09-19T11:30:08:     at process.processImmediate (node:internal/timers:454:9)
+2025-09-19T11:30:08:     at async ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:11)
+2025-09-19T11:30:08:     at async Timeout.<anonymous> (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9) {
+2025-09-19T11:30:08:   code: 'NoConnection'
+2025-09-19T11:30:08: }
+2025-09-19T11:30:08: Erro ao processar emails de Suporte ti: Error: Connection not available
+2025-09-19T11:30:08:     at ImapFlow.run (/app/node_modules/imapflow/lib/imap-flow.js:3216:27)
+2025-09-19T11:30:08:     at ImapFlow.mailboxOpen (/app/node_modules/imapflow/lib/imap-flow.js:2004:27)
+2025-09-19T11:30:08:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:267:24)
+2025-09-19T11:30:08:     at processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-09-19T11:30:08:     at runNextTicks (node:internal/process/task_queues:64:3)
+2025-09-19T11:30:08:     at process.processImmediate (node:internal/timers:454:9)
+2025-09-19T11:30:08:     at async ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:11)
+2025-09-19T11:30:08:     at async Timeout.<anonymous> (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9) {
+2025-09-19T11:30:08:   code: 'NoConnection'
+2025-09-19T11:30:08: }
+2025-09-19T11:30:08: Erro de conexão para departamento cmfee6p230001o0of71xpsksd: Error: Connection not available
+2025-09-19T11:30:08:     at ImapFlow.run (/app/node_modules/imapflow/lib/imap-flow.js:3216:27)
+2025-09-19T11:30:08:     at ImapFlow.mailboxOpen (/app/node_modules/imapflow/lib/imap-flow.js:2004:27)
+2025-09-19T11:30:08:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:267:24)
+2025-09-19T11:30:08:     at processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-09-19T11:30:08:     at runNextTicks (node:internal/process/task_queues:64:3)
+2025-09-19T11:30:08:     at process.processImmediate (node:internal/timers:454:9)
+2025-09-19T11:30:08:     at async ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:11)
+2025-09-19T11:30:08:     at async Timeout.<anonymous> (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9) {
+2025-09-19T11:30:08:   code: 'NoConnection'
+2025-09-19T11:30:08: }
+2025-09-19T11:50:13: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-19T12:05:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-19T12:50:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-19T13:05:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-19T13:52:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-19T14:05:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-19T14:52:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-19T15:52:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-19T16:05:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-19T17:05:12: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-19T17:52:13: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-19T18:05:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-19T18:54:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-19T19:05:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-19T19:54:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-19T20:05:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-19T20:54:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-19T21:05:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-19T21:54:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-19T22:05:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-19T22:56:04: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-19T23:05:04: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-19T23:56:04: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-20T00:05:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-20T00:56:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-20T01:05:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-20T01:56:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-20T02:05:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-20T02:06:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-20T02:06:33: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-20T02:07:33: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-20T02:10:33: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-20T02:13:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-20T02:15:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-20T02:17:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-20T02:20:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-20T02:22:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-20T03:05:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-20T03:22:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-20T04:05:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-20T04:22:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-20T05:05:04: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-20T05:24:04: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-20T06:05:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-20T06:24:01: Uncaught Exception: Error: read ECONNRESET
+2025-09-20T06:24:01:     at TLSWrap.onStreamRead (node:internal/stream_base_commons:218:20) {
+2025-09-20T06:24:01:   errno: -104,
+2025-09-20T06:24:01:   code: 'ECONNRESET',
+2025-09-20T06:24:01:   syscall: 'read',
+2025-09-20T06:24:01:   _connId: '1a1vk9cw9br95f1zidsk'
+2025-09-20T06:24:01: }
+2025-09-20T07:05:07: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-20T07:26:07: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-20T08:05:07: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-20T08:28:07: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-20T09:05:08: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-20T10:05:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-20T10:30:12: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-20T11:05:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-20T11:32:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-20T12:32:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-20T13:05:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-20T13:32:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-20T14:05:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-20T14:32:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-20T15:05:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-20T15:34:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-20T16:05:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-20T16:34:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-20T17:05:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-20T17:34:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-20T18:05:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-20T18:34:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-20T19:05:25: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-20T19:36:25: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-20T20:05:19: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-20T20:36:19: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-20T21:05:19: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-20T21:38:20: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-20T22:05:20: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-20T22:40:18: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-20T23:05:18: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-20T23:42:18: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T00:05:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T00:42:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T01:05:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T01:44:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T02:05:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T02:06:32: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T02:10:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T02:10:32: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T02:12:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T02:13:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T02:14:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T02:16:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T02:19:32: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T03:05:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T03:20:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T04:05:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T04:22:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T05:05:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T05:24:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T06:05:00: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T06:26:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T07:05:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T07:26:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T08:05:15: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T08:26:12: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T09:05:12: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T09:26:12: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T10:05:13: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T10:28:13: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T11:05:13: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T11:28:13: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T12:05:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T12:28:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T13:05:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T13:30:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T14:05:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T14:30:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T15:05:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T15:22:57: Uncaught Exception: Error: read ETIMEDOUT
+2025-09-21T15:22:57:     at TLSWrap.onStreamRead (node:internal/stream_base_commons:218:20) {
+2025-09-21T15:22:57:   errno: -110,
+2025-09-21T15:22:57:   code: 'ETIMEDOUT',
+2025-09-21T15:22:57:   syscall: 'read',
+2025-09-21T15:22:57:   _connId: '12gtss4ffclcj29knwya'
+2025-09-21T15:22:57: }
+2025-09-21T15:22:57: Unhandled Rejection at: Promise {
+2025-09-21T15:22:57:   <rejected> Error: Connection not available
+2025-09-21T15:22:57:       at ImapFlow.close (/app/node_modules/imapflow/lib/imap-flow.js:1694:35)
+2025-09-21T15:22:57:       at Immediate.<anonymous> (/app/node_modules/imapflow/lib/imap-flow.js:1651:33)
+2025-09-21T15:22:57:       at process.processImmediate (node:internal/timers:483:21) {
+2025-09-21T15:22:57:     code: 'NoConnection',
+2025-09-21T15:22:57:     _connId: '12gtss4ffclcj29knwya'
+2025-09-21T15:22:57:   }
+2025-09-21T15:22:57: } reason: Error: Connection not available
+2025-09-21T15:22:57:     at ImapFlow.close (/app/node_modules/imapflow/lib/imap-flow.js:1694:35)
+2025-09-21T15:22:57:     at Immediate.<anonymous> (/app/node_modules/imapflow/lib/imap-flow.js:1651:33)
+2025-09-21T15:22:57:     at process.processImmediate (node:internal/timers:483:21) {
+2025-09-21T15:22:57:   code: 'NoConnection',
+2025-09-21T15:22:57:   _connId: '12gtss4ffclcj29knwya'
+2025-09-21T15:22:57: }
+2025-09-21T15:30:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T16:05:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T16:32:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T17:05:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T17:34:27: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T18:05:00: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T18:34:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T19:05:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T19:36:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T20:05:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T20:36:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T21:05:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T21:38:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T22:05:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T22:40:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T23:05:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-21T23:40:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T00:05:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T00:40:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T01:05:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T01:42:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T02:05:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T02:06:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T02:06:31: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T02:07:31: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T02:08:31: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T02:12:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T02:13:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T02:15:31: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T02:21:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T02:22:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T03:05:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T03:22:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T04:05:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T04:24:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T05:05:00: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T05:24:00: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T06:05:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T06:24:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T07:05:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T07:15:31: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T08:05:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T08:16:00: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T09:05:00: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T09:18:00: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T10:05:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T10:20:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T11:05:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T11:22:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T12:05:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T12:24:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T13:05:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T13:24:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T14:24:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T15:05:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T15:26:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T16:05:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T16:24:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T17:05:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T17:28:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T18:05:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T18:24:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T19:05:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T19:28:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T20:05:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T20:30:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T21:05:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T21:32:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T22:05:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T22:32:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T23:05:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T23:26:04: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-22T23:34:04: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-23T00:05:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-23T00:34:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-23T01:05:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-23T01:34:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-23T02:05:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-23T02:06:32: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-23T02:07:32: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-23T02:08:32: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-23T02:11:32: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-23T02:13:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-23T02:13:32: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-23T02:15:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-23T02:16:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-23T02:21:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-23T03:05:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-23T03:22:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-23T04:05:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-23T04:24:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-23T05:05:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-23T05:24:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-23T06:05:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-23T06:24:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-23T08:46:53: Uncaught Exception: Error: read ECONNRESET
+2025-09-23T08:46:53:     at TLSWrap.onStreamRead (node:internal/stream_base_commons:218:20) {
+2025-09-23T08:46:53:   errno: -104,
+2025-09-23T08:46:53:   code: 'ECONNRESET',
+2025-09-23T08:46:53:   syscall: 'read',
+2025-09-23T08:46:53:   _connId: 'ww4d5i8mwl075hu80xjh'
+2025-09-23T08:46:53: }
+2025-09-23T09:05:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-23T09:26:03: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-23T11:35:41: Uncaught Exception: Error: Socket timeout
+2025-09-23T11:35:41:     at TLSSocket._socketTimeout (/app/node_modules/imapflow/lib/imap-flow.js:789:29)
+2025-09-23T11:35:41:     at TLSSocket.emit (node:events:524:28)
+2025-09-23T11:35:41:     at Socket._onTimeout (node:net:595:8)
+2025-09-23T11:35:41:     at listOnTimeout (node:internal/timers:581:17)
+2025-09-23T11:35:41:     at process.processTimers (node:internal/timers:519:7) {
+2025-09-23T11:35:41:   code: 'ETIMEOUT',
+2025-09-23T11:35:41:   _connId: 'cubrh5hhnlpdfv7yt4kb'
+2025-09-23T11:35:41: }
+2025-09-23T11:35:41: Erro ao processar emails de Suporte ti: Error: Connection not available
+2025-09-23T11:35:41:     at ImapFlow.run (/app/node_modules/imapflow/lib/imap-flow.js:3216:27)
+2025-09-23T11:35:41:     at ImapFlow.mailboxOpen (/app/node_modules/imapflow/lib/imap-flow.js:2004:27)
+2025-09-23T11:35:41:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:267:24)
+2025-09-23T11:35:41:     at processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-09-23T11:35:41:     at runNextTicks (node:internal/process/task_queues:64:3)
+2025-09-23T11:35:41:     at process.processImmediate (node:internal/timers:454:9)
+2025-09-23T11:35:41:     at async ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:11)
+2025-09-23T11:35:41:     at async Timeout.<anonymous> (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9) {
+2025-09-23T11:35:41:   code: 'NoConnection'
+2025-09-23T11:35:41: }
+2025-09-23T11:35:41: Erro de conexão para departamento cmfee6p230001o0of71xpsksd: Error: Connection not available
+2025-09-23T11:35:41:     at ImapFlow.run (/app/node_modules/imapflow/lib/imap-flow.js:3216:27)
+2025-09-23T11:35:41:     at ImapFlow.mailboxOpen (/app/node_modules/imapflow/lib/imap-flow.js:2004:27)
+2025-09-23T11:35:41:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:267:24)
+2025-09-23T11:35:41:     at processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-09-23T11:35:41:     at runNextTicks (node:internal/process/task_queues:64:3)
+2025-09-23T11:35:41:     at process.processImmediate (node:internal/timers:454:9)
+2025-09-23T11:35:41:     at async ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:11)
+2025-09-23T11:35:41:     at async Timeout.<anonymous> (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9) {
+2025-09-23T11:35:41:   code: 'NoConnection'
+2025-09-23T11:35:41: }
+2025-09-23T11:35:41: Erro ao processar emails de Suporte ti: Error: Connection not available
+2025-09-23T11:35:41:     at ImapFlow.run (/app/node_modules/imapflow/lib/imap-flow.js:3216:27)
+2025-09-23T11:35:41:     at ImapFlow.mailboxOpen (/app/node_modules/imapflow/lib/imap-flow.js:2004:27)
+2025-09-23T11:35:41:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:267:24)
+2025-09-23T11:35:41:     at processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-09-23T11:35:41:     at runNextTicks (node:internal/process/task_queues:64:3)
+2025-09-23T11:35:41:     at process.processImmediate (node:internal/timers:454:9)
+2025-09-23T11:35:41:     at async ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:11)
+2025-09-23T11:35:41:     at async Timeout.<anonymous> (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9) {
+2025-09-23T11:35:41:   code: 'NoConnection'
+2025-09-23T11:35:41: }
+2025-09-23T11:35:41: Erro de conexão para departamento cmfee6p230001o0of71xpsksd: Error: Connection not available
+2025-09-23T11:35:41:     at ImapFlow.run (/app/node_modules/imapflow/lib/imap-flow.js:3216:27)
+2025-09-23T11:35:41:     at ImapFlow.mailboxOpen (/app/node_modules/imapflow/lib/imap-flow.js:2004:27)
+2025-09-23T11:35:41:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:267:24)
+2025-09-23T11:35:41:     at processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-09-23T11:35:41:     at runNextTicks (node:internal/process/task_queues:64:3)
+2025-09-23T11:35:41:     at process.processImmediate (node:internal/timers:454:9)
+2025-09-23T11:35:41:     at async ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:11)
+2025-09-23T11:35:41:     at async Timeout.<anonymous> (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9) {
+2025-09-23T11:35:41:   code: 'NoConnection'
+2025-09-23T11:35:41: }
+2025-09-23T11:35:41: Erro ao processar emails de Suporte ti: Error: Connection not available
+2025-09-23T11:35:41:     at ImapFlow.run (/app/node_modules/imapflow/lib/imap-flow.js:3216:27)
+2025-09-23T11:35:41:     at ImapFlow.mailboxOpen (/app/node_modules/imapflow/lib/imap-flow.js:2004:27)
+2025-09-23T11:35:41:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:267:24)
+2025-09-23T11:35:41:     at processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-09-23T11:35:41:     at runNextTicks (node:internal/process/task_queues:64:3)
+2025-09-23T11:35:41:     at process.processImmediate (node:internal/timers:454:9)
+2025-09-23T11:35:41:     at async ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:11)
+2025-09-23T11:35:41:     at async Timeout.<anonymous> (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9) {
+2025-09-23T11:35:41:   code: 'NoConnection'
+2025-09-23T11:35:41: }
+2025-09-23T11:35:41: Erro de conexão para departamento cmfee6p230001o0of71xpsksd: Error: Connection not available
+2025-09-23T11:35:41:     at ImapFlow.run (/app/node_modules/imapflow/lib/imap-flow.js:3216:27)
+2025-09-23T11:35:41:     at ImapFlow.mailboxOpen (/app/node_modules/imapflow/lib/imap-flow.js:2004:27)
+2025-09-23T11:35:41:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:267:24)
+2025-09-23T11:35:41:     at processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-09-23T11:35:41:     at runNextTicks (node:internal/process/task_queues:64:3)
+2025-09-23T11:35:41:     at process.processImmediate (node:internal/timers:454:9)
+2025-09-23T11:35:41:     at async ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:11)
+2025-09-23T11:35:41:     at async Timeout.<anonymous> (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9) {
+2025-09-23T11:35:41:   code: 'NoConnection'
+2025-09-23T11:35:41: }
+2025-09-23T11:35:41: Erro ao processar emails de Suporte ti: Error: Connection not available
+2025-09-23T11:35:41:     at ImapFlow.run (/app/node_modules/imapflow/lib/imap-flow.js:3216:27)
+2025-09-23T11:35:41:     at ImapFlow.mailboxOpen (/app/node_modules/imapflow/lib/imap-flow.js:2004:27)
+2025-09-23T11:35:41:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:267:24)
+2025-09-23T11:35:41:     at processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-09-23T11:35:41:     at runNextTicks (node:internal/process/task_queues:64:3)
+2025-09-23T11:35:41:     at process.processImmediate (node:internal/timers:454:9)
+2025-09-23T11:35:41:     at async ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:11)
+2025-09-23T11:35:41:     at async Timeout.<anonymous> (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9) {
+2025-09-23T11:35:41:   code: 'NoConnection'
+2025-09-23T11:35:41: }
+2025-09-23T11:35:41: Erro de conexão para departamento cmfee6p230001o0of71xpsksd: Error: Connection not available
+2025-09-23T11:35:41:     at ImapFlow.run (/app/node_modules/imapflow/lib/imap-flow.js:3216:27)
+2025-09-23T11:35:41:     at ImapFlow.mailboxOpen (/app/node_modules/imapflow/lib/imap-flow.js:2004:27)
+2025-09-23T11:35:41:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:267:24)
+2025-09-23T11:35:41:     at processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-09-23T11:35:41:     at runNextTicks (node:internal/process/task_queues:64:3)
+2025-09-23T11:35:41:     at process.processImmediate (node:internal/timers:454:9)
+2025-09-23T11:35:41:     at async ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:11)
+2025-09-23T11:35:41:     at async Timeout.<anonymous> (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9) {
+2025-09-23T11:35:41:   code: 'NoConnection'
+2025-09-23T11:35:41: }
+2025-09-23T11:35:41: Erro ao processar emails de Suporte ti: Error: Connection not available
+2025-09-23T11:35:41:     at ImapFlow.run (/app/node_modules/imapflow/lib/imap-flow.js:3216:27)
+2025-09-23T11:35:41:     at ImapFlow.mailboxOpen (/app/node_modules/imapflow/lib/imap-flow.js:2004:27)
+2025-09-23T11:35:41:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:267:24)
+2025-09-23T11:35:41:     at processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-09-23T11:35:41:     at runNextTicks (node:internal/process/task_queues:64:3)
+2025-09-23T11:35:41:     at process.processImmediate (node:internal/timers:454:9)
+2025-09-23T11:35:41:     at async ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:11)
+2025-09-23T11:35:41:     at async Timeout.<anonymous> (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9) {
+2025-09-23T11:35:41:   code: 'NoConnection'
+2025-09-23T11:35:41: }
+2025-09-23T11:35:41: Erro de conexão para departamento cmfee6p230001o0of71xpsksd: Error: Connection not available
+2025-09-23T11:35:41:     at ImapFlow.run (/app/node_modules/imapflow/lib/imap-flow.js:3216:27)
+2025-09-23T11:35:41:     at ImapFlow.mailboxOpen (/app/node_modules/imapflow/lib/imap-flow.js:2004:27)
+2025-09-23T11:35:41:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:267:24)
+2025-09-23T11:35:41:     at processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-09-23T11:35:41:     at runNextTicks (node:internal/process/task_queues:64:3)
+2025-09-23T11:35:41:     at process.processImmediate (node:internal/timers:454:9)
+2025-09-23T11:35:41:     at async ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:11)
+2025-09-23T11:35:41:     at async Timeout.<anonymous> (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9) {
+2025-09-23T11:35:41:   code: 'NoConnection'
+2025-09-23T11:35:41: }
+2025-09-23T11:35:41: Erro ao processar emails de Suporte ti: Error: Connection not available
+2025-09-23T11:35:41:     at ImapFlow.run (/app/node_modules/imapflow/lib/imap-flow.js:3216:27)
+2025-09-23T11:35:41:     at ImapFlow.mailboxOpen (/app/node_modules/imapflow/lib/imap-flow.js:2004:27)
+2025-09-23T11:35:41:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:267:24)
+2025-09-23T11:35:41:     at processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-09-23T11:35:41:     at runNextTicks (node:internal/process/task_queues:64:3)
+2025-09-23T11:35:41:     at process.processImmediate (node:internal/timers:454:9)
+2025-09-23T11:35:41:     at async ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:11)
+2025-09-23T11:35:41:     at async Timeout.<anonymous> (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9) {
+2025-09-23T11:35:41:   code: 'NoConnection'
+2025-09-23T11:35:41: }
+2025-09-23T11:35:41: Erro de conexão para departamento cmfee6p230001o0of71xpsksd: Error: Connection not available
+2025-09-23T11:35:41:     at ImapFlow.run (/app/node_modules/imapflow/lib/imap-flow.js:3216:27)
+2025-09-23T11:35:41:     at ImapFlow.mailboxOpen (/app/node_modules/imapflow/lib/imap-flow.js:2004:27)
+2025-09-23T11:35:41:     at ConsolidatedHelpdeskWorker.processDepartmentEmails (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:267:24)
+2025-09-23T11:35:41:     at processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-09-23T11:35:41:     at runNextTicks (node:internal/process/task_queues:64:3)
+2025-09-23T11:35:41:     at process.processImmediate (node:internal/timers:454:9)
+2025-09-23T11:35:41:     at async ConsolidatedHelpdeskWorker.processAllDepartments (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:224:11)
+2025-09-23T11:35:41:     at async Timeout.<anonymous> (/app/src/lib/helpdesk/consolidated-helpdesk-worker.ts:148:9) {
+2025-09-23T11:35:41:   code: 'NoConnection'
+2025-09-23T11:35:41: }
+2025-09-23T11:42:16: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-23T12:05:17: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-23T12:45:42: Uncaught Exception: Error: read ETIMEDOUT
+2025-09-23T12:45:42:     at TLSWrap.onStreamRead (node:internal/stream_base_commons:218:20) {
+2025-09-23T12:45:42:   errno: -110,
+2025-09-23T12:45:42:   code: 'ETIMEDOUT',
+2025-09-23T12:45:42:   syscall: 'read',
+2025-09-23T12:45:42:   _connId: 'l3kyrqc5qra2igryk7ru'
+2025-09-23T12:45:42: }
+2025-09-23T12:45:42: Unhandled Rejection at: Promise {
+2025-09-23T12:45:42:   <rejected> Error: Connection not available
+2025-09-23T12:45:42:       at ImapFlow.close (/app/node_modules/imapflow/lib/imap-flow.js:1694:35)
+2025-09-23T12:45:42:       at Immediate.<anonymous> (/app/node_modules/imapflow/lib/imap-flow.js:1651:33)
+2025-09-23T12:45:42:       at process.processImmediate (node:internal/timers:483:21) {
+2025-09-23T12:45:42:     code: 'NoConnection',
+2025-09-23T12:45:42:     _connId: 'l3kyrqc5qra2igryk7ru'
+2025-09-23T12:45:42:   }
+2025-09-23T12:45:42: } reason: Error: Connection not available
+2025-09-23T12:45:42:     at ImapFlow.close (/app/node_modules/imapflow/lib/imap-flow.js:1694:35)
+2025-09-23T12:45:42:     at Immediate.<anonymous> (/app/node_modules/imapflow/lib/imap-flow.js:1651:33)
+2025-09-23T12:45:42:     at process.processImmediate (node:internal/timers:483:21) {
+2025-09-23T12:45:42:   code: 'NoConnection',
+2025-09-23T12:45:42:   _connId: 'l3kyrqc5qra2igryk7ru'
+2025-09-23T12:45:42: }
+2025-09-23T13:05:18: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-24T07:34:36: Uncaught Exception: Error: read ECONNRESET
+2025-09-24T07:34:36:     at TLSWrap.onStreamRead (node:internal/stream_base_commons:218:20) {
+2025-09-24T07:34:36:   errno: -104,
+2025-09-24T07:34:36:   code: 'ECONNRESET',
+2025-09-24T07:34:36:   syscall: 'read',
+2025-09-24T07:34:36:   _connId: '822eraw9u334rm7ybyg0'
+2025-09-24T07:34:36: }
+2025-09-24T07:59:55: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-24T08:05:25: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-24T12:02:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-24T12:05:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-24T13:04:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-24T14:04:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-24T14:05:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-24T15:04:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-24T15:05:01: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-25T07:29:46: Uncaught Exception: Error: read ETIMEDOUT
+2025-09-25T07:29:46:     at TLSWrap.onStreamRead (node:internal/stream_base_commons:218:20) {
+2025-09-25T07:29:46:   errno: -110,
+2025-09-25T07:29:46:   code: 'ETIMEDOUT',
+2025-09-25T07:29:46:   syscall: 'read',
+2025-09-25T07:29:46:   _connId: '11qaiw09vmu3uf0jleh0'
+2025-09-25T07:29:46: }
+2025-09-25T07:29:46: Unhandled Rejection at: Promise {
+2025-09-25T07:29:46:   <rejected> Error: Connection not available
+2025-09-25T07:29:46:       at ImapFlow.close (/app/node_modules/imapflow/lib/imap-flow.js:1694:35)
+2025-09-25T07:29:46:       at Immediate.<anonymous> (/app/node_modules/imapflow/lib/imap-flow.js:1651:33)
+2025-09-25T07:29:46:       at process.processImmediate (node:internal/timers:483:21) {
+2025-09-25T07:29:46:     code: 'NoConnection',
+2025-09-25T07:29:46:     _connId: '11qaiw09vmu3uf0jleh0'
+2025-09-25T07:29:46:   }
+2025-09-25T07:29:46: } reason: Error: Connection not available
+2025-09-25T07:29:46:     at ImapFlow.close (/app/node_modules/imapflow/lib/imap-flow.js:1694:35)
+2025-09-25T07:29:46:     at Immediate.<anonymous> (/app/node_modules/imapflow/lib/imap-flow.js:1651:33)
+2025-09-25T07:29:46:     at process.processImmediate (node:internal/timers:483:21) {
+2025-09-25T07:29:46:   code: 'NoConnection',
+2025-09-25T07:29:46:   _connId: '11qaiw09vmu3uf0jleh0'
+2025-09-25T07:29:46: }
+2025-09-25T08:05:22: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-25T08:20:22: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-25T08:28:22: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-25T10:28:18: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-25T11:05:19: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-25T11:30:19: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-25T12:05:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-25T12:30:02: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-25T13:05:08: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-25T13:30:08: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-25T14:05:08: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-25T14:30:13: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-25T15:05:09: Erro no departamento cmfee6p230001o0of71xpsksd: Connection not available
+2025-09-25T15:11:44: Nenhum departamento com configuração IMAP encontrado
+2025-09-25T15:11:49: Nenhum departamento com configuração IMAP encontrado
+2025-09-25T15:11:55: Nenhum departamento com configuração IMAP encontrado
+2025-09-25T15:12:00: Nenhum departamento com configuração IMAP encontrado
+2025-09-25T15:12:06: Nenhum departamento com configuração IMAP encontrado
+2025-09-25T15:12:11: Nenhum departamento com configuração IMAP encontrado
+2025-09-25T15:12:16: Nenhum departamento com configuração IMAP encontrado
+2025-09-25T15:12:21: Nenhum departamento com configuração IMAP encontrado
+2025-09-25T15:12:27: Nenhum departamento com configuração IMAP encontrado
+2025-09-25T15:12:32: Nenhum departamento com configuração IMAP encontrado
+2025-09-25T15:27:56: Nenhum departamento com configuração IMAP encontrado
+2025-09-25T15:28:02: Nenhum departamento com configuração IMAP encontrado
+2025-09-25T15:28:07: Nenhum departamento com configuração IMAP encontrado
+2025-09-25T15:28:12: Nenhum departamento com configuração IMAP encontrado
+2025-09-25T15:28:17: Nenhum departamento com configuração IMAP encontrado
+2025-09-25T15:28:23: Nenhum departamento com configuração IMAP encontrado
+2025-09-25T15:28:28: Nenhum departamento com configuração IMAP encontrado
+2025-09-25T15:28:34: Nenhum departamento com configuração IMAP encontrado
+2025-09-25T15:28:39: Nenhum departamento com configuração IMAP encontrado
+2025-09-25T15:28:44: Nenhum departamento com configuração IMAP encontrado

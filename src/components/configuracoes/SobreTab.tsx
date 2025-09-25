@@ -35,27 +35,33 @@ interface VersionInfo {
     };
   };
   system: {
-    nodeVersion: string;
+    node: string;
     platform: string;
     arch: string;
     uptime: number;
     memory: {
       used: number;
       total: number;
+      percentage: number;
     };
     environment: string;
   };
   updates: {
     available: boolean;
-    latestVersion?: string;
+    latestVersion: string;
     currentVersion: string;
-    releaseNotes?: string;
+    releaseNotes: string;
+    lastChecked?: string;
     releaseDate?: string;
     severity?: string;
+    downloadUrl?: string;
     error?: string;
-    lastChecked: string;
+    changelog?: string[];
   };
-  timestamp: string;
+  features?: {
+    [key: string]: string;
+  };
+  timestamp?: string;
 }
 
 export default function SobreTab() {
@@ -264,7 +270,23 @@ export default function SobreTab() {
             <Alert>
               <CheckCircle className="h-4 w-4" />
               <AlertDescription>
-                Você está usando a versão mais recente do sistema.
+                <div className="space-y-2">
+                  <p>Você está usando a versão mais recente do sistema.</p>
+                  <p className="text-sm">{versionInfo.updates.releaseNotes}</p>
+                  {versionInfo.updates.changelog && versionInfo.updates.changelog.length > 0 && (
+                    <div className="mt-3">
+                      <p className="text-sm font-medium mb-2">Últimas melhorias:</p>
+                      <ul className="text-xs space-y-1">
+                        {versionInfo.updates.changelog.map((item, index) => (
+                          <li key={index} className="flex items-start space-x-2">
+                            <span className="text-green-500 mt-1">•</span>
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
               </AlertDescription>
             </Alert>
           )}
@@ -295,6 +317,28 @@ export default function SobreTab() {
         </CardContent>
       </Card>
 
+      {/* Funcionalidades do Sistema */}
+      {versionInfo.features && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm">Funcionalidades Disponíveis</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 gap-3">
+              {Object.entries(versionInfo.features).map(([key, description]) => (
+                <div key={key} className="flex items-start space-x-3">
+                  <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0" />
+                  <div>
+                    <p className="text-sm font-medium capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</p>
+                    <p className="text-xs text-muted-foreground">{description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Informações de Debug */}
       <Card>
         <CardHeader>
@@ -302,7 +346,7 @@ export default function SobreTab() {
         </CardHeader>
         <CardContent>
           <p className="text-xs text-muted-foreground">
-            Última atualização: {formatDate(versionInfo.timestamp)}
+            Última atualização: {formatDate(versionInfo.timestamp || new Date().toISOString())}
           </p>
         </CardContent>
       </Card>

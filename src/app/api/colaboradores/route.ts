@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import bcrypt from 'bcryptjs';
+import { createWuzapiUser, createWuzapiInstance } from '@/lib/wuzapi';
 
 export async function GET(request: NextRequest) {
   try {
@@ -230,7 +231,39 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    return NextResponse.json(colaborador, { status: 201 });
+    // Integração com Wuzapi - criar usuário e instância automaticamente
+    let wuzapiWarning = '';
+    try {
+      const wuzapiResult = await createWuzapiUser(
+        colaborador.nome,
+        colaborador.email,
+        colaborador.id
+      );
+
+      if (wuzapiResult.success && wuzapiResult.token) {
+        // Criar instância para o colaborador
+        const instanceResult = await createWuzapiInstance(
+          colaborador.email,
+          wuzapiResult.token
+        );
+
+        if (!instanceResult.success) {
+          wuzapiWarning = `Usuário Wuzapi criado, mas falha ao criar instância: ${instanceResult.error}`;
+        }
+      } else {
+        wuzapiWarning = `Falha ao criar usuário Wuzapi: ${wuzapiResult.error}`;
+      }
+    } catch (wuzapiError) {
+      console.error('Erro na integração Wuzapi:', wuzapiError);
+      wuzapiWarning = 'Erro na integração com Wuzapi';
+    }
+
+    const response = { ...colaborador };
+    if (wuzapiWarning) {
+      response.wuzapiWarning = wuzapiWarning;
+    }
+
+    return NextResponse.json(response, { status: 201 });
   } catch (error) {
     console.error('Erro ao criar colaborador:', error);
     return NextResponse.json(

@@ -4,20 +4,15 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
+import { useWhatsAppModule } from '@/hooks/useWhatsAppModule';
 import { useState } from 'react';
 import { 
   Users, 
-  Building2, 
-  Shield, 
-  UserCircle, 
   Home,
   Settings,
-  Key,
   Menu,
   X,
   TrendingUp,
-  Webhook,
-  KeyRound,
   Mail,
   Headphones,
   CheckSquare,
@@ -25,7 +20,8 @@ import {
   Calendar,
   ChevronDown,
   ChevronRight,
-  MessageCircle
+  MessageCircle,
+  ClipboardList
 } from 'lucide-react';
 
 interface NavigationItem {
@@ -87,53 +83,18 @@ const navigation: NavigationItem[] = [
     requiredPermission: { recurso: 'clientes', acao: 'ler' }
   },
   { 
+    name: 'Ordens de Serviço', 
+    href: '/ordens-servico', 
+    icon: ClipboardList,
+    requiredPermission: { recurso: 'ordens_servico', acao: 'ler' }
+  },
+  { 
     name: 'Negócios', 
     href: '/negocios', 
     icon: TrendingUp,
     requiredPermission: { recurso: 'negocios', acao: 'ler' }
   },
-  { 
-    name: 'Colaboradores', 
-    href: '/colaboradores', 
-    icon: UserCircle,
-    requiredPermission: { recurso: 'colaboradores', acao: 'ler' }
-  },
-  { 
-    name: 'Grupos Hierárquicos', 
-    href: '/grupos-hierarquicos', 
-    icon: Building2,
-    requiredPermission: { recurso: 'grupos', acao: 'ler' }
-  },
-  { 
-    name: 'Perfis', 
-    href: '/perfis', 
-    icon: Key,
-    requiredPermission: { recurso: 'perfis', acao: 'ler' }
-  },
-  { 
-    name: 'Permissões', 
-    href: '/permissoes', 
-    icon: Shield,
-    requiredPermission: { recurso: 'permissoes', acao: 'ler' }
-  },
-  { 
-    name: 'Usuários', 
-    href: '/usuarios', 
-    icon: UserCircle,
-    requiredPermission: { recurso: 'usuarios', acao: 'ler' }
-  },
-  { 
-    name: 'Webhooks', 
-    href: '/webhooks', 
-    icon: Webhook,
-    requiredPermission: { recurso: 'webhooks', acao: 'ler' }
-  },
-  { 
-    name: 'Chaves de API', 
-    href: '/chaves-api', 
-    icon: KeyRound,
-    requiredPermission: { recurso: 'api_keys', acao: 'ler' }
-  },
+
   { 
     name: 'Configurações', 
     href: '/configuracoes', 
@@ -145,6 +106,7 @@ const navigation: NavigationItem[] = [
 export function Sidebar() {
   const pathname = usePathname();
   const { hasPermission, isAdmin, isAuthenticated } = useAuth();
+  const { isModuleActive } = useWhatsAppModule();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
@@ -156,6 +118,9 @@ export function Sidebar() {
   const filteredNavigation = navigation.filter((item) => {
     // Dashboard é sempre visível
     if (item.href === '/') return true;
+    
+    // Verificar se é o menu WhatsApp e se o módulo está ativo
+    if (item.href === '/whatsappchat' && !isModuleActive) return false;
     
     // Verificar se requer admin
     if (item.requireAdmin && !isAdmin) return false;

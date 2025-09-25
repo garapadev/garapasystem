@@ -1,1 +1,1 @@
-O projeto usa PM2 para gerenciar o servidor e os workers
+O projeto usa PM2 para gerenciar o serviços e os workers

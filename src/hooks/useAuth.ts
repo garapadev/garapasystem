@@ -133,6 +133,16 @@ export function useAuth() {
         delete: hasPermission('usuarios', 'excluir'),
         any: hasAnyPermission('usuarios', ['criar', 'ler', 'editar', 'excluir'])
       },
+      // Ordens de Serviço
+      ordens_servico: {
+        create: hasPermission('ordens_servico', 'criar'),
+        read: hasPermission('ordens_servico', 'ler'),
+        update: hasPermission('ordens_servico', 'editar'),
+        delete: hasPermission('ordens_servico', 'excluir'),
+        approve: hasPermission('ordens_servico', 'aprovar'),
+        manage: hasPermission('ordens_servico', 'gerenciar'),
+        any: hasAnyPermission('ordens_servico', ['criar', 'ler', 'editar', 'excluir', 'aprovar', 'gerenciar'])
+      },
       // Webmail
        webmail: {
           access: WebmailPermissionUtils.hasWebmailPermission(permissions.map(p => p.nome), WEBMAIL_PERMISSIONS.EMAIL_READ),

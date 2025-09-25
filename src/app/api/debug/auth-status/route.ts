@@ -18,7 +18,16 @@ export async function GET(request: NextRequest) {
     const colaborador = await db.colaborador.findUnique({
       where: { email: session.user.email },
       include: {
-        emailConfig: true
+        emailConfig: true,
+        perfil: {
+          include: {
+            permissoes: {
+              include: {
+                permissao: true
+              }
+            }
+          }
+        }
       }
     })
 
@@ -31,7 +40,9 @@ export async function GET(request: NextRequest) {
       colaborador: colaborador ? {
         id: colaborador.id,
         nome: colaborador.nome,
-        email: colaborador.email
+        email: colaborador.email,
+        perfil: colaborador.perfil?.nome,
+        permissoes: colaborador.perfil?.permissoes.map(p => p.permissao?.nome).filter(Boolean) || []
       } : null,
       emailConfig: colaborador?.emailConfig ? {
         id: colaborador.emailConfig.id,

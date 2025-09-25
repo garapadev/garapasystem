@@ -1,16 +1,27 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { instrumentApiRoute, instrumentDatabaseOperation } from "@/lib/telemetry/api-instrumentation";
 
-export async function GET() {
-  try {
-    // Verificar conexão com o banco de dados
+// Instrumentar operação de banco de dados
+const checkDatabase = instrumentDatabaseOperation(
+  async () => {
     await db.$queryRaw`SELECT 1`;
+    return "connected";
+  },
+  "health_check",
+  "system"
+);
+
+async function healthHandler() {
+  try {
+    // Verificar conexão com o banco de dados usando função instrumentada
+    const databaseStatus = await checkDatabase();
     
     return NextResponse.json({ 
       status: "healthy",
       message: "Application is running",
       timestamp: new Date().toISOString(),
-      database: "connected"
+      database: databaseStatus
     });
   } catch (error) {
     console.error('Health check failed:', error);
@@ -25,3 +36,10 @@ export async function GET() {
     );
   }
 }
+
+// Exportar handlers instrumentados
+const instrumentedHandlers = instrumentApiRoute({
+  GET: healthHandler
+}, '/api/health');
+
+export const GET = instrumentedHandlers.GET;

@@ -68,7 +68,7 @@ interface EmailConfig {
 }
 
 export default function WebmailPage() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
   const [emailConfig, setEmailConfig] = useState<EmailConfig | null>(null);
   const [folders, setFolders] = useState<EmailFolder[]>([]);
@@ -83,10 +83,12 @@ export default function WebmailPage() {
   const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
-    if (session?.user) {
+    if (status === 'authenticated' && session?.user) {
       loadEmailConfig();
+    } else if (status === 'unauthenticated') {
+       router.push('/auth/login');
     }
-  }, [session]);
+  }, [session, status, router]);
 
   useEffect(() => {
     if (emailConfig) {

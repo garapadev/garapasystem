@@ -1,0 +1,274 @@
+# Regras de Alerta para GarapaSystem
+groups:
+  - name: garapasystem.instances
+    interval: 30s
+    rules:
+      # Instância não está respondendo
+      - alert: InstanceDown
+        expr: up{job=~"garapasystem.*"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: garapasystem
+        annotations:
+          summary: "Instância GarapaSystem não está respondendo"
+          description: "A instância {{ $labels.company_id }}/{{ $labels.instance_id }} não está respondendo há mais de 1 minuto."
+          runbook_url: "https://docs.garapasystem.com/runbooks/instance-down"
+          action: "Verificar logs da instância e reiniciar se necessário"
+
+      # Alta taxa de erro
+      - alert: HighErrorRate
+        expr: |
+          (
+            rate(http_requests_total{job=~"garapasystem.*", status=~"5.."}[5m]) /
+            rate(http_requests_total{job=~"garapasystem.*"}[5m])
+          ) * 100 > 5
+        for: 2m
+        labels:
+          severity: warning
+          service: garapasystem
+        annotations:
+          summary: "Alta taxa de erro na instância"
+          description: "A instância {{ $labels.company_id }}/{{ $labels.instance_id }} tem {{ $value | humanizePercentage }} de taxa de erro."
+          current_value: "{{ $value | humanizePercentage }}"
+          threshold: "5%"
+          recommendation: "Verificar logs de aplicação e banco de dados"
+
+      # Alta latência
+      - alert: HighLatency
+        expr: |
+          histogram_quantile(0.95, 
+            rate(http_request_duration_seconds_bucket{job=~"garapasystem.*"}[5m])
+          ) > 2
+        for: 3m
+        labels:
+          severity: warning
+          service: garapasystem
+        annotations:
+          summary: "Alta latência detectada"
+          description: "P95 de latência na instância {{ $labels.company_id }}/{{ $labels.instance_id }} é {{ $value }}s."
+          current_value: "{{ $value }}s"
+          threshold: "2s"
+          recommendation: "Verificar performance do banco de dados e otimizar queries"
+
+      # Falha na conexão com banco de dados
+      - alert: DatabaseConnectionFailed
+        expr: |
+          database_connections_failed_total{job=~"garapasystem.*"} > 0
+        for: 1m
+        labels:
+          severity: critical
+          service: database
+        annotations:
+          summary: "Falha na conexão com banco de dados"
+          description: "A instância {{ $labels.company_id }}/{{ $labels.instance_id }} não consegue conectar ao banco de dados."
+          action: "Verificar status do banco de dados e conectividade de rede"
+
+      # Alto uso de memória
+      - alert: HighMemoryUsage
+        expr: |
+          (
+            process_resident_memory_bytes{job=~"garapasystem.*"} / 
+            node_memory_MemTotal_bytes
+          ) * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+          service: garapasystem
+        annotations:
+          summary: "Alto uso de memória"
+          description: "A instância {{ $labels.company_id }}/{{ $labels.instance_id }} está usando {{ $value | humanizePercentage }} da memória."
+          current_value: "{{ $value | humanizePercentage }}"
+          threshold: "80%"
+          recommendation: "Considerar aumentar recursos ou otimizar aplicação"
+
+      # Alto uso de CPU
+      - alert: HighCPUUsage
+        expr: |
+          rate(process_cpu_seconds_total{job=~"garapasystem.*"}[5m]) * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+          service: garapasystem
+        annotations:
+          summary: "Alto uso de CPU"
+          description: "A instância {{ $labels.company_id }}/{{ $labels.instance_id }} está usando {{ $value | humanizePercentage }} de CPU."
+          current_value: "{{ $value | humanizePercentage }}"
+          threshold: "80%"
+          recommendation: "Verificar processos em execução e otimizar código"
+
+      # Disco quase cheio
+      - alert: DiskSpaceRunningOut
+        expr: |
+          (
+            node_filesystem_avail_bytes{job=~"garapasystem.*", fstype!="tmpfs"} /
+            node_filesystem_size_bytes{job=~"garapasystem.*", fstype!="tmpfs"}
+          ) * 100 < 10
+        for: 2m
+        labels:
+          severity: warning
+          service: system
+        annotations:
+          summary: "Espaço em disco baixo"
+          description: "A instância {{ $labels.company_id }}/{{ $labels.instance_id }} tem apenas {{ $value | humanizePercentage }} de espaço livre no disco {{ $labels.mountpoint }}."
+          current_value: "{{ $value | humanizePercentage }}"
+          threshold: "10%"
+          action: "Limpar logs antigos ou aumentar espaço em disco"
+
+  - name: garapasystem.telemetry
+    interval: 30s
+    rules:
+      # Coletor OpenTelemetry não está funcionando
+      - alert: CollectorDown
+        expr: up{job="otel-collector"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: telemetry
+        annotations:
+          summary: "Coletor OpenTelemetry não está funcionando"
+          description: "O coletor OpenTelemetry central não está respondendo."
+          action: "Verificar status do container e logs do coletor"
+
+      # Métricas não estão sendo recebidas
+      - alert: MetricsNotReceived
+        expr: |
+          increase(otelcol_receiver_accepted_metric_points_total[5m]) == 0
+        for: 3m
+        labels:
+          severity: warning
+          service: telemetry
+        annotations:
+          summary: "Métricas não estão sendo recebidas"
+          description: "O coletor não recebeu métricas nos últimos 5 minutos."
+          recommendation: "Verificar conectividade das instâncias com o coletor"
+
+      # Traces não estão sendo recebidos
+      - alert: TracesNotReceived
+        expr: |
+          increase(otelcol_receiver_accepted_spans_total[5m]) == 0
+        for: 3m
+        labels:
+          severity: warning
+          service: telemetry
+        annotations:
+          summary: "Traces não estão sendo recebidos"
+          description: "O coletor não recebeu traces nos últimos 5 minutos."
+          recommendation: "Verificar instrumentação das aplicações"
+
+      # Alto número de métricas rejeitadas
+      - alert: HighMetricsRejectionRate
+        expr: |
+          (
+            rate(otelcol_receiver_refused_metric_points_total[5m]) /
+            rate(otelcol_receiver_accepted_metric_points_total[5m])
+          ) * 100 > 5
+        for: 2m
+        labels:
+          severity: warning
+          service: telemetry
+        annotations:
+          summary: "Alta taxa de rejeição de métricas"
+          description: "{{ $value | humanizePercentage }} das métricas estão sendo rejeitadas."
+          current_value: "{{ $value | humanizePercentage }}"
+          threshold: "5%"
+          action: "Verificar configuração do coletor e capacidade de processamento"
+
+  - name: garapasystem.infrastructure
+    interval: 30s
+    rules:
+      # Prometheus não está funcionando
+      - alert: PrometheusDown
+        expr: up{job="prometheus"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: prometheus
+        annotations:
+          summary: "Prometheus não está funcionando"
+          description: "O servidor Prometheus não está respondendo."
+          action: "Verificar status do container Prometheus"
+
+      # Elasticsearch não está funcionando
+      - alert: ElasticsearchDown
+        expr: up{job="elasticsearch"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: elasticsearch
+        annotations:
+          summary: "Elasticsearch não está funcionando"
+          description: "O cluster Elasticsearch não está respondendo."
+          action: "Verificar status do cluster Elasticsearch"
+
+      # Jaeger não está funcionando
+      - alert: JaegerDown
+        expr: up{job="jaeger"} == 0
+        for: 2m
+        labels:
+          severity: warning
+          service: jaeger
+        annotations:
+          summary: "Jaeger não está funcionando"
+          description: "O serviço Jaeger não está respondendo."
+          action: "Verificar status do container Jaeger"
+
+      # Grafana não está funcionando
+      - alert: GrafanaDown
+        expr: up{job="grafana"} == 0
+        for: 2m
+        labels:
+          severity: warning
+          service: grafana
+        annotations:
+          summary: "Grafana não está funcionando"
+          description: "O serviço Grafana não está respondendo."
+          action: "Verificar status do container Grafana"
+
+  - name: garapasystem.security
+    interval: 30s
+    rules:
+      # Tentativas de acesso não autorizado
+      - alert: UnauthorizedAccess
+        expr: |
+          increase(nginx_http_requests_total{status="403"}[5m]) > 10
+        for: 1m
+        labels:
+          severity: warning
+          service: security
+        annotations:
+          summary: "Múltiplas tentativas de acesso não autorizado"
+          description: "{{ $value }} tentativas de acesso negadas nos últimos 5 minutos."
+          current_value: "{{ $value }}"
+          threshold: "10"
+          action: "Verificar logs de acesso e considerar bloqueio de IP"
+
+      # Certificado expirando
+      - alert: CertificateExpiring
+        expr: |
+          (ssl_certificate_expiry_seconds - time()) / 86400 < 30
+        for: 1h
+        labels:
+          severity: warning
+          service: security
+        annotations:
+          summary: "Certificado SSL expirando em breve"
+          description: "O certificado SSL expira em {{ $value }} dias."
+          current_value: "{{ $value }} dias"
+          threshold: "30 dias"
+          action: "Renovar certificado SSL antes da expiração"
+
+      # Falhas no handshake TLS
+      - alert: TLSHandshakeFailed
+        expr: |
+          increase(nginx_ssl_handshakes_failed_total[5m]) > 5
+        for: 2m
+        labels:
+          severity: warning
+          service: security
+        annotations:
+          summary: "Falhas no handshake TLS"
+          description: "{{ $value }} falhas no handshake TLS nos últimos 5 minutos."
+          current_value: "{{ $value }}"
+          threshold: "5"
+          recommendation: "Verificar configuração SSL e certificados"

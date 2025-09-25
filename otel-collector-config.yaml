@@ -1,0 +1,198 @@
+# Configuração do Coletor OpenTelemetry Centralizado
+# Para ser implantado em app.garapasystem.com
+
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+        tls:
+          cert_file: /etc/ssl/certs/otel-collector.crt
+          key_file: /etc/ssl/private/otel-collector.key
+          client_ca_file: /etc/ssl/certs/ca.crt
+      http:
+        endpoint: 0.0.0.0:4318
+        tls:
+          cert_file: /etc/ssl/certs/otel-collector.crt
+          key_file: /etc/ssl/private/otel-collector.key
+          client_ca_file: /etc/ssl/certs/ca.crt
+        cors:
+          allowed_origins:
+            - "https://*.garapasystem.com"
+            - "http://localhost:*"
+          allowed_headers:
+            - "x-company-id"
+            - "x-instance-id"
+            - "x-service-version"
+            - "content-type"
+            - "authorization"
+
+  prometheus:
+    config:
+      scrape_configs:
+        - job_name: 'garapasystem-instances'
+          scrape_interval: 30s
+          static_configs:
+            - targets: ['localhost:9090']
+
+processors:
+  # Processador de atributos para adicionar metadados
+  attributes:
+    actions:
+      - key: collector.name
+        value: "central-collector"
+        action: insert
+      - key: collector.version
+        value: "1.0.0"
+        action: insert
+
+  # Processador de recursos para enriquecer dados
+  resource:
+    attributes:
+      - key: deployment.environment
+        from_attribute: environment
+        action: upsert
+      - key: service.namespace
+        value: "garapasystem"
+        action: insert
+
+  # Processador de filtragem para dados sensíveis
+  filter:
+    traces:
+      span:
+        - 'attributes["http.url"] != nil and IsMatch(attributes["http.url"], ".*/(login|password|token|auth).*")'
+        - 'attributes["db.statement"] != nil and IsMatch(attributes["db.statement"], ".*(password|token|secret).*")'
+    metrics:
+      metric:
+        - 'name == "http_requests_total" and attributes["http.route"] == "/api/auth"'
+
+  # Processador de batch para otimização
+  batch:
+    timeout: 1s
+    send_batch_size: 1024
+    send_batch_max_size: 2048
+
+  # Processador de sampling para controle de volume
+  probabilistic_sampler:
+    sampling_percentage: 100  # 100% em desenvolvimento, ajustar em produção
+
+  # Processador de transformação para labels customizados
+  transform:
+    trace_statements:
+      - context: span
+        statements:
+          - set(attributes["company.normalized"], Concat([attributes["company.id"], "-", attributes["instance.id"]]))
+          - set(attributes["trace.sampled"], "true") where attributes["company.id"] != nil
+    metric_statements:
+      - context: metric
+        statements:
+          - set(attributes["company.normalized"], Concat([attributes["company.id"], "-", attributes["instance.id"]]))
+
+exporters:
+  # Exportador para Jaeger (traces)
+  jaeger:
+    endpoint: jaeger:14250
+    tls:
+      insecure: false
+      cert_file: /etc/ssl/certs/jaeger.crt
+      key_file: /etc/ssl/private/jaeger.key
+
+  # Exportador para Prometheus (métricas)
+  prometheus:
+    endpoint: "0.0.0.0:8889"
+    namespace: "garapasystem"
+    const_labels:
+      collector: "central"
+      environment: "${ENVIRONMENT}"
+
+  # Exportador para arquivo (backup/debug)
+  file:
+    path: /var/log/otel/traces.json
+    rotation:
+      max_megabytes: 100
+      max_days: 7
+      max_backups: 3
+
+  # Exportador para Elasticsearch (logs e traces)
+  elasticsearch:
+    endpoints: 
+      - "https://elasticsearch:9200"
+    index: "garapasystem-telemetry"
+    tls:
+      cert_file: /etc/ssl/certs/elasticsearch.crt
+      key_file: /etc/ssl/private/elasticsearch.key
+      ca_file: /etc/ssl/certs/ca.crt
+    mapping:
+      mode: "ecs"
+    auth:
+      authenticator: "basic"
+      username: "${ELASTICSEARCH_USERNAME}"
+      password: "${ELASTICSEARCH_PASSWORD}"
+
+  # Exportador OTLP para outros coletores (federação)
+  otlp/federation:
+    endpoint: "https://federation.garapasystem.com:4317"
+    tls:
+      cert_file: /etc/ssl/certs/federation.crt
+      key_file: /etc/ssl/private/federation.key
+      ca_file: /etc/ssl/certs/ca.crt
+    headers:
+      x-federation-key: "${FEDERATION_KEY}"
+
+extensions:
+  # Extensão de saúde
+  health_check:
+    endpoint: 0.0.0.0:13133
+    path: "/health"
+
+  # Extensão de pprof para debugging
+  pprof:
+    endpoint: 0.0.0.0:1777
+
+  # Extensão de zpages para monitoramento
+  zpages:
+    endpoint: 0.0.0.0:55679
+
+  # Extensão de autenticação
+  basicauth/server:
+    htpasswd:
+      file: /etc/otel/htpasswd
+
+service:
+  extensions: [health_check, pprof, zpages, basicauth/server]
+  
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [attributes, resource, filter, transform, probabilistic_sampler, batch]
+      exporters: [jaeger, file, elasticsearch]
+    
+    metrics:
+      receivers: [otlp, prometheus]
+      processors: [attributes, resource, filter, transform, batch]
+      exporters: [prometheus, elasticsearch]
+    
+    logs:
+      receivers: [otlp]
+      processors: [attributes, resource, filter, batch]
+      exporters: [elasticsearch, file]
+
+  # Configurações de telemetria do próprio coletor
+  telemetry:
+    logs:
+      level: "info"
+      development: false
+      sampling:
+        enabled: true
+        tick: 10s
+        initial: 5
+        thereafter: 200
+    metrics:
+      level: "detailed"
+      address: 0.0.0.0:8888
+    
+    # Configurações de recursos
+    resource:
+      service.name: "otel-collector"
+      service.version: "1.0.0"
+      deployment.environment: "${ENVIRONMENT}"

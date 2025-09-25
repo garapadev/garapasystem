@@ -45,7 +45,7 @@ const emailConfigSchema = z.object({
 type EmailConfigForm = z.infer<typeof emailConfigSchema>;
 
 export default function EmailConfigPage() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -70,15 +70,20 @@ export default function EmailConfigPage() {
   const [showDebug, setShowDebug] = useState(false);
 
   useEffect(() => {
-    console.log('Session state:', session);
-    if (session?.user) {
+    console.log('Session state:', session, 'Status:', status);
+    if (status === 'authenticated' && session?.user) {
       console.log('Loading existing config for user:', session.user.email);
       loadExistingConfig();
+    } else if (status === 'unauthenticated') {
+       console.log('User not authenticated, redirecting to login');
+       router.push('/auth/login');
+    } else if (status === 'loading') {
+      console.log('Session loading...');
     } else {
       console.log('No session or user found, setting loading to false');
       setLoading(false);
     }
-  }, [session]);
+  }, [session, status, router]);
 
   const loadExistingConfig = async () => {
     try {

@@ -1,141 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useToast } from '@/hooks/use-toast';
-import { useConfiguracoes } from '@/hooks/useConfiguracoes';
-import { Loader2, Settings, Info } from 'lucide-react';
-import SobreTab from '@/components/configuracoes/SobreTab';
-import HelpdeskTab from '@/components/configuracoes/HelpdeskTab';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function ConfiguracoesPage() {
-  const { toast } = useToast();
-  const { configuracoes, loading, updateConfiguracao, getConfiguracao } = useConfiguracoes();
-  const [formData, setFormData] = useState({
-    nomeDoSistema: '',
-    tituloDoSistema: ''
-  });
-  const [saving, setSaving] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
-    if (configuracoes && configuracoes.length > 0) {
-      const nomeDoSistema = getConfiguracao('sistema_nome')?.valor || '';
-      const tituloDoSistema = getConfiguracao('projeto_titulo')?.valor || '';
-      
-      setFormData({
-        nomeDoSistema,
-        tituloDoSistema
-      });
-    }
-  }, [configuracoes, getConfiguracao]);
+    // Redireciona para a seção geral por padrão
+    router.replace('/configuracoes/geral');
+  }, [router]);
 
-  const handleSave = async () => {
-    setSaving(true);
-    try {
-      await Promise.all([
-        updateConfiguracao('sistema_nome', formData.nomeDoSistema, 'Nome do sistema'),
-        updateConfiguracao('projeto_titulo', formData.tituloDoSistema, 'Título do projeto')
-      ]);
-      
-      toast({
-        title: 'Configurações salvas',
-        description: 'As configurações foram atualizadas com sucesso.',
-      });
-    } catch (error) {
-      toast({
-        title: 'Erro ao salvar',
-        description: 'Ocorreu um erro ao salvar as configurações.',
-        variant: 'destructive',
-      });
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin" />
-      </div>
-    );
-  }
-
-  return (
-    <div className="container mx-auto py-6">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold tracking-tight">Configurações</h1>
-        <p className="text-muted-foreground">
-          Gerencie as configurações do sistema
-        </p>
-      </div>
-
-      <Tabs defaultValue="geral" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="geral" className="flex items-center gap-2">
-            <Settings className="h-4 w-4" />
-            Configurações Gerais
-          </TabsTrigger>
-          <TabsTrigger value="helpdesk" className="flex items-center gap-2">
-            <Info className="h-4 w-4" />
-            Helpdesk
-          </TabsTrigger>
-          <TabsTrigger value="sobre" className="flex items-center gap-2">
-            <Info className="h-4 w-4" />
-            Sobre
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="geral">
-          <Card>
-            <CardHeader>
-              <CardTitle>Configurações Gerais</CardTitle>
-              <CardDescription>
-                Configure as informações básicas do sistema
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="nomeDoSistema">Nome do Sistema</Label>
-                <Input
-                  id="nomeDoSistema"
-                  value={formData.nomeDoSistema}
-                  onChange={(e) => setFormData({ ...formData, nomeDoSistema: e.target.value })}
-                  placeholder="Digite o nome do sistema"
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="tituloDoSistema">Título do Projeto</Label>
-                <Input
-                  id="tituloDoSistema"
-                  value={formData.tituloDoSistema}
-                  onChange={(e) => setFormData({ ...formData, tituloDoSistema: e.target.value })}
-                  placeholder="Digite o título do projeto"
-                />
-              </div>
-
-              <div className="flex justify-end pt-4">
-                <Button onClick={handleSave} disabled={saving}>
-                  {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Salvar Configurações
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="helpdesk">
-          <HelpdeskTab />
-        </TabsContent>
-
-        <TabsContent value="sobre">
-          <SobreTab />
-        </TabsContent>
-      </Tabs>
-    </div>
-  );
+  return null;
 }

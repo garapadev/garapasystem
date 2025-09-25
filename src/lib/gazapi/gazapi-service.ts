@@ -11,6 +11,11 @@ export interface GazapiSession {
   lastActivity?: Date;
   createdAt: Date;
   updatedAt: Date;
+  webhook?: {
+    url: string;
+    events: string[];
+    enabled: boolean;
+  };
 }
 
 export interface GazapiMessage {
@@ -543,6 +548,429 @@ export class GazapiService extends EventEmitter {
       ...request,
       messageType: 'document'
     });
+  }
+
+  public async sendContact(request: MessageRequest): Promise<MessageResponse> {
+    return this.sendMessage({
+      ...request,
+      messageType: 'contact'
+    });
+  }
+
+  public async sendLocation(request: MessageRequest): Promise<MessageResponse> {
+    return this.sendMessage({
+      ...request,
+      messageType: 'location'
+    });
+  }
+
+  public async sendSticker(request: MessageRequest): Promise<MessageResponse> {
+    return this.sendMessage({
+      ...request,
+      messageType: 'sticker'
+    });
+  }
+
+  // Métodos de gerenciamento de grupos
+  public async createGroup(request: GroupRequest): Promise<GazapiResponse> {
+    try {
+      const { session, token, groupName, description, participants } = request;
+
+      if (token !== this.config.adminToken) {
+        return {
+          success: false,
+          message: 'Token administrativo inválido',
+          error: 'INVALID_TOKEN'
+        };
+      }
+
+      const sessionData = this.sessions.get(session);
+      if (!sessionData || sessionData.status !== 'connected') {
+        return {
+          success: false,
+          message: 'Sessão não conectada',
+          error: 'SESSION_NOT_CONNECTED'
+        };
+      }
+
+      // Simular criação de grupo
+      const groupId = `group_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      
+      return {
+        success: true,
+        message: 'Grupo criado com sucesso',
+        data: {
+          groupId,
+          groupName,
+          participants,
+          createdAt: new Date()
+        }
+      };
+
+    } catch (error) {
+      console.error('[Gazapi] Erro ao criar grupo:', error);
+      return {
+        success: false,
+        message: 'Erro interno ao criar grupo',
+        error: error instanceof Error ? error.message : 'Erro desconhecido'
+      };
+    }
+  }
+
+  public async getGroups(request: SessionRequest): Promise<GazapiResponse> {
+    try {
+      const { session, token } = request;
+
+      if (token !== this.config.adminToken) {
+        return {
+          success: false,
+          message: 'Token administrativo inválido',
+          error: 'INVALID_TOKEN'
+        };
+      }
+
+      const sessionData = this.sessions.get(session);
+      if (!sessionData || sessionData.status !== 'connected') {
+        return {
+          success: false,
+          message: 'Sessão não conectada',
+          error: 'SESSION_NOT_CONNECTED'
+        };
+      }
+
+      // Simular lista de grupos
+      const groups = [
+        {
+          id: 'group_1',
+          name: 'Grupo Exemplo 1',
+          description: 'Descrição do grupo 1',
+          participants: ['5511999999999', '5511888888888'],
+          admins: ['5511999999999'],
+          createdAt: new Date()
+        }
+      ];
+      
+      return {
+        success: true,
+        message: 'Grupos obtidos com sucesso',
+        data: { groups }
+      };
+
+    } catch (error) {
+      console.error('[Gazapi] Erro ao obter grupos:', error);
+      return {
+        success: false,
+        message: 'Erro interno ao obter grupos',
+        error: error instanceof Error ? error.message : 'Erro desconhecido'
+      };
+    }
+  }
+
+  public async getContacts(request: SessionRequest): Promise<GazapiResponse> {
+    try {
+      const { session, token } = request;
+
+      if (token !== this.config.adminToken) {
+        return {
+          success: false,
+          message: 'Token administrativo inválido',
+          error: 'INVALID_TOKEN'
+        };
+      }
+
+      const sessionData = this.sessions.get(session);
+      if (!sessionData || sessionData.status !== 'connected') {
+        return {
+          success: false,
+          message: 'Sessão não conectada',
+          error: 'SESSION_NOT_CONNECTED'
+        };
+      }
+
+      // Simular lista de contatos
+      const contacts = [
+        {
+          id: '5511999999999',
+          name: 'Contato Exemplo',
+          phone: '5511999999999',
+          avatar: null,
+          isGroup: false,
+          lastMessage: 'Última mensagem',
+          lastMessageTime: new Date(),
+          unreadCount: 0
+        }
+      ];
+      
+      return {
+        success: true,
+        message: 'Contatos obtidos com sucesso',
+        data: { contacts }
+      };
+
+    } catch (error) {
+      console.error('[Gazapi] Erro ao obter contatos:', error);
+      return {
+        success: false,
+        message: 'Erro interno ao obter contatos',
+        error: error instanceof Error ? error.message : 'Erro desconhecido'
+      };
+    }
+  }
+
+  public async getMessages(request: any): Promise<GazapiResponse> {
+    try {
+      const { session, token, chatId, limit = 50, offset = 0 } = request;
+
+      if (token !== this.config.adminToken) {
+        return {
+          success: false,
+          message: 'Token administrativo inválido',
+          error: 'INVALID_TOKEN'
+        };
+      }
+
+      const sessionData = this.sessions.get(session);
+      if (!sessionData || sessionData.status !== 'connected') {
+        return {
+          success: false,
+          message: 'Sessão não conectada',
+          error: 'SESSION_NOT_CONNECTED'
+        };
+      }
+
+      // Simular lista de mensagens
+      const messages = [
+        {
+          id: 'msg_1',
+          chatId,
+          fromMe: false,
+          messageType: 'text',
+          content: 'Olá! Como posso ajudar?',
+          timestamp: new Date(Date.now() - 3600000),
+          status: 'read'
+        },
+        {
+          id: 'msg_2',
+          chatId,
+          fromMe: true,
+          messageType: 'text',
+          content: 'Oi! Tudo bem?',
+          timestamp: new Date(Date.now() - 1800000),
+          status: 'delivered'
+        }
+      ].slice(offset, offset + limit);
+      
+      return {
+        success: true,
+        message: 'Mensagens obtidas com sucesso',
+        data: { 
+          messages,
+          total: 2
+        }
+      };
+
+    } catch (error) {
+      console.error('[Gazapi] Erro ao obter mensagens:', error);
+      return {
+        success: false,
+        message: 'Erro interno ao obter mensagens',
+        error: error instanceof Error ? error.message : 'Erro desconhecido'
+      };
+    }
+  }
+
+  public async checkNumber(request: any): Promise<GazapiResponse> {
+    try {
+      const { session, token, phoneNumber } = request;
+
+      if (token !== this.config.adminToken) {
+        return {
+          success: false,
+          message: 'Token administrativo inválido',
+          error: 'INVALID_TOKEN'
+        };
+      }
+
+      const sessionData = this.sessions.get(session);
+      if (!sessionData || sessionData.status !== 'connected') {
+        return {
+          success: false,
+          message: 'Sessão não conectada',
+          error: 'SESSION_NOT_CONNECTED'
+        };
+      }
+
+      // Simular verificação de número
+      const exists = Math.random() > 0.3; // 70% de chance de existir
+      const jid = exists ? `${phoneNumber}@s.whatsapp.net` : undefined;
+      
+      return {
+        success: true,
+        message: 'Verificação de número concluída',
+        data: {
+          phoneNumber,
+          exists,
+          jid,
+          businessName: exists && Math.random() > 0.7 ? 'Empresa Exemplo' : undefined
+        }
+      };
+
+    } catch (error) {
+      console.error('[Gazapi] Erro ao verificar número:', error);
+      return {
+        success: false,
+        message: 'Erro interno ao verificar número',
+        error: error instanceof Error ? error.message : 'Erro desconhecido'
+      };
+    }
+  }
+
+  public async markAsRead(request: any): Promise<GazapiResponse> {
+    try {
+      const { session, token, chatId, messageId } = request;
+
+      if (token !== this.config.adminToken) {
+        return {
+          success: false,
+          message: 'Token administrativo inválido',
+          error: 'INVALID_TOKEN'
+        };
+      }
+
+      const sessionData = this.sessions.get(session);
+      if (!sessionData || sessionData.status !== 'connected') {
+        return {
+          success: false,
+          message: 'Sessão não conectada',
+          error: 'SESSION_NOT_CONNECTED'
+        };
+      }
+
+      // Simular marcação como lida
+      const markedAt = new Date();
+      
+      return {
+        success: true,
+        message: messageId ? 'Mensagem marcada como lida' : 'Chat marcado como lido',
+        data: {
+          chatId,
+          messageId,
+          markedAt
+        }
+      };
+
+    } catch (error) {
+      console.error('[Gazapi] Erro ao marcar como lida:', error);
+      return {
+        success: false,
+        message: 'Erro interno ao marcar como lida',
+        error: error instanceof Error ? error.message : 'Erro desconhecido'
+      };
+    }
+  }
+
+  public async setWebhook(request: any): Promise<GazapiResponse> {
+    try {
+      const { session, token, webhookUrl, events, enabled } = request;
+
+      if (token !== this.config.adminToken) {
+        return {
+          success: false,
+          message: 'Token administrativo inválido',
+          error: 'INVALID_TOKEN'
+        };
+      }
+
+      const sessionData = this.sessions.get(session);
+      if (!sessionData) {
+        return {
+          success: false,
+          message: 'Sessão não encontrada',
+          error: 'SESSION_NOT_FOUND'
+        };
+      }
+
+      // Configurar webhook na sessão
+      sessionData.webhook = {
+        url: webhookUrl,
+        events: events || ['message', 'status', 'connection'],
+        enabled: enabled !== false
+      };
+
+      const configuredAt = new Date();
+      
+      return {
+        success: true,
+        message: 'Webhook configurado com sucesso',
+        data: {
+          webhookUrl,
+          events: sessionData.webhook.events,
+          enabled: sessionData.webhook.enabled,
+          configuredAt
+        }
+      };
+
+    } catch (error) {
+      console.error('[Gazapi] Erro ao configurar webhook:', error);
+      return {
+        success: false,
+        message: 'Erro interno ao configurar webhook',
+        error: error instanceof Error ? error.message : 'Erro desconhecido'
+      };
+    }
+  }
+
+  public async getWebhook(request: any): Promise<GazapiResponse> {
+    try {
+      const { session, token } = request;
+
+      if (token !== this.config.adminToken) {
+        return {
+          success: false,
+          message: 'Token administrativo inválido',
+          error: 'INVALID_TOKEN'
+        };
+      }
+
+      const sessionData = this.sessions.get(session);
+      if (!sessionData) {
+        return {
+          success: false,
+          message: 'Sessão não encontrada',
+          error: 'SESSION_NOT_FOUND'
+        };
+      }
+
+      if (!sessionData.webhook) {
+        return {
+          success: true,
+          message: 'Nenhum webhook configurado',
+          data: {
+            webhookUrl: undefined,
+            events: undefined,
+            enabled: false
+          }
+        };
+      }
+      
+      return {
+        success: true,
+        message: 'Informações do webhook obtidas',
+        data: {
+          webhookUrl: sessionData.webhook.url,
+          events: sessionData.webhook.events,
+          enabled: sessionData.webhook.enabled
+        }
+      };
+
+    } catch (error) {
+      console.error('[Gazapi] Erro ao obter webhook:', error);
+      return {
+        success: false,
+        message: 'Erro interno ao obter webhook',
+        error: error instanceof Error ? error.message : 'Erro desconhecido'
+      };
+    }
   }
 
   private async sendMessage(request: MessageRequest & { messageType: string }): Promise<MessageResponse> {

@@ -5,103 +5,345 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { MessageSquare, Users, Clock, Wifi, WifiOff, QrCode } from 'lucide-react';
-import { ConnectionStatus } from '@/components/whatsapp/ConnectionStatus';
-import { WhatsAppAuth } from '@/components/whatsapp/WhatsAppAuth';
+import { MessageSquare, Users, Clock, Loader2, RefreshCw, Smartphone, Settings } from 'lucide-react';
+
+import { ContactsList } from '@/components/whatsapp/ContactsList';
+import { ChatWindow } from '@/components/whatsapp/ChatWindow';
+import { useConfiguracoes } from '@/hooks/useConfiguracoes';
+import { useToast } from '@/hooks/use-toast';
 
 interface SessionData {
-  session: string;
-  status: 'disconnected' | 'connecting' | 'qr_required' | 'connected' | 'inChat';
+  status: 'not_connected' | 'connecting' | 'qr_required' | 'connected' | 'inChat';
   qrCode?: string;
-  phoneNumber?: string;
-  lastActivity?: Date;
+}
+
+interface Contact {
+  jid: string;
+  pushName: string;
+  fullName: string;
+  firstName: string;
+  businessName: string;
+  found: boolean;
+  id?: string;
+  name?: string;
+  phone?: string;
+  avatar?: string;
+  lastMessage?: string;
+  lastMessageTime?: Date;
+  unreadCount?: number;
+  isGroup?: boolean;
 }
 
 export default function WhatsAppChatPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const { toast } = useToast();
+  const { configuracoes, loading: configLoading } = useConfiguracoes();
   const [sessionData, setSessionData] = useState<SessionData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string>('');
-  const [showAuth, setShowAuth] = useState(false);
+  const [userId, setUserId] = useState<string>('');
+  const [colaboradorData, setColaboradorData] = useState<{id: string; nome: string} | null>(null);
+  const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
+  const [apiConfig, setApiConfig] = useState<{apiUrl: string; adminToken: string} | null>(null);
 
-  const fetchSessionData = async () => {
-    if (!session?.user?.email) return;
+  // Carregar configurações da API
+  useEffect(() => {
+    if (configuracoes && configuracoes.length > 0) {
+      const apiUrl = configuracoes.find(config => config.chave === 'wuzapi_url')?.valor || '';
+      const adminToken = configuracoes.find(config => config.chave === 'wuzapi_admin_token')?.valor || '';
+      
+      if (apiUrl && adminToken) {
+        // Normalizar URL removendo barra final se existir
+        const normalizedApiUrl = apiUrl.endsWith('/') ? apiUrl.slice(0, -1) : apiUrl;
+        setApiConfig({ apiUrl: normalizedApiUrl, adminToken });
+      } else {
+        setError('Configurações da API WhatsApp não encontradas. Configure em Configurações > API WhatsApp');
+      }
+    }
+  }, [configuracoes]);
+
+  // Carregar dados do colaborador quando autenticado
+  useEffect(() => {
+    if (status === 'authenticated') {
+      const fetchColaboradorData = async () => {
+        try {
+          const response = await fetch('/api/colaboradores/me');
+          if (response.ok) {
+            const result = await response.json();
+            setColaboradorData(result.data);
+            setUserId(result.data.id.toString());
+          }
+        } catch (error) {
+          console.error('Erro ao carregar dados do colaborador:', error);
+        }
+      };
+      
+      fetchColaboradorData();
+    } else {
+      // TEMPORÁRIO: Usar userId fixo para teste quando não autenticado
+      const adminUserId = 'cmfbc2udu000ho010hyr18voe';
+      setUserId(adminUserId);
+      setColaboradorData({
+         id: adminUserId,
+         nome: 'Administrador do Sistema'
+       });
+    }
+  }, [status]);
+
+  // Criar sessão automaticamente ao carregar a página
+  useEffect(() => {
+    if (userId && status === 'authenticated' && apiConfig) {
+      createSession();
+    }
+  }, [userId, status, apiConfig]);
+
+  // Polling para verificar status da sessão
+  useEffect(() => {
+    if (sessionData?.status === 'qr_required' || sessionData?.status === 'connecting') {
+      const interval = setInterval(checkSessionStatus, 3000);
+      return () => clearInterval(interval);
+    }
+  }, [sessionData?.status]);
+
+  const createSession = async () => {
+    if (!apiConfig || !userId || !colaboradorData) return;
+
+    setIsLoading(true);
+    setError('');
 
     try {
-      const response = await fetch('/api/gazapi/getSessionStatus', {
+      
+      // Primeiro, verificar se o usuário já existe
+      const getUsersResponse = await fetch('/api/wuzapi/admin/users', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+
+      if (!getUsersResponse.ok) {
+        throw new Error('Falha ao verificar usuários existentes');
+      }
+
+      const usersData = await getUsersResponse.json();
+      
+      // Limpar usuários duplicados ou não conectados com tokens relacionados ao colaborador atual
+      const currentUserToken = colaboradorData.id.toString();
+      const usersToClean = usersData.data?.filter((user: any) => {
+        // Remover usuários não conectados que tenham tokens relacionados ao colaborador atual
+        return !user.connected && (
+          user.token === currentUserToken || 
+          user.token === `token_${currentUserToken}` ||
+          user.name === colaboradorData.nome
+        );
+      });
+
+      // Deletar usuários duplicados/não conectados
+      for (const userToDelete of usersToClean || []) {
+        try {
+          await fetch(`/api/wuzapi/admin/users/${userToDelete.id}`, {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+            }
+          });
+          console.log(`Usuário duplicado removido: ${userToDelete.id}`);
+        } catch (deleteError) {
+          console.warn(`Erro ao deletar usuário ${userToDelete.id}:`, deleteError);
+        }
+      }
+
+      // Verificar se existe um usuário conectado após a limpeza
+      const remainingUsers = usersData.data?.filter((user: any) => 
+        !usersToClean?.some((deleted: any) => deleted.id === user.id)
+      );
+      const existingUser = remainingUsers?.find((user: any) => 
+        user.name === colaboradorData.nome || user.token === currentUserToken
+      );
+
+      if (!existingUser) {
+        
+        // Criar instância na API wuzapi conforme especificação
+        const createInstanceResponse = await fetch('/api/wuzapi/admin/users', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name: colaboradorData.nome,
+            token: colaboradorData.id.toString(),
+            webhook: `${window.location.origin}/api/webhooks/whatsapp`,
+            events: "message,status,qr",
+            proxyConfig: {
+              enabled: false
+            },
+            s3Config: {
+              enabled: false
+            }
+          })
+        });
+
+        if (!createInstanceResponse.ok) {
+          const errorText = await createInstanceResponse.text();
+          throw new Error(`Falha ao criar instância na API wuzapi: ${errorText}`);
+        }
+        
+        // Armazenar o token do usuário na tabela do colaborador
+        try {
+          const updateTokenResponse = await fetch('/api/colaboradores/whatsapp-token', {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              whatsappToken: colaboradorData.id.toString(),
+              whatsappInstanceName: colaboradorData.nome
+            })
+          });
+
+          if (!updateTokenResponse.ok) {
+            console.warn('Falha ao armazenar token do WhatsApp no colaborador');
+          }
+        } catch (tokenError) {
+          console.warn('Erro ao armazenar token do WhatsApp:', tokenError);
+        }
+      }
+
+      // Verificar status primeiro
+      try {
+        const sessionStatus = await checkSessionStatus();
+        
+        // Se a sessão já está conectada ou conectada mas não logada, não precisa conectar novamente
+        if (sessionStatus === 'connected' || sessionStatus === 'connected_but_not_logged') {
+          return;
+        }
+        
+        // Se sessionStatus é 'not_connected' ou null, continua para conectar
+      } catch (statusError) {
+        // Erro real ao verificar status, continua para tentar conectar
+        console.warn('Erro ao verificar status da sessão:', statusError);
+      }
+
+      // Conectar à sessão apenas se não estiver conectada
+      
+      const connectResponse = await fetch('/api/wuzapi/session/connect', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': colaboradorData.id.toString(),
         },
         body: JSON.stringify({
-          session: session.user.email,
-          sessionKey: `key_${session.user.email}`
-        }),
+          Subscribe: ["Message"],
+          Immediate: false
+        })
       });
 
-      const data = await response.json();
-      
-      if (data.success && data.data) {
-        setSessionData(data.data);
-        // Se não estiver conectado, mostrar tela de autenticação
-        if (data.data.status === 'disconnected' || data.data.status === 'qr_required') {
-          setShowAuth(true);
+      if (!connectResponse.ok) {
+        const errorText = await connectResponse.text();
+        
+        // Se o erro for "already connected", isso é na verdade um sucesso
+        if (errorText.includes('already connected')) {
+          await checkSessionStatus();
+          return;
         }
-      } else {
-        setError(data.message || 'Erro ao buscar dados da sessão');
-        setShowAuth(true);
+        
+        throw new Error(`Falha ao conectar à sessão: ${errorText}`);
       }
+
+      const connectData = await connectResponse.json();
+
+      // Verificar status após conexão
+      await checkSessionStatus();
+
     } catch (err) {
-      console.error('Erro ao buscar dados da sessão:', err);
-      setError('Erro de conexão');
-      setShowAuth(true);
+      console.error('Erro ao criar sessão:', err);
+      setError(err instanceof Error ? err.message : 'Erro desconhecido');
+      toast({
+        title: 'Erro ao conectar',
+        description: err instanceof Error ? err.message : 'Erro desconhecido',
+        variant: 'destructive',
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
-  useEffect(() => {
-    if (status === 'authenticated') {
-      fetchSessionData();
+  const checkSessionStatus = async () => {
+    if (!apiConfig || !userId) return null;
+
+    try {
+      const response = await fetch('/api/wuzapi/session/status', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': userId.toString()
+        }
+      });
+
+      if (!response.ok) {
+        console.warn(`Erro ao verificar status da sessão: ${response.status}`);
+        return 'not_connected';
+      }
+
+      const data = await response.json();
+
+      if (data.status === 'connected') {
+        setSessionData(data);
+        setIsLoading(false);
+        return 'connected';
+      } else if (data.status === 'connected_but_not_logged') {
+        // Sessão conectada mas não logada - mostrar QR code
+        setSessionData(data);
+        setIsLoading(false);
+        await fetchQRCode();
+        return 'connected_but_not_logged';
+      } else {
+        // Não conectada - retorna o status em vez de lançar erro
+        return 'not_connected';
+      }
+    } catch (error) {
+      console.warn('Erro ao verificar status da sessão:', error);
+      // Em caso de erro de rede ou outro problema, assumir que não está conectada
+      return 'not_connected';
     }
-  }, [status]);
-
-  // Polling para monitorar status de conexão
-  useEffect(() => {
-    if (status === 'authenticated' && session?.user?.email && !showAuth) {
-      console.log('[WhatsAppChat] Iniciando polling de status');
-      
-      const interval = setInterval(() => {
-        console.log('[WhatsAppChat] Verificando status...');
-        fetchSessionData();
-      }, 3000); // Verificar a cada 3 segundos
-      
-      return () => {
-        console.log('[WhatsAppChat] Parando polling de status');
-        clearInterval(interval);
-      };
-    }
-  }, [status, session?.user?.email, showAuth]);
-
-  // Função para conectar WhatsApp
-  const handleConnect = async () => {
-    if (!session?.user?.email) {
-      setError('Email não encontrado na sessão');
-      return;
-    }
-
-    console.log('[WhatsAppChat] Iniciando conexão para email:', session.user.email);
-    setError('');
-
-    // Mostrar tela de autenticação
-    setShowAuth(true);
   };
 
-  // Função chamada quando a conexão for bem-sucedida
-  const handleConnectionSuccess = () => {
-    setShowAuth(false);
-    fetchSessionData(); // Atualizar dados da sessão
+  const fetchQRCode = async () => {
+    if (!apiConfig || !colaboradorData) return;
+
+    try {
+      const response = await fetch('/api/wuzapi/session/qr', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'token': colaboradorData.id.toString(),
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Falha ao buscar QR code');
+      }
+
+      const data = await response.json();
+
+      if (data.data && data.data.QRCode) {
+        setSessionData({ 
+          status: 'qr_required', 
+          qrCode: data.data.QRCode 
+        });
+      }
+
+    } catch (err) {
+      console.error('Erro ao buscar QR code:', err);
+      setError(err instanceof Error ? err.message : 'Erro ao buscar QR code');
+    }
+  };
+
+  const handleRefresh = () => {
+    setSessionData(null);
+    setError('');
+    createSession();
   };
 
   if (status === 'loading') {
@@ -120,17 +362,156 @@ export default function WhatsAppChatPage() {
     return null;
   }
 
-  // Mostrar tela de autenticação se necessário
-  if (showAuth && session?.user?.email) {
+  // Mostrar QR Code se necessário
+  if (sessionData?.status === 'qr_required' && sessionData.qrCode) {
     return (
-      <WhatsAppAuth 
-        colaboradorId={session.user.email}
-        onConnectionSuccess={handleConnectionSuccess}
-      />
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <div className="w-full max-w-2xl">
+          <div className="text-center">
+            <div className="mb-8">
+              <h1 className="text-3xl font-light text-gray-800 mb-2">
+                Use o WhatsApp no seu computador
+              </h1>
+              <p className="text-gray-600">
+                Escaneie o código com o seu telefone para conectar
+              </p>
+            </div>
+
+            <div className="flex justify-center mb-8">
+              <Card className="p-8 bg-white shadow-sm border">
+                <CardContent className="p-0">
+                  <img 
+                    src={sessionData.qrCode}
+                    alt="QR Code do WhatsApp"
+                    className="w-64 h-64 object-contain"
+                    style={{
+                      maxWidth: '100%',
+                      height: 'auto'
+                    }}
+                  />
+                </CardContent>
+              </Card>
+            </div>
+
+            <div className="max-w-md mx-auto">
+              <div className="flex items-start space-x-4 text-left mb-6">
+                <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                  <span className="text-sm font-medium text-gray-600">1</span>
+                </div>
+                <div>
+                  <p className="text-gray-800 font-medium">Abra o WhatsApp no seu telefone</p>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-4 text-left mb-6">
+                <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                  <span className="text-sm font-medium text-gray-600">2</span>
+                </div>
+                <div>
+                  <p className="text-gray-800 font-medium">
+                    Toque em <strong>Menu</strong> ou <strong>Configurações</strong> e selecione <strong>Dispositivos conectados</strong>
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-4 text-left mb-8">
+                <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                  <span className="text-sm font-medium text-gray-600">3</span>
+                </div>
+                <div>
+                  <p className="text-gray-800 font-medium">
+                    Toque em <strong>Conectar um dispositivo</strong> e escaneie este código QR
+                  </p>
+                </div>
+              </div>
+
+              <Button 
+                onClick={handleRefresh} 
+                variant="outline" 
+                disabled={isLoading}
+                className="w-full"
+              >
+                <RefreshCw className="w-4 h-4 mr-2" />
+                {isLoading ? 'Atualizando...' : 'Atualizar código QR'}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
     );
   }
 
-  // Se estiver conectado, mostrar a interface do chat
+  // Mostrar tela de carregamento/conectando
+  if (isLoading || sessionData?.status === 'connecting') {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Loader2 className="w-10 h-10 animate-spin text-blue-600" />
+          </div>
+          <h2 className="text-2xl font-light text-gray-800 mb-2">
+            {isLoading ? 'Inicializando...' : 'Conectando...'}
+          </h2>
+          <p className="text-gray-600">
+            {isLoading ? 'Preparando sua sessão do WhatsApp' : 'Aguarde enquanto estabelecemos a conexão'}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Mostrar erro se houver
+  if (error) {
+    const isConfigError = error.includes('Configurações da API WhatsApp não encontradas');
+    
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            {isConfigError ? (
+              <Settings className="w-10 h-10 text-red-600" />
+            ) : (
+              <MessageSquare className="w-10 h-10 text-red-600" />
+            )}
+          </div>
+          <h2 className="text-2xl font-light text-gray-800 mb-2">
+            {isConfigError ? 'Configuração necessária' : 'Erro na conexão'}
+          </h2>
+          <p className="text-gray-600 mb-6">
+            {error}
+          </p>
+          <div className="space-y-3">
+            {isConfigError ? (
+              <Button 
+                onClick={() => router.push('/configuracoes/whatsapp-api')} 
+                className="px-8"
+              >
+                <Settings className="w-4 h-4 mr-2" />
+                Ir para Configurações
+              </Button>
+            ) : (
+              <Button onClick={handleRefresh} variant="outline" className="px-8">
+                <RefreshCw className="w-4 h-4 mr-2" />
+                Tentar novamente
+              </Button>
+            )}
+            {!isConfigError && (
+              <Button 
+                onClick={() => router.push('/configuracoes/whatsapp-api')} 
+                variant="ghost" 
+                className="px-8"
+              >
+                <Settings className="w-4 h-4 mr-2" />
+                Verificar Configurações
+              </Button>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Interface principal do chat (quando conectado)
   if (sessionData?.status === 'connected' || sessionData?.status === 'inChat') {
     return (
       <div className="min-h-screen bg-gray-50">
@@ -157,90 +538,49 @@ export default function WhatsAppChatPage() {
               </div>
             </div>
 
-            {/* Dashboard Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Conversas Ativas</CardTitle>
-                  <MessageSquare className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">0</div>
-                  <p className="text-xs text-muted-foreground">Nenhuma conversa ativa</p>
-                </CardContent>
-              </Card>
+            {/* Chat Interface */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-200px)]">
+              {/* Sidebar com Lista de Contatos */}
+              <div className="lg:col-span-1">
+                <ContactsList
+                  userId={userId}
+                  onContactSelect={setSelectedContact}
+                  selectedContact={selectedContact}
+                />
+              </div>
 
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Contatos</CardTitle>
-                  <Users className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">0</div>
-                  <p className="text-xs text-muted-foreground">Contatos sincronizados</p>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Status</CardTitle>
-                  <Clock className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">
-                    {sessionData?.status === 'connected' ? 'Conectado' : 
-                     sessionData?.status === 'inChat' ? 'Em Chat' :
-                     sessionData?.status === 'connecting' ? 'Conectando...' :
-                     'Desconectado'}
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Status da conexão WhatsApp
-                  </p>
-                </CardContent>
-              </Card>
+              {/* Área Principal do Chat */}
+              <div className="lg:col-span-2">
+                <ChatWindow
+                  userId={userId}
+                  selectedContact={selectedContact}
+                />
+              </div>
             </div>
-
-            {/* Chat Interface Placeholder */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Interface do Chat</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-12">
-                  <MessageSquare className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                    WhatsApp Conectado
-                  </h3>
-                  <p className="text-gray-600 mb-4">
-                    Sua conta do WhatsApp está conectada e pronta para uso.
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    A interface do chat será implementada em breve.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
           </div>
         </div>
       </div>
     );
   }
 
-  // Se não estiver conectado, mostrar tela de conexão
+  // Estado padrão - não conectado
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="w-full max-w-md">
-        <ConnectionStatus
-          status={sessionData?.status as any || 'not_connected'}
-          message={error || 'Conecte-se ao WhatsApp para começar'}
-          onConnect={handleConnect}
-          onBack={() => router.push('/whatsapp')}
-          isLoading={isLoading}
-          error={error}
-        />
+      <div className="text-center">
+        <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+          <MessageSquare className="w-10 h-10 text-gray-600" />
+        </div>
+        <h2 className="text-2xl font-light text-gray-800 mb-2">
+          WhatsApp não conectado
+        </h2>
+        <p className="text-gray-600 mb-6">
+          Clique no botão abaixo para conectar sua conta do WhatsApp
+        </p>
+        <Button onClick={createSession} disabled={isLoading}>
+          <Smartphone className="w-4 h-4 mr-2" />
+          Conectar WhatsApp
+        </Button>
       </div>
-
-
     </div>
   );
 }
