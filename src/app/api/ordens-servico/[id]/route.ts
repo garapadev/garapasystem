@@ -3,11 +3,12 @@ import { db } from '@/lib/db';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const ordemServico = await db.ordemServico.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         cliente: {
           select: {
@@ -52,14 +53,6 @@ export async function GET(
               }
             },
             itens: {
-              include: {
-                concluidoPor: {
-                  select: {
-                    id: true,
-                    nome: true
-                  }
-                }
-              },
               orderBy: {
                 ordem: 'asc'
               }
@@ -130,14 +123,15 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const body = await request.json();
 
     // Verificar se ordem de serviço existe
     const ordemServicoExistente = await db.ordemServico.findUnique({
-      where: { id: params.id }
+      where: { id }
     });
 
     if (!ordemServicoExistente) {
@@ -158,6 +152,18 @@ export async function PUT(
           { error: 'Responsável não encontrado' },
           { status: 404 }
         );
+      }
+    }
+
+    // Validar colaboradorId para histórico (se fornecido)
+    let colaboradorIdValido = null;
+    if (body.atualizadoPorId) {
+      const colaborador = await db.colaborador.findUnique({
+        where: { id: body.atualizadoPorId }
+      });
+
+      if (colaborador) {
+        colaboradorIdValido = body.atualizadoPorId;
       }
     }
 
@@ -192,23 +198,59 @@ export async function PUT(
         if (ordemServicoExistente[campo as keyof typeof ordemServicoExistente] !== valor) {
           historicoEntries.push({
             acao: `${campo} alterado`,
+            descricao: `Campo ${campo} foi alterado`,
             valorAnterior: String(ordemServicoExistente[campo as keyof typeof ordemServicoExistente] || ''),
             valorNovo: String(valor || ''),
-            colaboradorId: body.atualizadoPorId
+            ordemServicoId: id,
+            colaboradorId: colaboradorIdValido
           });
         }
       }
     });
 
+    // Processar itens se fornecidos
+    if (body.itens !== undefined) {
+      // Primeiro, deletar todos os itens existentes
+      await db.itemOrdemServico.deleteMany({
+        where: { ordemServicoId: id }
+      });
+
+      // Criar novos itens
+      if (Array.isArray(body.itens) && body.itens.length > 0) {
+        const itensData = body.itens.map((item: any) => ({
+          descricao: item.descricao,
+          quantidade: parseInt(item.quantidade) || 0,
+          valorUnitario: parseFloat(item.valorUnitario) || 0,
+          valorTotal: (parseInt(item.quantidade) || 0) * (parseFloat(item.valorUnitario) || 0),
+          observacoes: item.observacoes || null,
+          ordemServicoId: id
+        }));
+
+        await db.itemOrdemServico.createMany({
+          data: itensData
+        });
+
+        // Calcular valor total dos itens
+        const valorTotalItens = itensData.reduce((total, item) => total + item.valorTotal, 0);
+        updateData.valorFinal = valorTotalItens;
+
+        historicoEntries.push({
+          acao: 'itens atualizados',
+          descricao: `Itens da ordem de serviço foram atualizados`,
+          valorAnterior: '',
+          valorNovo: `${body.itens.length} item(ns) - Total: R$ ${valorTotalItens.toFixed(2)}`,
+          ordemServicoId: id,
+          colaboradorId: colaboradorIdValido
+        });
+      }
+    }
+
     // Atualizar ordem de serviço
     const ordemServico = await db.ordemServico.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         ...updateData,
-        updatedAt: new Date(),
-        historico: historicoEntries.length > 0 ? {
-          create: historicoEntries
-        } : undefined
+        updatedAt: new Date()
       },
       include: {
         cliente: {
@@ -252,6 +294,13 @@ export async function PUT(
       }
     });
 
+    // Criar entradas de histórico se houver e se colaboradorId for válido
+    if (historicoEntries.length > 0 && colaboradorIdValido) {
+      await db.historicoOrdemServico.createMany({
+        data: historicoEntries
+      });
+    }
+
     return NextResponse.json(ordemServico);
   } catch (error) {
     console.error('Erro ao atualizar ordem de serviço:', error);
@@ -264,12 +313,13 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     // Verificar se ordem de serviço existe
     const ordemServico = await db.ordemServico.findUnique({
-      where: { id: params.id }
+      where: { id }
     });
 
     if (!ordemServico) {
@@ -289,7 +339,7 @@ export async function DELETE(
 
     // Deletar ordem de serviço (cascade irá deletar relacionamentos)
     await db.ordemServico.delete({
-      where: { id: params.id }
+      where: { id }
     });
 
     return NextResponse.json({ message: 'Ordem de serviço deletada com sucesso' });

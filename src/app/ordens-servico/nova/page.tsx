@@ -18,6 +18,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { useClientes } from '@/hooks/useClientes';
 import { useTemplatesChecklist } from '@/hooks/useOrdensServico';
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { z } from 'zod';
 
 // Schema de validação
@@ -115,8 +116,20 @@ export default function NovaOrdemServicoPage() {
   const onSubmit = async (data: OrdemServicoFormData) => {
     setIsSubmitting(true);
     try {
+      // Verificar se o usuário está logado e tem colaborador associado
+      if (!user?.colaborador?.id) {
+        toast({
+          title: 'Erro',
+          description: 'Usuário não está logado ou não possui colaborador associado.',
+          variant: 'destructive'
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
       const ordemData = {
         ...data,
+        criadoPorId: user.colaborador.id, // Adicionar o ID do colaborador logado como criador
         valorOrcamento: data.valorOrcamento ? parseFloat(data.valorOrcamento) : 0,
         valorTotal: calcularValorTotal(),
         status: 'RASCUNHO' as const
@@ -175,16 +188,22 @@ export default function NovaOrdemServicoPage() {
   }, [templateSelecionado, templates, appendItem, form]);
 
   return (
-    <div className="space-y-6">
-      {/* Cabeçalho */}
-      <div className="flex items-center space-x-4">
-        <Link href="/ordens-servico">
-          <Button variant="ghost" size="sm">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Voltar
-          </Button>
-        </Link>
-        <div>
+    <ProtectedRoute
+      requiredPermission={{
+        recurso: 'ordens_servico',
+        acao: 'create'
+      }}
+    >
+      <div className="space-y-6">
+        {/* Cabeçalho */}
+        <div className="flex items-center space-x-4">
+          <Link href="/ordens-servico">
+            <Button variant="ghost" size="sm">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Voltar
+            </Button>
+          </Link>
+          <div>
           <h1 className="text-3xl font-bold tracking-tight">Nova Ordem de Serviço</h1>
           <p className="text-muted-foreground">
             Crie uma nova ordem de serviço para um cliente
@@ -253,7 +272,7 @@ export default function NovaOrdemServicoPage() {
                         </FormControl>
                         <SelectContent>
                           {clientesLoading ? (
-                            <SelectItem value="" disabled>Carregando...</SelectItem>
+                            <SelectItem value="loading" disabled>Carregando...</SelectItem>
                           ) : (
                             clientes.map((cliente) => (
                               <SelectItem key={cliente.id} value={cliente.id}>
@@ -405,9 +424,9 @@ export default function NovaOrdemServicoPage() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="">Nenhum template</SelectItem>
+                        <SelectItem value="none">Nenhum template</SelectItem>
                         {templatesLoading ? (
-                          <SelectItem value="" disabled>Carregando...</SelectItem>
+                          <SelectItem value="loading" disabled>Carregando...</SelectItem>
                         ) : (
                           templates.map((template) => (
                             <SelectItem key={template.id} value={template.id}>
@@ -580,6 +599,7 @@ export default function NovaOrdemServicoPage() {
           </div>
         </form>
       </Form>
-    </div>
+      </div>
+    </ProtectedRoute>
   );
 }

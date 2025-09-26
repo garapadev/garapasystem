@@ -7,14 +7,13 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { toast } from '@/hooks/use-toast';
-import { Plus, Search, Eye, Edit, Trash2, Filter, FileText, Clock, CheckCircle, XCircle, Pause, Play } from 'lucide-react';
+import { Plus, Search, Filter, FileText, Clock, CheckCircle, XCircle, Pause, Play } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useSocket } from '@/hooks/useSocket';
 import { useOrdensServico } from '@/hooks/useOrdensServico';
 import { formatCurrency, getStatusVariant, getPriorityVariant, getStatusText, getPriorityText, formatDate } from '@/lib/utils';
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 
 const getStatusIcon = (status: string) => {
   switch (status) {
@@ -109,22 +108,28 @@ export default function OrdensServicoPage() {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Cabeçalho */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Ordens de Serviço</h1>
-          <p className="text-muted-foreground">
-            Gerencie as ordens de serviço da empresa
-          </p>
+    <ProtectedRoute
+      requiredPermission={{
+        recurso: 'ordens_servico',
+        acao: 'read'
+      }}
+    >
+      <div className="space-y-6">
+        {/* Cabeçalho */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Ordens de Serviço</h1>
+            <p className="text-muted-foreground">
+              Gerencie as ordens de serviço da empresa
+            </p>
+          </div>
+          {canAccess.ordens_servico.create && (
+            <Button onClick={() => router.push('/ordens-servico/nova')}>
+              <Plus className="mr-2 h-4 w-4" />
+              Nova Ordem de Serviço
+            </Button>
+          )}
         </div>
-        {canAccess.ordens_servico.create && (
-          <Button onClick={() => router.push('/ordens-servico/nova')}>
-            <Plus className="mr-2 h-4 w-4" />
-            Nova Ordem de Serviço
-          </Button>
-        )}
-      </div>
 
       {/* Filtros */}
       <Card>
@@ -229,14 +234,22 @@ export default function OrdensServicoPage() {
                     <TableHead>Cliente</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Prioridade</TableHead>
-                    <TableHead>Valor Total</TableHead>
                     <TableHead>Data Criação</TableHead>
-                    <TableHead className="text-right">Ações</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {ordensServico.map((ordem) => (
-                    <TableRow key={ordem.id}>
+                  {ordensServico.map((ordem, index) => (
+                    <TableRow 
+                      key={ordem.id}
+                      className={`cursor-pointer hover:bg-muted/50 transition-colors ${
+                        index % 2 === 0 ? 'bg-background' : 'bg-muted/20'
+                      }`}
+                      onClick={() => {
+                        if (canAccess.ordens_servico.read) {
+                          router.push(`/ordens-servico/${ordem.id}`);
+                        }
+                      }}
+                    >
                       <TableCell className="font-medium">{ordem.numero}</TableCell>
                       <TableCell>{ordem.titulo}</TableCell>
                       <TableCell>{ordem.cliente.nome}</TableCell>
@@ -251,57 +264,7 @@ export default function OrdensServicoPage() {
                           {getPriorityText(ordem.prioridade)}
                         </Badge>
                       </TableCell>
-                      <TableCell>{formatCurrency(ordem.valorTotal)}</TableCell>
                       <TableCell>{formatDate(ordem.createdAt)}</TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          {canAccess.ordens_servico.read && (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => router.push(`/ordens-servico/${ordem.id}`)}
-                            >
-                              <Eye className="h-4 w-4" />
-                            </Button>
-                          )}
-                          {canAccess.ordens_servico.update && (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => router.push(`/ordens-servico/${ordem.id}/editar`)}
-                            >
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                          )}
-                          {canAccess.ordens_servico.delete && ordem.status === 'RASCUNHO' && (
-                            <AlertDialog>
-                              <AlertDialogTrigger asChild>
-                                <Button variant="ghost" size="sm">
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </AlertDialogTrigger>
-                              <AlertDialogContent>
-                                <AlertDialogHeader>
-                                  <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
-                                  <AlertDialogDescription>
-                                    Tem certeza que deseja excluir a ordem de serviço "{ordem.numero}"?
-                                    Esta ação não pode ser desfeita.
-                                  </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                  <AlertDialogAction
-                                    onClick={() => handleDelete(ordem.id)}
-                                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                  >
-                                    Excluir
-                                  </AlertDialogAction>
-                                </AlertDialogFooter>
-                              </AlertDialogContent>
-                            </AlertDialog>
-                          )}
-                        </div>
-                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -341,5 +304,6 @@ export default function OrdensServicoPage() {
         </CardContent>
       </Card>
     </div>
+    </ProtectedRoute>
   );
 }

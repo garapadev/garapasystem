@@ -47,3 +47,8 @@ test
 prompt
 
 server.log
+
+# Large log files
+logs/server-combined-*.log
+logs/server-out-*.log
+logs/server-error-*.log

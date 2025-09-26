@@ -72,7 +72,7 @@ ENV WEBMAIL_ENABLE_NOTIFICATIONS=true
 # Script de inicialização otimizado com verificações de saúde
 RUN echo '#!/bin/sh' > /app/start.sh && \
     echo 'set -e' >> /app/start.sh && \
-    echo 'echo "🚀 GarapaSystem v0.1.35 - Iniciando configuração..."' >> /app/start.sh && \
+    echo 'echo "🚀 GarapaSystem v0.2.37.7 - Iniciando configuração..."' >> /app/start.sh && \
     echo 'if [ "$SKIP_DB_CHECK" != "true" ]; then' >> /app/start.sh && \
     echo '  echo "🗄️  Configurando banco de dados..."' >> /app/start.sh && \
     echo '  # Verificar se o banco já tem dados (baseline)' >> /app/start.sh && \

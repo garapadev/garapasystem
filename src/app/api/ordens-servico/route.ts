@@ -210,34 +210,76 @@ export async function POST(request: NextRequest) {
     // Processar itens da OS
     const itensData = body.itens || [];
     
+    // Calcular valor final baseado nos itens
+    let valorFinal = 0;
+    if (itensData.length > 0) {
+      valorFinal = itensData.reduce((total: number, item: any) => {
+        const quantidade = parseFloat(item.quantidade || 1);
+        const valorUnitario = parseFloat(item.valorUnitario || 0);
+        return total + (quantidade * valorUnitario);
+      }, 0);
+    }
+    
+    // Gerar número sequencial da OS
+    const hoje = new Date();
+    const ano = hoje.getFullYear();
+    const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+    
+    // Buscar o último número do mês atual
+    const ultimaOS = await db.ordemServico.findFirst({
+      where: {
+        numero: {
+          startsWith: `OS${ano}${mes}`
+        }
+      },
+      orderBy: {
+        numero: 'desc'
+      }
+    });
+    
+    let proximoNumero = 1;
+    if (ultimaOS) {
+      const ultimoNumero = parseInt(ultimaOS.numero.slice(-4));
+      proximoNumero = ultimoNumero + 1;
+    }
+    
+    const numeroOS = `OS${ano}${mes}${String(proximoNumero).padStart(4, '0')}`;
+    
     // Criar ordem de serviço
     const ordemServico = await db.ordemServico.create({
       data: {
+        numero: numeroOS,
         titulo: body.titulo,
         descricao: body.descricao,
         localExecucao: body.localExecucao || null,
         dataInicio: body.dataInicio ? new Date(body.dataInicio) : null,
         dataFim: body.dataFim ? new Date(body.dataFim) : null,
         valorOrcamento: body.valorOrcamento ? parseFloat(body.valorOrcamento) : null,
+        valorFinal: valorFinal,
         status: body.status || 'RASCUNHO',
         prioridade: body.prioridade || 'MEDIA',
-        observacoesInternas: body.observacoesInternas || null,
+        observacoes: body.observacoes || null,
         clienteId: body.clienteId,
         responsavelId: body.responsavelId || null,
         criadoPorId: body.criadoPorId,
         oportunidadeId: body.oportunidadeId || null,
         itens: {
-          create: itensData.map((item: any) => ({
-            descricao: item.descricao,
-            quantidade: parseFloat(item.quantidade || 1),
-            valorUnitario: parseFloat(item.valorUnitario || 0),
-            valorTotal: parseFloat(item.valorTotal || 0),
-            observacoes: item.observacoes || null
-          }))
+          create: itensData.map((item: any) => {
+            const quantidade = parseFloat(item.quantidade || 1);
+            const valorUnitario = parseFloat(item.valorUnitario || 0);
+            return {
+              descricao: item.descricao,
+              quantidade: quantidade,
+              valorUnitario: valorUnitario,
+              valorTotal: quantidade * valorUnitario,
+              observacoes: item.observacoes || null
+            };
+          })
         },
         historico: {
           create: {
-            acao: 'Ordem de serviço criada',
+            acao: 'criada',
+            descricao: 'Ordem de serviço criada',
             colaboradorId: body.criadoPorId
           }
         }

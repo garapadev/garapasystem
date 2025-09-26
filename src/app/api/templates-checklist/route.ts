@@ -32,13 +32,6 @@ export async function GET(request: NextRequest) {
             orderBy: {
               ordem: 'asc'
             }
-          },
-          criadoPor: {
-            select: {
-              id: true,
-              nome: true,
-              email: true
-            }
           }
         },
         orderBy: {
@@ -51,8 +44,8 @@ export async function GET(request: NextRequest) {
     ]);
 
     return NextResponse.json({
-      templates,
-      pagination: {
+      data: templates,
+      meta: {
         page,
         limit,
         total,

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -19,6 +19,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useOrdemServico, useTemplatesChecklist } from '@/hooks/useOrdensServico';
 import { useClientes } from '@/hooks/useClientes';
 import { formatCurrency } from '@/lib/utils';
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 
 const ordemServicoSchema = z.object({
   titulo: z.string().min(1, 'Título é obrigatório'),
@@ -40,18 +41,19 @@ const ordemServicoSchema = z.object({
 type OrdemServicoFormData = z.infer<typeof ordemServicoSchema>;
 
 interface OrdemServicoEditPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default function OrdemServicoEditPage({ params }: OrdemServicoEditPageProps) {
+  const { id } = use(params);
   const router = useRouter();
   const { toast } = useToast();
   const { user, canAccess } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { ordemServico, loading: loadingOS, error: errorOS } = useOrdemServico(params.id);
+  const { ordemServico, loading: loadingOS, error: errorOS } = useOrdemServico(id);
   const { clientes, loading: loadingClientes } = useClientes({ page: 1, limit: 1000 });
   const { templates, loading: loadingTemplates } = useTemplatesChecklist({ page: 1, limit: 100 });
 
@@ -149,7 +151,7 @@ export default function OrdemServicoEditPage({ params }: OrdemServicoEditPagePro
   const onSubmit = async (data: OrdemServicoFormData) => {
     setIsSubmitting(true);
     try {
-      const response = await fetch(`/api/ordens-servico/${params.id}`, {
+      const response = await fetch(`/api/ordens-servico/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
@@ -172,7 +174,7 @@ export default function OrdemServicoEditPage({ params }: OrdemServicoEditPagePro
         description: 'Ordem de serviço atualizada com sucesso'
       });
 
-      router.push(`/ordens-servico/${params.id}`);
+      router.push(`/ordens-servico/${id}`);
     } catch (error) {
       toast({
         title: 'Erro',
@@ -213,17 +215,23 @@ export default function OrdemServicoEditPage({ params }: OrdemServicoEditPagePro
   };
 
   return (
-    <div className="space-y-6">
-      {/* Cabeçalho */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <Link href={`/ordens-servico/${params.id}`}>
-            <Button variant="ghost" size="sm">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Voltar
-            </Button>
-          </Link>
-          <div>
+    <ProtectedRoute
+      requiredPermission={{
+        recurso: 'ordens_servico',
+        acao: 'update'
+      }}
+    >
+      <div className="space-y-6">
+        {/* Cabeçalho */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <Link href={`/ordens-servico/${params.id}`}>
+              <Button variant="ghost" size="sm">
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Voltar
+              </Button>
+            </Link>
+            <div>
             <h1 className="text-3xl font-bold tracking-tight">
               Editar Ordem de Serviço #{ordemServico.numero}
             </h1>
@@ -568,6 +576,7 @@ export default function OrdemServicoEditPage({ params }: OrdemServicoEditPagePro
           </div>
         </form>
       </Form>
-    </div>
+      </div>
+    </ProtectedRoute>
   );
 }

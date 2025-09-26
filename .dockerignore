@@ -25,6 +25,11 @@ dist
 logs
 *.log
 local-*
+server-combined-*.log
+server-out-*.log
+server-error-*.log
+dev.log
+server.log
 
 # Testing
 test
@@ -74,3 +79,4 @@ temp/
 
 # Data directories
 data/
+trash/

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, use, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,11 +14,13 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { useOrdemServico } from '@/hooks/useOrdensServico';
 import { formatCurrency, getStatusVariant, getPriorityVariant, getStatusText, getPriorityText, formatDate, formatDateTime } from '@/lib/utils';
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import LaudoTecnico from '@/components/ordens-servico/LaudoTecnico';
 
 interface OrdemServicoDetailPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default function OrdemServicoDetailPage({ params }: OrdemServicoDetailPageProps) {
@@ -27,14 +29,30 @@ export default function OrdemServicoDetailPage({ params }: OrdemServicoDetailPag
   const { canAccess } = useAuth();
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
 
-  const { ordemServico, loading, error, refetch } = useOrdemServico(params.id);
+  // Unwrap params Promise using React.use()
+  const { id } = use(params);
+  const { ordemServico, loading, error, refetch } = useOrdemServico(id);
+
+  useEffect(() => {
+    if (!canAccess.ordens_servico.read) {
+      toast({
+        title: 'Acesso Negado',
+        description: 'Você não tem permissão para visualizar esta ordem de serviço.',
+        variant: 'destructive'
+      });
+      // Redirecionar para a página de login após 2 segundos
+      setTimeout(() => {
+        router.push('/auth/login');
+      }, 2000);
+    }
+  }, [canAccess.ordens_servico.read, router]);
 
   if (!canAccess.ordens_servico.read) {
     return (
       <div className="flex items-center justify-center h-96">
         <div className="text-center">
-          <h2 className="text-lg font-semibold">Acesso Negado</h2>
-          <p className="text-muted-foreground">Você não tem permissão para visualizar esta ordem de serviço.</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-2 text-sm text-muted-foreground">Redirecionando...</p>
         </div>
       </div>
     );
@@ -42,7 +60,7 @@ export default function OrdemServicoDetailPage({ params }: OrdemServicoDetailPag
 
   const handleDelete = async () => {
     try {
-      const response = await fetch(`/api/ordens-servico/${params.id}`, {
+      const response = await fetch(`/api/ordens-servico/${id}`, {
         method: 'DELETE'
       });
 
@@ -69,7 +87,7 @@ export default function OrdemServicoDetailPage({ params }: OrdemServicoDetailPag
   const handleStatusChange = async (novoStatus: string) => {
     setIsUpdatingStatus(true);
     try {
-      const response = await fetch(`/api/ordens-servico/${params.id}`, {
+      const response = await fetch(`/api/ordens-servico/${id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json'
@@ -102,7 +120,7 @@ export default function OrdemServicoDetailPage({ params }: OrdemServicoDetailPag
   const handleSendForApproval = async () => {
     setIsUpdatingStatus(true);
     try {
-      const response = await fetch(`/api/ordens-servico/${params.id}/enviar-aprovacao`, {
+      const response = await fetch(`/api/ordens-servico/${id}/enviar-aprovacao`, {
         method: 'POST'
       });
 
@@ -179,17 +197,23 @@ export default function OrdemServicoDetailPage({ params }: OrdemServicoDetailPag
   const canChangeStatus = canAccess.ordens_servico.update && ['APROVADA', 'EM_ANDAMENTO', 'PAUSADA'].includes(ordemServico.status);
 
   return (
-    <div className="space-y-6">
-      {/* Cabeçalho */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <Link href="/ordens-servico">
-            <Button variant="ghost" size="sm">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Voltar
-            </Button>
-          </Link>
-          <div>
+    <ProtectedRoute
+      requiredPermission={{
+        recurso: 'ordens_servico',
+        acao: 'read'
+      }}
+    >
+      <div className="space-y-6">
+        {/* Cabeçalho */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <Link href="/ordens-servico">
+              <Button variant="ghost" size="sm">
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Voltar
+              </Button>
+            </Link>
+            <div>
             <h1 className="text-3xl font-bold tracking-tight">
               Ordem de Serviço #{ordemServico.numero}
             </h1>
@@ -283,13 +307,18 @@ export default function OrdemServicoDetailPage({ params }: OrdemServicoDetailPag
                 <div className="flex justify-end">
                   <div className="text-right">
                     <p className="text-sm text-muted-foreground">Valor Total:</p>
-                    <p className="text-lg font-semibold">{formatCurrency(ordemServico.valorTotal)}</p>
+                    <p className="text-lg font-semibold">{formatCurrency(ordemServico.valorFinal)}</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
           )}
 
+          {/* Laudo Técnico */}
+          <LaudoTecnico 
+            ordemServicoId={id} 
+            onLaudoUpdate={refetch}
+          />
 
         </div>
 
@@ -305,7 +334,7 @@ export default function OrdemServicoDetailPage({ params }: OrdemServicoDetailPag
                 <Button 
                   className="w-full justify-start" 
                   variant="outline"
-                  onClick={() => router.push(`/ordens-servico/${params.id}/editar`)}
+                  onClick={() => router.push(`/ordens-servico/${id}/editar`)}
                 >
                   <Edit className="mr-2 h-4 w-4" />
                   Editar
@@ -472,6 +501,7 @@ export default function OrdemServicoDetailPage({ params }: OrdemServicoDetailPag
           </Card>
         </div>
       </div>
-    </div>
+      </div>
+    </ProtectedRoute>
   );
 }

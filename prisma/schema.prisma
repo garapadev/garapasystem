@@ -257,6 +257,16 @@ model Colaborador {
   whatsappMessages      WhatsAppMessage[]
   whatsappSession       WhatsAppSession?
 
+  // Laudos Técnicos
+  laudosTecnicos        LaudoTecnico[]         @relation("LaudoTecnico")
+  anexosLaudoTecnico    AnexoLaudoTecnico[]    @relation("AnexoLaudoTecnico")
+  historicoLaudoTecnico HistoricoLaudoTecnico[] @relation("HistoricoLaudoTecnico")
+
+  // Orçamentos
+  orcamentosCriados     Orcamento[]            @relation("OrcamentoCriador")
+  anexosOrcamento       AnexoOrcamento[]       @relation("AnexoOrcamento")
+  historicoOrcamento    HistoricoOrcamento[]   @relation("HistoricoOrcamento")
+
   @@map("colaboradores")
 }
 
@@ -1247,6 +1257,12 @@ model OrdemServico {
   // Aprovações
   aprovacoes AprovacaoOrdemServico[]
 
+  // Laudo Técnico
+  laudoTecnico LaudoTecnico?
+
+  // Orçamentos
+  orcamentos Orcamento[]
+
   @@map("ordens_servico")
 }
 
@@ -1443,6 +1459,8 @@ model AnexoOrdemServico {
 enum StatusOrdemServico {
   RASCUNHO // OS criada mas não enviada
   AGUARDANDO_APROVACAO // Enviada para cliente aprovar
+  AGUARDANDO_APROVACAO_CLIENTE // Aguardando aprovação do cliente após laudo
+  ORCAMENTO_ENVIADO // Orçamento enviado para cliente
   APROVADA // Cliente aprovou
   REJEITADA // Cliente rejeitou
   EM_ANDAMENTO // Serviço sendo executado
@@ -1469,4 +1487,299 @@ enum StatusAprovacao {
   EXPIRADA
 
   @@map("status_aprovacao")
+}
+
+// ===== MÓDULO LAUDO TÉCNICO =====
+
+// Laudo Técnico
+model LaudoTecnico {
+  id                String   @id @default(cuid())
+  numero            String   @unique // Número sequencial do laudo
+  titulo            String
+  problemaRelatado  String   // Problema inicial relatado pelo cliente
+  analiseProblema   String   // Análise técnica detalhada do problema
+  diagnostico       String   // Diagnóstico final
+  solucaoRecomendada String  // Solução recomendada
+  observacoesTecnicas String? // Observações técnicas adicionais
+  
+  // Orçamento automático
+  gerarOrcamento    Boolean  @default(false) // Se deve gerar orçamento automaticamente
+  valorOrcamento    Float?   // Valor do orçamento gerado
+  justificativaValor String? // Justificativa do valor orçado
+  
+  // Status do laudo
+  status            StatusLaudo @default(RASCUNHO)
+  
+  // Aprovação do cliente
+  aprovadoCliente   Boolean? // null = pendente, true = aprovado, false = rejeitado
+  dataAprovacao     DateTime?
+  comentariosCliente String? // Comentários do cliente sobre o laudo
+  
+  // Timestamps
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  // Relacionamentos
+  ordemServicoId    String   @unique // Um laudo por ordem de serviço
+  ordemServico      OrdemServico @relation(fields: [ordemServicoId], references: [id], onDelete: Cascade)
+  
+  tecnicoId         String
+  tecnico           Colaborador @relation("LaudoTecnico", fields: [tecnicoId], references: [id])
+  
+  // Itens do laudo (materiais/serviços necessários)
+  itens             ItemLaudoTecnico[]
+  
+  // Anexos do laudo (fotos, documentos técnicos)
+  anexos            AnexoLaudoTecnico[]
+  
+  // Histórico de alterações
+  historico         HistoricoLaudoTecnico[]
+
+  // Orçamentos gerados a partir deste laudo
+  orcamentos        Orcamento[]
+
+  @@map("laudos_tecnicos")
+}
+
+// Itens do Laudo Técnico (materiais/serviços necessários)
+model ItemLaudoTecnico {
+  id            String  @id @default(cuid())
+  tipo          TipoItemLaudo // MATERIAL, SERVICO, MAO_DE_OBRA
+  descricao     String
+  quantidade    Float   @default(1)
+  unidade       String? // ex: "un", "m", "kg", "h"
+  valorUnitario Float?
+  valorTotal    Float?
+  necessario    Boolean @default(true) // Se é necessário para a solução
+  observacoes   String?
+  
+  // Relacionamentos
+  laudoId       String
+  laudo         LaudoTecnico @relation(fields: [laudoId], references: [id], onDelete: Cascade)
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Itens de orçamento gerados a partir deste item
+  itensOrcamento ItemOrcamento[]
+
+  @@map("itens_laudo_tecnico")
+}
+
+// Anexos do Laudo Técnico
+model AnexoLaudoTecnico {
+  id             String  @id @default(cuid())
+  nomeArquivo    String
+  caminhoArquivo String
+  tamanho        Int? // Tamanho em bytes
+  tipoMime       String?
+  descricao      String?
+  categoria      CategoriaAnexoLaudo? // FOTO_PROBLEMA, FOTO_SOLUCAO, DOCUMENTO_TECNICO, OUTRO
+  
+  // Relacionamentos
+  laudoId        String
+  laudo          LaudoTecnico @relation(fields: [laudoId], references: [id], onDelete: Cascade)
+  
+  uploadPor      String? // Nome de quem fez upload
+  tecnicoId      String?
+  tecnico        Colaborador? @relation("AnexoLaudoTecnico", fields: [tecnicoId], references: [id])
+  
+  createdAt      DateTime @default(now())
+
+  @@map("anexos_laudo_tecnico")
+}
+
+// Histórico de alterações do Laudo Técnico
+model HistoricoLaudoTecnico {
+  id            String  @id @default(cuid())
+  acao          String // "criado", "status_alterado", "aprovado_cliente", etc.
+  descricao     String
+  valorAnterior String? // JSON com valores anteriores
+  valorNovo     String? // JSON com valores novos
+  
+  // Relacionamentos
+  laudoId       String
+  laudo         LaudoTecnico @relation(fields: [laudoId], references: [id], onDelete: Cascade)
+  
+  tecnicoId     String?
+  tecnico       Colaborador? @relation("HistoricoLaudoTecnico", fields: [tecnicoId], references: [id])
+  
+  createdAt     DateTime @default(now())
+
+  @@map("historico_laudo_tecnico")
+}
+
+// Enums para Laudo Técnico
+enum StatusLaudo {
+  RASCUNHO // Laudo sendo elaborado
+  CONCLUIDO // Laudo concluído pelo técnico
+  FINALIZADO // Laudo finalizado pelo técnico
+  ENVIADO_CLIENTE // Enviado para aprovação do cliente
+  APROVADO_CLIENTE // Cliente aprovou o laudo
+  REJEITADO_CLIENTE // Cliente rejeitou o laudo
+  REVISAO // Em revisão pelo técnico
+
+  @@map("status_laudo")
+}
+
+enum TipoItemLaudo {
+  MATERIAL // Material/peça necessária
+  SERVICO // Serviço a ser executado
+  MAO_DE_OBRA // Mão de obra
+
+  @@map("tipo_item_laudo")
+}
+
+enum CategoriaAnexoLaudo {
+  FOTO_PROBLEMA // Foto do problema identificado
+  FOTO_SOLUCAO // Foto da solução proposta
+  DOCUMENTO_TECNICO // Documento técnico
+  ESQUEMA // Esquema/diagrama
+  OUTRO // Outros tipos
+
+  @@map("categoria_anexo_laudo")
+}
+
+// ===== MÓDULO ORÇAMENTO =====
+
+// Orçamento
+model Orcamento {
+  id                String   @id @default(cuid())
+  numero            String   @unique // Número sequencial do orçamento
+  titulo            String
+  descricao         String?
+  observacoes       String?
+  
+  // Valores
+  valorSubtotal     Float    @default(0) // Soma dos itens
+  valorDesconto     Float    @default(0) // Desconto aplicado
+  percentualDesconto Float?  // Percentual de desconto
+  valorTotal        Float    @default(0) // Valor final
+  
+  // Validade
+  dataValidade      DateTime // Data de validade do orçamento
+  
+  // Status do orçamento
+  status            StatusOrcamento @default(RASCUNHO)
+  
+  // Aprovação do cliente
+  aprovadoCliente   Boolean? // null = pendente, true = aprovado, false = rejeitado
+  dataAprovacao     DateTime?
+  comentariosCliente String? // Comentários do cliente sobre o orçamento
+  codigoAprovacao   String?  @unique // Código único para aprovação via email
+  
+  // Geração automática
+  geradoAutomaticamente Boolean @default(false) // Se foi gerado automaticamente do laudo
+  
+  // Timestamps
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  // Relacionamentos
+  ordemServicoId    String
+  ordemServico      OrdemServico @relation(fields: [ordemServicoId], references: [id], onDelete: Cascade)
+  
+  laudoTecnicoId    String? // Orçamento pode ser gerado de um laudo
+  laudoTecnico      LaudoTecnico? @relation(fields: [laudoTecnicoId], references: [id])
+  
+  criadoPorId       String
+  criadoPor         Colaborador @relation("OrcamentoCriador", fields: [criadoPorId], references: [id])
+  
+  // Itens do orçamento
+  itens             ItemOrcamento[]
+  
+  // Anexos do orçamento
+  anexos            AnexoOrcamento[]
+  
+  // Histórico de alterações
+  historico         HistoricoOrcamento[]
+
+  @@map("orcamentos")
+}
+
+// Itens do Orçamento
+model ItemOrcamento {
+  id            String  @id @default(cuid())
+  tipo          TipoItemOrcamento // MATERIAL, SERVICO, MAO_DE_OBRA
+  descricao     String
+  quantidade    Float   @default(1)
+  unidade       String? // ex: "un", "m", "kg", "h"
+  valorUnitario Float
+  valorTotal    Float
+  observacoes   String?
+  
+  // Relacionamentos
+  orcamentoId   String
+  orcamento     Orcamento @relation(fields: [orcamentoId], references: [id], onDelete: Cascade)
+  
+  // Referência ao item do laudo (se gerado automaticamente)
+  itemLaudoId   String?
+  itemLaudo     ItemLaudoTecnico? @relation(fields: [itemLaudoId], references: [id])
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("itens_orcamento")
+}
+
+// Anexos do Orçamento
+model AnexoOrcamento {
+  id             String  @id @default(cuid())
+  nomeArquivo    String
+  caminhoArquivo String
+  tamanho        Int? // Tamanho em bytes
+  tipoMime       String?
+  descricao      String?
+  
+  // Relacionamentos
+  orcamentoId    String
+  orcamento      Orcamento @relation(fields: [orcamentoId], references: [id], onDelete: Cascade)
+  
+  uploadPor      String? // Nome de quem fez upload
+  colaboradorId  String?
+  colaborador    Colaborador? @relation("AnexoOrcamento", fields: [colaboradorId], references: [id])
+  
+  createdAt      DateTime @default(now())
+
+  @@map("anexos_orcamento")
+}
+
+// Histórico de alterações do Orçamento
+model HistoricoOrcamento {
+  id            String  @id @default(cuid())
+  acao          String // "criado", "status_alterado", "aprovado_cliente", etc.
+  descricao     String
+  valorAnterior String? // JSON com valores anteriores
+  valorNovo     String? // JSON com valores novos
+  
+  // Relacionamentos
+  orcamentoId   String
+  orcamento     Orcamento @relation(fields: [orcamentoId], references: [id], onDelete: Cascade)
+  
+  colaboradorId String?
+  colaborador   Colaborador? @relation("HistoricoOrcamento", fields: [colaboradorId], references: [id])
+  
+  createdAt     DateTime @default(now())
+
+  @@map("historico_orcamento")
+}
+
+// Enums para Orçamento
+enum StatusOrcamento {
+  RASCUNHO // Orçamento sendo elaborado
+  ENVIADO // Enviado para cliente
+  APROVADO // Cliente aprovou
+  REJEITADO // Cliente rejeitou
+  EXPIRADO // Orçamento expirou
+  CANCELADO // Orçamento cancelado
+
+  @@map("status_orcamento")
+}
+
+enum TipoItemOrcamento {
+  MATERIAL // Material/peça
+  SERVICO // Serviço a ser executado
+  MAO_DE_OBRA // Mão de obra
+
+  @@map("tipo_item_orcamento")
 }
