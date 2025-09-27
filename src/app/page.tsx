@@ -140,8 +140,12 @@ export default function Home() {
                   <span className="text-sm font-medium">Banco de Dados Conectado</span>
                 </div>
                 <div className="flex items-center space-x-3 p-2 rounded-lg">
-                  <div className="w-3 h-3 bg-yellow-500 rounded-full flex-shrink-0"></div>
-                  <span className="text-sm font-medium">Última atualização: 5 min atrás</span>
+                  <div className="w-3 h-3 bg-green-500 rounded-full flex-shrink-0"></div>
+                  <span className="text-sm font-medium">PM2 Ativo</span>
+                </div>
+                <div className="flex items-center space-x-3 p-2 rounded-lg">
+                  <div className="w-3 h-3 bg-blue-500 rounded-full flex-shrink-0"></div>
+                  <span className="text-sm font-medium">Versão 0.2.37.9</span>
                 </div>
               </div>
             </CardContent>

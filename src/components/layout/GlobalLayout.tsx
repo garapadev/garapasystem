@@ -22,9 +22,16 @@ export function GlobalLayout({ children }: GlobalLayoutProps) {
   const authPages = ['/auth/login', '/auth/register'];
   const isAuthPage = authPages.includes(pathname);
   
-  // Se está carregando, mostra apenas o conteúdo
+  // Se está carregando, mostra loading state melhorado
   if (isLoading) {
-    return <div className="min-h-screen">{children}</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Carregando GarapaSystem...</p>
+        </div>
+      </div>
+    );
   }
   
   // Se não está autenticado ou está em página de auth, mostra apenas o conteúdo

@@ -33,6 +33,9 @@ RUN apk add --no-cache dumb-init postgresql-client openssl ca-certificates tzdat
     apk upgrade --no-cache && \
     rm -rf /var/cache/apk/*
 
+# Instalar PM2 globalmente
+RUN npm install -g pm2
+
 # Criar usuário não-root com configurações de segurança
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 --ingroup nodejs --shell /bin/false nextjs
@@ -47,6 +50,7 @@ COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/tsconfig.json ./tsconfig.json
+COPY --from=builder /app/ecosystem.config.js ./ecosystem.config.js
 
 # Definir permissões
 RUN chown -R nextjs:nodejs /app
@@ -72,7 +76,7 @@ ENV WEBMAIL_ENABLE_NOTIFICATIONS=true
 # Script de inicialização otimizado com verificações de saúde
 RUN echo '#!/bin/sh' > /app/start.sh && \
     echo 'set -e' >> /app/start.sh && \
-    echo 'echo "🚀 GarapaSystem v0.2.37.7 - Iniciando configuração..."' >> /app/start.sh && \
+    echo 'echo "🚀 GarapaSystem v0.2.37.9 - Iniciando configuração..."' >> /app/start.sh && \
     echo 'if [ "$SKIP_DB_CHECK" != "true" ]; then' >> /app/start.sh && \
     echo '  echo "🗄️  Configurando banco de dados..."' >> /app/start.sh && \
     echo '  # Verificar se o banco já tem dados (baseline)' >> /app/start.sh && \
@@ -85,7 +89,7 @@ RUN echo '#!/bin/sh' > /app/start.sh && \
     echo '  echo "⏭️  Pulando verificações de banco de dados..."' >> /app/start.sh && \
     echo 'fi' >> /app/start.sh && \
     echo 'echo "🌟 Iniciando aplicação..."' >> /app/start.sh && \
-    echo 'exec npm start' >> /app/start.sh && \
+    echo 'pm2-runtime start ecosystem.config.js --only garapasystem --env production' >> /app/start.sh && \
     chmod +x /app/start.sh && \
     chown nextjs:nodejs /app/start.sh
 
