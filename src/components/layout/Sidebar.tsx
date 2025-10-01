@@ -21,7 +21,8 @@ import {
   ChevronDown,
   ChevronRight,
   MessageCircle,
-  ClipboardList
+  ClipboardList,
+  FileText
 } from 'lucide-react';
 
 interface NavigationItem {
@@ -83,6 +84,12 @@ const navigation: NavigationItem[] = [
     requiredPermission: { recurso: 'clientes', acao: 'ler' }
   },
   { 
+    name: 'Orçamentos', 
+    href: '/orcamentos', 
+    icon: FileText,
+    requiredPermission: { recurso: 'orcamentos', acao: 'ler' }
+  },
+  { 
     name: 'Ordens de Serviço', 
     href: '/ordens-servico', 
     icon: ClipboardList,
@@ -106,12 +113,22 @@ const navigation: NavigationItem[] = [
 export function Sidebar() {
   const pathname = usePathname();
   const { hasPermission, isAdmin, isAuthenticated } = useAuth();
-  const { isModuleActive } = useWhatsAppModule();
+  const { isModuleActive, isLoading: whatsappLoading } = useWhatsAppModule();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
 
+  // Debug logs
+  console.log('Sidebar render:', { 
+    isAuthenticated, 
+    isAdmin, 
+    isModuleActive, 
+    whatsappLoading,
+    pathname 
+  });
+
   if (!isAuthenticated) {
+    console.log('Sidebar: usuário não autenticado');
     return null;
   }
 
