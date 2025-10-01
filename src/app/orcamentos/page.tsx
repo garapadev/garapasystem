@@ -295,8 +295,8 @@ export default function OrcamentosPage() {
                       <TableRow key={orcamento.id}>
                         <TableCell className="font-medium">{orcamento.numero}</TableCell>
                         <TableCell>{orcamento.titulo}</TableCell>
-                        <TableCell>{orcamento.cliente.nome}</TableCell>
-                        <TableCell>{orcamento.ordemServico.numero}</TableCell>
+                        <TableCell>{orcamento.ordemServico?.cliente?.nome || 'N/A'}</TableCell>
+                        <TableCell>{orcamento.ordemServico?.numero || 'N/A'}</TableCell>
                         <TableCell>
                           <Badge variant={getStatusVariant(orcamento.status)} className="flex items-center gap-1 w-fit">
                             {getStatusIcon(orcamento.status)}

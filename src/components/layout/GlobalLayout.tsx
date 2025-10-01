@@ -1,11 +1,12 @@
 'use client';
 
-import { ReactNode } from 'react';
-import { usePathname } from 'next/navigation';
+import { ReactNode, useEffect } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { Sidebar } from './Sidebar';
 import { Header } from './Header';
 import { useEmailNotifications } from '@/hooks/useEmailNotifications';
+import { isUserLoggedOut } from '@/lib/logout';
 
 interface GlobalLayoutProps {
   children: ReactNode;
@@ -14,13 +15,32 @@ interface GlobalLayoutProps {
 export function GlobalLayout({ children }: GlobalLayoutProps) {
   const { isAuthenticated, isLoading } = useAuth();
   const pathname = usePathname();
+  const router = useRouter();
   
   // Initialize email notifications
   useEmailNotifications();
   
+  // Verificar se o usuário foi deslogado manualmente
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated && isUserLoggedOut()) {
+      const authPages = ['/auth/login', '/auth/register'];
+      if (!authPages.includes(pathname)) {
+        router.push('/auth/login');
+      }
+    }
+  }, [isAuthenticated, isLoading, pathname, router]);
+  
   // Páginas que não devem mostrar o sidebar (login, etc.)
   const authPages = ['/auth/login', '/auth/register'];
   const isAuthPage = authPages.includes(pathname);
+
+  // Debug logs
+  console.log('GlobalLayout render:', { 
+    isAuthenticated, 
+    isLoading, 
+    pathname, 
+    isAuthPage 
+  });
   
   // Se está carregando, mostra loading state melhorado
   if (isLoading) {

@@ -83,7 +83,14 @@ export const authOptions: NextAuthOptions = {
   },
   pages: {
     signIn: '/auth/login',
-    error: '/auth/error'
+    error: '/auth/error',
+    signOut: '/auth/login'
+  },
+  events: {
+    async signOut() {
+      // Log do logout para auditoria
+      console.log('Usuário fez logout')
+    }
   },
   secret: process.env.NEXTAUTH_SECRET
 }

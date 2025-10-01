@@ -1,21 +1,11 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { instrumentApiRoute, instrumentDatabaseOperation } from "@/lib/telemetry/api-instrumentation";
-
-// Instrumentar operação de banco de dados
-const checkDatabase = instrumentDatabaseOperation(
-  async () => {
-    await db.$queryRaw`SELECT 1`;
-    return "connected";
-  },
-  "health_check",
-  "system"
-);
 
 async function healthHandler() {
   try {
-    // Verificar conexão com o banco de dados usando função instrumentada
-    const databaseStatus = await checkDatabase();
+    // Verificar conexão com o banco de dados
+    await db.$queryRaw`SELECT 1`;
+    const databaseStatus = "connected";
     
     return NextResponse.json({ 
       status: "healthy",
@@ -37,9 +27,4 @@ async function healthHandler() {
   }
 }
 
-// Exportar handlers instrumentados
-const instrumentedHandlers = instrumentApiRoute({
-  GET: healthHandler
-}, '/api/health');
-
-export const GET = instrumentedHandlers.GET;
+export const GET = healthHandler;

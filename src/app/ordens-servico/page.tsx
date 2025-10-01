@@ -14,6 +14,7 @@ import { useSocket } from '@/hooks/useSocket';
 import { useOrdensServico } from '@/hooks/useOrdensServico';
 import { formatCurrency, getStatusVariant, getPriorityVariant, getStatusText, getPriorityText, formatDate } from '@/lib/utils';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { useToast } from '@/hooks/use-toast';
 
 const getStatusIcon = (status: string) => {
   switch (status) {
@@ -40,6 +41,7 @@ export default function OrdensServicoPage() {
   const router = useRouter();
   const { canAccess } = useAuth();
   const { socket } = useSocket();
+  const { toast } = useToast();
   
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');

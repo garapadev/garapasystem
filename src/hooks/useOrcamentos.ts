@@ -68,13 +68,11 @@ interface Orcamento {
   observacoes?: string;
   geradoAutomaticamente: boolean;
   ordemServicoId: string;
-  ordemServico: OrdemServico;
+  ordemServico: OrdemServico & { cliente: Cliente };
   laudoTecnicoId?: string;
   laudoTecnico?: LaudoTecnico;
-  clienteId: string;
-  cliente: Cliente;
-  criadorId: string;
-  criador: Colaborador;
+  criadoPorId: string;
+  criadoPor: Colaborador;
   itens: ItemOrcamento[];
   anexos: AnexoOrcamento[];
   historico: HistoricoOrcamento[];

@@ -63,7 +63,7 @@ ENV NODE_ENV=production
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 ENV NODE_OPTIONS="--max-old-space-size=1024"
-ENV TZ=America/Sao_Paulo
+ENV TZ=America/Fortaleza
 
 # Configurações de segurança para webmail
 ENV WEBMAIL_SECURE=true
@@ -76,7 +76,7 @@ ENV WEBMAIL_ENABLE_NOTIFICATIONS=true
 # Script de inicialização otimizado com verificações de saúde
 RUN echo '#!/bin/sh' > /app/start.sh && \
     echo 'set -e' >> /app/start.sh && \
-    echo 'echo "🚀 GarapaSystem v0.2.37.9 - Iniciando configuração..."' >> /app/start.sh && \
+    echo 'echo "🚀 GarapaSystem v0.2.37.13 - Iniciando configuração..."' >> /app/start.sh && \
     echo 'if [ "$SKIP_DB_CHECK" != "true" ]; then' >> /app/start.sh && \
     echo '  echo "🗄️  Configurando banco de dados..."' >> /app/start.sh && \
     echo '  # Verificar se o banco já tem dados (baseline)' >> /app/start.sh && \
