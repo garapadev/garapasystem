@@ -269,5 +269,5 @@ Para suporte técnico:
 
 ---
 
-**GarapaSystem v0.2.36.7** - Sistema Integrado de Gestão Empresarial  
+**GarapaSystem v0.2.37.13** - Sistema Integrado de Gestão Empresarial  
 Desenvolvido com ❤️ usando Next.js 15, TypeScript e tecnologias modernas.
