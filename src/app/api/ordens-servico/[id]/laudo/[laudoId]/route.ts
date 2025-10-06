@@ -22,7 +22,7 @@ const laudoUpdateSchema = z.object({
 // GET - Buscar laudo específico
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string; laudoId: string } }
+  { params }: { params: Promise<{ id: string; laudoId: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -30,7 +30,14 @@ export async function GET(
       return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
     }
 
-    const { id: ordemServicoId, laudoId } = params;
+    const { id: ordemServicoId, laudoId } = await params;
+    
+    if (!ordemServicoId || !laudoId) {
+      return NextResponse.json(
+        { error: 'ID da ordem de serviço e ID do laudo são obrigatórios' },
+        { status: 400 }
+      );
+    }
 
     const laudo = await prisma.laudoTecnico.findFirst({
       where: {
@@ -83,7 +90,7 @@ export async function GET(
 // PUT - Atualizar laudo técnico
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string; laudoId: string } }
+  { params }: { params: Promise<{ id: string; laudoId: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -91,7 +98,15 @@ export async function PUT(
       return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
     }
 
-    const { id: ordemServicoId, laudoId } = params;
+    const { id: ordemServicoId, laudoId } = await params;
+    
+    if (!ordemServicoId || !laudoId) {
+      return NextResponse.json(
+        { error: 'ID da ordem de serviço e ID do laudo são obrigatórios' },
+        { status: 400 }
+      );
+    }
+    
     const body = await request.json();
 
     // Validar dados

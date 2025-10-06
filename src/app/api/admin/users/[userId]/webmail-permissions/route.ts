@@ -8,9 +8,9 @@ import { WEBMAIL_PERMISSIONS, WEBMAIL_ACCESS_LEVELS } from '@/lib/permissions/we
 // Usar métodos estáticos da classe WebmailSecurity
 
 interface RouteParams {
-  params: {
+  params: Promise<{
     userId: string;
-  };
+  }>;
 }
 
 // GET /api/admin/users/[userId]/webmail-permissions
@@ -25,7 +25,14 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    const { userId } = params;
+    const { userId } = await params;
+    
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'ID do usuário é obrigatório' },
+        { status: 400 }
+      );
+    }
 
     // Verificar se o usuário tem permissão para visualizar permissões
     const accessValidation = await WebmailSecurity.validateEndpointAccess(
@@ -118,7 +125,14 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    const { userId } = params;
+    const { userId } = await params;
+    
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'ID do usuário é obrigatório' },
+        { status: 400 }
+      );
+    }
 
     // Verificar se o usuário tem permissão para gerenciar permissões
     const accessValidation = await WebmailSecurity.validateEndpointAccess(

@@ -4,10 +4,19 @@ import { ImapService } from '@/lib/email/imap-service';
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const emailId = params.id;
+    const { id } = await params;
+    
+    if (!id) {
+      return NextResponse.json(
+        { error: 'ID do email é obrigatório' },
+        { status: 400 }
+      );
+    }
+
+    const emailId = id;
     const body = await request.json();
     const { flagged } = body;
 

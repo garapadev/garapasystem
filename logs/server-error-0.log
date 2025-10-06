@@ -4,3 +4,620 @@
 2025-09-30T10:02:36: 
 2025-09-30T10:02:36: 
 2025-09-30T10:02:36: Retrying 1/3...
+2025-10-02T09:43:27: Error: Route "/api/ordens-servico/[id]/laudo" used `params.id`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+2025-10-02T09:43:27:     at GET (src/app/api/ordens-servico/[id]/laudo/route.ts:33:34)
+2025-10-02T09:43:27:   31 |     }
+2025-10-02T09:43:27:   32 |
+2025-10-02T09:43:27: > 33 |     const ordemServicoId = params.id;
+2025-10-02T09:43:27:      |                                  ^
+2025-10-02T09:43:27:   34 |
+2025-10-02T09:43:27:   35 |     // Verificar se a ordem de serviço existe
+2025-10-02T09:43:27:   36 |     const ordemServico = await prisma.ordemServico.findUnique({
+2025-10-06T11:05:13: Erro ao buscar módulos ativos: TypeError: Cannot read properties of undefined (reading 'findMany')
+2025-10-06T11:05:13:     at GET (src/app/api/modulos/active/route.ts:21:43)
+2025-10-06T11:05:13:   19 |
+2025-10-06T11:05:13:   20 |     // Buscar módulos ativos ordenados
+2025-10-06T11:05:13: > 21 |     const modulos = await db.moduloSistema.findMany({
+2025-10-06T11:05:13:      |                                           ^
+2025-10-06T11:05:13:   22 |       where: {
+2025-10-06T11:05:13:   23 |         ativo: true
+2025-10-06T11:05:13:   24 |       },
+2025-10-06T11:16:50: Erro ao buscar módulos ativos: TypeError: Cannot read properties of undefined (reading 'findMany')
+2025-10-06T11:16:50:     at GET (src/app/api/modulos/active/route.ts:21:43)
+2025-10-06T11:16:50:   19 |
+2025-10-06T11:16:50:   20 |     // Buscar módulos ativos ordenados
+2025-10-06T11:16:50: > 21 |     const modulos = await db.moduloSistema.findMany({
+2025-10-06T11:16:50:      |                                           ^
+2025-10-06T11:16:50:   22 |       where: {
+2025-10-06T11:16:50:   23 |         ativo: true
+2025-10-06T11:16:50:   24 |       },
+2025-10-06T11:18:17: Erro ao buscar módulos ativos: TypeError: Cannot read properties of undefined (reading 'findMany')
+2025-10-06T11:18:17:     at GET (src/app/api/modulos/active/route.ts:21:43)
+2025-10-06T11:18:17:   19 |
+2025-10-06T11:18:17:   20 |     // Buscar módulos ativos ordenados
+2025-10-06T11:18:17: > 21 |     const modulos = await db.moduloSistema.findMany({
+2025-10-06T11:18:17:      |                                           ^
+2025-10-06T11:18:17:   22 |       where: {
+2025-10-06T11:18:17:   23 |         ativo: true
+2025-10-06T11:18:17:   24 |       },
+2025-10-06T11:18:45: Erro ao buscar módulos ativos: TypeError: Cannot read properties of undefined (reading 'findMany')
+2025-10-06T11:18:45:     at GET (src/app/api/modulos/active/route.ts:21:43)
+2025-10-06T11:18:45:   19 |
+2025-10-06T11:18:45:   20 |     // Buscar módulos ativos ordenados
+2025-10-06T11:18:45: > 21 |     const modulos = await db.moduloSistema.findMany({
+2025-10-06T11:18:45:      |                                           ^
+2025-10-06T11:18:45:   22 |       where: {
+2025-10-06T11:18:45:   23 |         ativo: true
+2025-10-06T11:18:45:   24 |       },
+2025-10-06T11:19:31: Erro ao buscar módulos ativos: TypeError: Cannot read properties of undefined (reading 'findMany')
+2025-10-06T11:19:31:     at GET (src/app/api/modulos/active/route.ts:21:43)
+2025-10-06T11:19:31:   19 |
+2025-10-06T11:19:31:   20 |     // Buscar módulos ativos ordenados
+2025-10-06T11:19:31: > 21 |     const modulos = await db.moduloSistema.findMany({
+2025-10-06T11:19:31:      |                                           ^
+2025-10-06T11:19:31:   22 |       where: {
+2025-10-06T11:19:31:   23 |         ativo: true
+2025-10-06T11:19:31:   24 |       },
+2025-10-06T11:19:52: Erro ao buscar módulos ativos: TypeError: Cannot read properties of undefined (reading 'findMany')
+2025-10-06T11:19:52:     at GET (src/app/api/modulos/active/route.ts:21:43)
+2025-10-06T11:19:52:   19 |
+2025-10-06T11:19:52:   20 |     // Buscar módulos ativos ordenados
+2025-10-06T11:19:52: > 21 |     const modulos = await db.moduloSistema.findMany({
+2025-10-06T11:19:52:      |                                           ^
+2025-10-06T11:19:52:   22 |       where: {
+2025-10-06T11:19:52:   23 |         ativo: true
+2025-10-06T11:19:52:   24 |       },
+2025-10-06T11:27:10: Erro ao buscar módulos: TypeError: Cannot read properties of undefined (reading 'findMany')
+2025-10-06T11:27:10:     at GET (src/app/api/modulos/route.ts:51:23)
+2025-10-06T11:27:10:   49 |
+2025-10-06T11:27:10:   50 |     const [modulos, total] = await Promise.all([
+2025-10-06T11:27:10: > 51 |       db.moduloSistema.findMany({
+2025-10-06T11:27:10:      |                       ^
+2025-10-06T11:27:10:   52 |         where,
+2025-10-06T11:27:10:   53 |         include: {
+2025-10-06T11:27:10:   54 |           logs: {
+2025-10-06T11:27:10:  ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+2025-10-06T11:27:19: Erro ao buscar módulos: TypeError: Cannot read properties of undefined (reading 'findMany')
+2025-10-06T11:27:19:     at GET (src/app/api/modulos/route.ts:51:23)
+2025-10-06T11:27:19:   49 |
+2025-10-06T11:27:19:   50 |     const [modulos, total] = await Promise.all([
+2025-10-06T11:27:19: > 51 |       db.moduloSistema.findMany({
+2025-10-06T11:27:19:      |                       ^
+2025-10-06T11:27:19:   52 |         where,
+2025-10-06T11:27:19:   53 |         include: {
+2025-10-06T11:27:19:   54 |           logs: {
+2025-10-06T11:27:19: Erro ao buscar módulos ativos: TypeError: Cannot read properties of undefined (reading 'findMany')
+2025-10-06T11:27:19:     at GET (src/app/api/modulos/active/route.ts:21:43)
+2025-10-06T11:27:19:   19 |
+2025-10-06T11:27:19:   20 |     // Buscar módulos ativos ordenados
+2025-10-06T11:27:19: > 21 |     const modulos = await db.moduloSistema.findMany({
+2025-10-06T11:27:19:      |                                           ^
+2025-10-06T11:27:19:   22 |       where: {
+2025-10-06T11:27:19:   23 |         ativo: true
+2025-10-06T11:27:19:   24 |       },
+2025-10-06T12:08:53:  ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+2025-10-06T12:21:03:  ⨯ [Error: ENOENT: no such file or directory, open '/app/.next/server/app-paths-manifest.json'] {
+2025-10-06T12:21:03:   errno: -2,
+2025-10-06T12:21:03:   code: 'ENOENT',
+2025-10-06T12:21:03:   syscall: 'open',
+2025-10-06T12:21:03:   path: '/app/.next/server/app-paths-manifest.json',
+2025-10-06T12:21:03:   page: '/favicon.ico'
+2025-10-06T12:21:03: }
+2025-10-06T12:21:04:  ⨯ [Error: ENOENT: no such file or directory, open '/app/.next/server/app-paths-manifest.json'] {
+2025-10-06T12:21:04:   errno: -2,
+2025-10-06T12:21:04:   code: 'ENOENT',
+2025-10-06T12:21:04:   syscall: 'open',
+2025-10-06T12:21:04:   path: '/app/.next/server/app-paths-manifest.json',
+2025-10-06T12:21:04:   page: '/api/auth/session'
+2025-10-06T12:21:04: }
+2025-10-06T12:21:14:  ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+2025-10-06T12:21:26:  ⨯ Failed to generate static paths for /api/auth/[...nextauth]:
+2025-10-06T12:21:26: [Error: Cannot find module './vendor-chunks/@opentelemetry.js'
+2025-10-06T12:21:26: Require stack:
+2025-10-06T12:21:26: - /app/.next/server/webpack-runtime.js
+2025-10-06T12:21:26: - /app/.next/server/app/api/auth/[...nextauth]/route.js
+2025-10-06T12:21:26: - /app/node_modules/next/dist/server/require.js
+2025-10-06T12:21:26: - /app/node_modules/next/dist/server/load-components.js
+2025-10-06T12:21:26: - /app/node_modules/next/dist/build/utils.js
+2025-10-06T12:21:26: - /app/node_modules/next/dist/server/dev/static-paths-worker.js
+2025-10-06T12:21:26: - /app/node_modules/next/dist/compiled/jest-worker/processChild.js] {
+2025-10-06T12:21:26:   type: 'Error',
+2025-10-06T12:21:26:   code: 'MODULE_NOT_FOUND',
+2025-10-06T12:21:26:   requireStack: [Array]
+2025-10-06T12:21:26: }
+2025-10-06T12:21:31:  ⨯ [Error: ENOENT: no such file or directory, open '/app/.next/server/app/favicon.ico/route.js'] {
+2025-10-06T12:21:31:   errno: -2,
+2025-10-06T12:21:31:   code: 'ENOENT',
+2025-10-06T12:21:31:   syscall: 'open',
+2025-10-06T12:21:31:   path: '/app/.next/server/app/favicon.ico/route.js',
+2025-10-06T12:21:31:   page: '/favicon.ico'
+2025-10-06T12:21:31: }
+2025-10-06T13:17:21:  ⨯ Error: Cannot find module './4243.js'
+2025-10-06T13:17:21: Require stack:
+2025-10-06T13:17:21: - /app/.next/server/webpack-runtime.js
+2025-10-06T13:17:21: - /app/.next/server/app/_not-found/page.js
+2025-10-06T13:17:21: - /app/node_modules/next/dist/server/require.js
+2025-10-06T13:17:21: - /app/node_modules/next/dist/server/load-components.js
+2025-10-06T13:17:21: - /app/node_modules/next/dist/build/utils.js
+2025-10-06T13:17:21: - /app/node_modules/next/dist/build/swc/options.js
+2025-10-06T13:17:21: - /app/node_modules/next/dist/build/swc/index.js
+2025-10-06T13:17:21: - /app/node_modules/next/dist/build/next-config-ts/transpile-config.js
+2025-10-06T13:17:21: - /app/node_modules/next/dist/server/config.js
+2025-10-06T13:17:21: - /app/node_modules/next/dist/server/next.js
+2025-10-06T13:17:21: - /app/server.ts
+2025-10-06T13:17:21:     at __webpack_require__.f.require (.next/server/webpack-runtime.js:208:28)
+2025-10-06T13:17:21:     at <unknown> (.next/server/webpack-runtime.js:116:40)
+2025-10-06T13:17:21:     at Array.reduce (<anonymous>)
+2025-10-06T13:17:21:     at __webpack_require__.e (.next/server/webpack-runtime.js:115:67)
+2025-10-06T13:17:21:     at Array.map (<anonymous>)
+2025-10-06T13:17:21:     at __webpack_require__.X (.next/server/webpack-runtime.js:167:22)
+2025-10-06T13:17:21:     at <unknown> (.next/server/app/api/configuracoes/route.js:1:3213)
+2025-10-06T13:17:21:     at Object.<anonymous> (.next/server/app/api/configuracoes/route.js:1:3260) {
+2025-10-06T13:17:21:   code: 'MODULE_NOT_FOUND',
+2025-10-06T13:17:21:   requireStack: [Array],
+2025-10-06T13:17:21:   page: '/api/configuracoes'
+2025-10-06T13:17:21: }
+2025-10-06T13:17:23:  ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+2025-10-06T13:19:53:  ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+2025-10-06T13:25:40:  ⨯ ./src/components/layout/Sidebar.tsx
+2025-10-06T13:25:40: Module parse failed: Identifier 'isModuleActive' has already been declared (135:46)
+2025-10-06T13:25:40: |     const { isModuleActive, isLoading: whatsappLoading } = useWhatsAppModule();
+2025-10-06T13:25:40: |     const { getBadgeByModule, getBadgeColor } = useNotificationBadges();
+2025-10-06T13:25:40: >     const { modulos, loading: modulosLoading, isModuleActive } = useModulos();
+2025-10-06T13:25:40: |     const [isCollapsed, setIsCollapsed] = useState(false);
+2025-10-06T13:25:40: |     const [isMobileOpen, setIsMobileOpen] = useState(false);
+2025-10-06T13:25:40: 
+2025-10-06T13:25:40: Import trace for requested module:
+2025-10-06T13:25:40: ./src/components/layout/Sidebar.tsx
+2025-10-06T13:25:40: ./src/components/layout/GlobalLayout.tsx
+2025-10-06T13:25:42:  ⨯ ./src/components/layout/Sidebar.tsx
+2025-10-06T13:25:42: Module parse failed: Identifier 'isModuleActive' has already been declared (135:46)
+2025-10-06T13:25:42: |     const { isModuleActive, isLoading: whatsappLoading } = useWhatsAppModule();
+2025-10-06T13:25:42: |     const { getBadgeByModule, getBadgeColor } = useNotificationBadges();
+2025-10-06T13:25:42: >     const { modulos, loading: modulosLoading, isModuleActive } = useModulos();
+2025-10-06T13:25:42: |     const [isCollapsed, setIsCollapsed] = useState(false);
+2025-10-06T13:25:42: |     const [isMobileOpen, setIsMobileOpen] = useState(false);
+2025-10-06T13:25:42: 
+2025-10-06T13:25:42: Import trace for requested module:
+2025-10-06T13:25:42: ./src/components/layout/Sidebar.tsx
+2025-10-06T13:25:42: ./src/components/layout/GlobalLayout.tsx
+2025-10-06T13:25:50:  ⨯ ./src/components/layout/Sidebar.tsx
+2025-10-06T13:25:50: Module parse failed: Identifier 'isModuleActive' has already been declared (135:46)
+2025-10-06T13:25:50: |     const { isModuleActive, isLoading: whatsappLoading } = useWhatsAppModule();
+2025-10-06T13:25:50: |     const { getBadgeByModule, getBadgeColor } = useNotificationBadges();
+2025-10-06T13:25:50: >     const { modulos, loading: modulosLoading, isModuleActive } = useModulos();
+2025-10-06T13:25:50: |     const [isCollapsed, setIsCollapsed] = useState(false);
+2025-10-06T13:25:50: |     const [isMobileOpen, setIsMobileOpen] = useState(false);
+2025-10-06T13:25:50: 
+2025-10-06T13:25:50: Import trace for requested module:
+2025-10-06T13:25:50: ./src/components/layout/Sidebar.tsx
+2025-10-06T13:25:50: ./src/components/layout/GlobalLayout.tsx
+2025-10-06T13:25:52:  ⨯ ./src/components/layout/Sidebar.tsx
+2025-10-06T13:25:52: Module parse failed: Identifier 'isModuleActive' has already been declared (132:46)
+2025-10-06T13:25:52: |     const { isModuleActive, isLoading: whatsappLoading } = useWhatsAppModule();
+2025-10-06T13:25:52: |     const { getBadgeByModule, getBadgeColor } = useNotificationBadges();
+2025-10-06T13:25:52: >     const { modulos, loading: modulosLoading, isModuleActive } = useModulos();
+2025-10-06T13:25:52: |     const [isCollapsed, setIsCollapsed] = useState(false);
+2025-10-06T13:25:52: |     const [isMobileOpen, setIsMobileOpen] = useState(false);
+2025-10-06T13:25:52: 
+2025-10-06T13:25:52: Import trace for requested module:
+2025-10-06T13:25:52: ./src/components/layout/Sidebar.tsx
+2025-10-06T13:25:52: ./src/components/layout/GlobalLayout.tsx
+2025-10-06T13:28:09:  ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+2025-10-06T13:54:09: Error: Route "/api/modulos/[id]" used `params.id`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+2025-10-06T13:54:09:     at PUT (src/app/api/modulos/[id]/route.ts:105:26)
+2025-10-06T13:54:09:   103 |     // Buscar módulo atual
+2025-10-06T13:54:09:   104 |     const moduloAtual = await db.moduloSistema.findUnique({
+2025-10-06T13:54:09: > 105 |       where: { id: params.id }
+2025-10-06T13:54:09:       |                          ^
+2025-10-06T13:54:09:   106 |     });
+2025-10-06T13:54:09:   107 |
+2025-10-06T13:54:09:   108 |     if (!moduloAtual) {
+2025-10-06T13:54:09: Error: Route "/api/modulos/[id]" used `params.id`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+2025-10-06T13:54:09:     at PUT (src/app/api/modulos/[id]/route.ts:188:26)
+2025-10-06T13:54:09:   186 |     // Atualizar o módulo
+2025-10-06T13:54:09:   187 |     const modulo = await db.moduloSistema.update({
+2025-10-06T13:54:09: > 188 |       where: { id: params.id },
+2025-10-06T13:54:09:       |                          ^
+2025-10-06T13:54:09:   189 |       data: updateData,
+2025-10-06T13:54:09:   190 |       include: {
+2025-10-06T13:54:09:   191 |         logs: {
+2025-10-06T13:54:09: Erro ao atualizar módulo: Error [PrismaClientValidationError]: 
+2025-10-06T13:54:09: Invalid `prisma.moduloSistemaLog.create()` invocation:
+2025-10-06T13:54:09: 
+2025-10-06T13:54:09: {
+2025-10-06T13:54:09:   data: {
+2025-10-06T13:54:09:     moduloId: "cmgf6x2is0004o0kvrx15ch09",
+2025-10-06T13:54:09:     acao: "ATUALIZADO",
+2025-10-06T13:54:09:     detalhes: "Status alterado para inativo; Permissão alterada; Categoria alterada",
+2025-10-06T13:54:09:     autorId: "cmg1g2hvl001go0vku0ki1oj6",
+2025-10-06T13:54:09: +   autorNome: String
+2025-10-06T13:54:09:   }
+2025-10-06T13:54:09: }
+2025-10-06T13:54:09: 
+2025-10-06T13:54:09: Argument `autorNome` is missing.
+2025-10-06T13:54:09:     at async PUT (src/app/api/modulos/[id]/route.ts:209:6)
+2025-10-06T13:54:09:   207 |     // Registrar log de alteração
+2025-10-06T13:54:09:   208 |     if (changes.length > 0) {
+2025-10-06T13:54:09: > 209 |       await db.moduloSistemaLog.create({
+2025-10-06T13:54:09:       |      ^
+2025-10-06T13:54:09:   210 |         data: {
+2025-10-06T13:54:09:   211 |           moduloId: modulo.id,
+2025-10-06T13:54:09:   212 |           acao: 'ATUALIZADO', {
+2025-10-06T13:54:09:   clientVersion: '6.15.0'
+2025-10-06T13:54:09: }
+2025-10-06T14:05:44: Error: Route "/api/modulos/[id]" used `params.id`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+2025-10-06T14:05:44:     at PUT (src/app/api/modulos/[id]/route.ts:105:26)
+2025-10-06T14:05:44:   103 |     // Buscar módulo atual
+2025-10-06T14:05:44:   104 |     const moduloAtual = await db.moduloSistema.findUnique({
+2025-10-06T14:05:44: > 105 |       where: { id: params.id }
+2025-10-06T14:05:44:       |                          ^
+2025-10-06T14:05:44:   106 |     });
+2025-10-06T14:05:44:   107 |
+2025-10-06T14:05:44:   108 |     if (!moduloAtual) {
+2025-10-06T14:05:44: Error: Route "/api/modulos/[id]" used `params.id`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+2025-10-06T14:05:44:     at PUT (src/app/api/modulos/[id]/route.ts:105:26)
+2025-10-06T14:05:44:   103 |     // Buscar módulo atual
+2025-10-06T14:05:44:   104 |     const moduloAtual = await db.moduloSistema.findUnique({
+2025-10-06T14:05:44: > 105 |       where: { id: params.id }
+2025-10-06T14:05:44:       |                          ^
+2025-10-06T14:05:44:   106 |     });
+2025-10-06T14:05:44:   107 |
+2025-10-06T14:05:44:   108 |     if (!moduloAtual) {
+2025-10-06T14:05:44: Error: Route "/api/modulos/[id]" used `params.id`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+2025-10-06T14:05:44:     at PUT (src/app/api/modulos/[id]/route.ts:105:26)
+2025-10-06T14:05:44:   103 |     // Buscar módulo atual
+2025-10-06T14:05:44:   104 |     const moduloAtual = await db.moduloSistema.findUnique({
+2025-10-06T14:05:44: > 105 |       where: { id: params.id }
+2025-10-06T14:05:44:       |                          ^
+2025-10-06T14:05:44:   106 |     });
+2025-10-06T14:05:44:   107 |
+2025-10-06T14:05:44:   108 |     if (!moduloAtual) {
+2025-10-06T14:05:45: Error: Route "/api/modulos/[id]" used `params.id`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+2025-10-06T14:05:45:     at PUT (src/app/api/modulos/[id]/route.ts:188:26)
+2025-10-06T14:05:45:   186 |     // Atualizar o módulo
+2025-10-06T14:05:45:   187 |     const modulo = await db.moduloSistema.update({
+2025-10-06T14:05:45: > 188 |       where: { id: params.id },
+2025-10-06T14:05:45:       |                          ^
+2025-10-06T14:05:45:   189 |       data: updateData,
+2025-10-06T14:05:45:   190 |       include: {
+2025-10-06T14:05:45:   191 |         logs: {
+2025-10-06T14:05:45: Error: Route "/api/modulos/[id]" used `params.id`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+2025-10-06T14:05:45:     at PUT (src/app/api/modulos/[id]/route.ts:188:26)
+2025-10-06T14:05:45:   186 |     // Atualizar o módulo
+2025-10-06T14:05:45:   187 |     const modulo = await db.moduloSistema.update({
+2025-10-06T14:05:45: > 188 |       where: { id: params.id },
+2025-10-06T14:05:45:       |                          ^
+2025-10-06T14:05:45:   189 |       data: updateData,
+2025-10-06T14:05:45:   190 |       include: {
+2025-10-06T14:05:45:   191 |         logs: {
+2025-10-06T14:05:45: Error: Route "/api/modulos/[id]" used `params.id`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+2025-10-06T14:05:45:     at PUT (src/app/api/modulos/[id]/route.ts:188:26)
+2025-10-06T14:05:45:   186 |     // Atualizar o módulo
+2025-10-06T14:05:45:   187 |     const modulo = await db.moduloSistema.update({
+2025-10-06T14:05:45: > 188 |       where: { id: params.id },
+2025-10-06T14:05:45:       |                          ^
+2025-10-06T14:05:45:   189 |       data: updateData,
+2025-10-06T14:05:45:   190 |       include: {
+2025-10-06T14:05:45:   191 |         logs: {
+2025-10-06T14:05:45: Erro ao atualizar módulo: Error [PrismaClientValidationError]: 
+2025-10-06T14:05:45: Invalid `prisma.moduloSistemaLog.create()` invocation:
+2025-10-06T14:05:45: 
+2025-10-06T14:05:45: {
+2025-10-06T14:05:45:   data: {
+2025-10-06T14:05:45:     moduloId: "cmgf6x2is0004o0kvrx15ch09",
+2025-10-06T14:05:45:     acao: "ATUALIZADO",
+2025-10-06T14:05:45:     detalhes: "Status alterado para ativo; Permissão alterada; Categoria alterada",
+2025-10-06T14:05:45:     autorId: "cmg1g2hvl001go0vku0ki1oj6",
+2025-10-06T14:05:45: +   autorNome: String
+2025-10-06T14:05:45:   }
+2025-10-06T14:05:45: }
+2025-10-06T14:05:45: 
+2025-10-06T14:05:45: Argument `autorNome` is missing.
+2025-10-06T14:05:45:     at async PUT (src/app/api/modulos/[id]/route.ts:209:6)
+2025-10-06T14:05:45:   207 |     // Registrar log de alteração
+2025-10-06T14:05:45:   208 |     if (changes.length > 0) {
+2025-10-06T14:05:45: > 209 |       await db.moduloSistemaLog.create({
+2025-10-06T14:05:45:       |      ^
+2025-10-06T14:05:45:   210 |         data: {
+2025-10-06T14:05:45:   211 |           moduloId: modulo.id,
+2025-10-06T14:05:45:   212 |           acao: 'ATUALIZADO', {
+2025-10-06T14:05:45:   clientVersion: '6.15.0'
+2025-10-06T14:05:45: }
+2025-10-06T14:05:45: Erro ao atualizar módulo: Error [PrismaClientValidationError]: 
+2025-10-06T14:05:45: Invalid `prisma.moduloSistemaLog.create()` invocation:
+2025-10-06T14:05:45: 
+2025-10-06T14:05:45: {
+2025-10-06T14:05:45:   data: {
+2025-10-06T14:05:45:     moduloId: "cmgf6x2is0004o0kvrx15ch09",
+2025-10-06T14:05:45:     acao: "ATUALIZADO",
+2025-10-06T14:05:45:     detalhes: "Status alterado para ativo; Permissão alterada; Categoria alterada",
+2025-10-06T14:05:45:     autorId: "cmg1g2hvl001go0vku0ki1oj6",
+2025-10-06T14:05:45: +   autorNome: String
+2025-10-06T14:05:45:   }
+2025-10-06T14:05:45: }
+2025-10-06T14:05:45: 
+2025-10-06T14:05:45: Argument `autorNome` is missing.
+2025-10-06T14:05:45:     at async PUT (src/app/api/modulos/[id]/route.ts:209:6)
+2025-10-06T14:05:45:   207 |     // Registrar log de alteração
+2025-10-06T14:05:45:   208 |     if (changes.length > 0) {
+2025-10-06T14:05:45: > 209 |       await db.moduloSistemaLog.create({
+2025-10-06T14:05:45:       |      ^
+2025-10-06T14:05:45:   210 |         data: {
+2025-10-06T14:05:45:   211 |           moduloId: modulo.id,
+2025-10-06T14:05:45:   212 |           acao: 'ATUALIZADO', {
+2025-10-06T14:05:45:   clientVersion: '6.15.0'
+2025-10-06T14:05:45: }
+2025-10-06T14:05:45: Erro ao atualizar módulo: Error [PrismaClientValidationError]: 
+2025-10-06T14:05:45: Invalid `prisma.moduloSistemaLog.create()` invocation:
+2025-10-06T14:05:45: 
+2025-10-06T14:05:45: {
+2025-10-06T14:05:45:   data: {
+2025-10-06T14:05:45:     moduloId: "cmgf6x2is0004o0kvrx15ch09",
+2025-10-06T14:05:45:     acao: "ATUALIZADO",
+2025-10-06T14:05:45:     detalhes: "Status alterado para ativo; Permissão alterada; Categoria alterada",
+2025-10-06T14:05:45:     autorId: "cmg1g2hvl001go0vku0ki1oj6",
+2025-10-06T14:05:45: +   autorNome: String
+2025-10-06T14:05:45:   }
+2025-10-06T14:05:45: }
+2025-10-06T14:05:45: 
+2025-10-06T14:05:45: Argument `autorNome` is missing.
+2025-10-06T14:05:45:     at async PUT (src/app/api/modulos/[id]/route.ts:209:6)
+2025-10-06T14:05:45:   207 |     // Registrar log de alteração
+2025-10-06T14:05:45:   208 |     if (changes.length > 0) {
+2025-10-06T14:05:45: > 209 |       await db.moduloSistemaLog.create({
+2025-10-06T14:05:45:       |      ^
+2025-10-06T14:05:45:   210 |         data: {
+2025-10-06T14:05:45:   211 |           moduloId: modulo.id,
+2025-10-06T14:05:45:   212 |           acao: 'ATUALIZADO', {
+2025-10-06T14:05:45:   clientVersion: '6.15.0'
+2025-10-06T14:05:45: }
+2025-10-06T14:06:13: Error: Route "/api/modulos/[id]" used `params.id`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+2025-10-06T14:06:13:     at PUT (src/app/api/modulos/[id]/route.ts:105:26)
+2025-10-06T14:06:13:   103 |     // Buscar módulo atual
+2025-10-06T14:06:13:   104 |     const moduloAtual = await db.moduloSistema.findUnique({
+2025-10-06T14:06:13: > 105 |       where: { id: params.id }
+2025-10-06T14:06:13:       |                          ^
+2025-10-06T14:06:13:   106 |     });
+2025-10-06T14:06:13:   107 |
+2025-10-06T14:06:13:   108 |     if (!moduloAtual) {
+2025-10-06T14:06:13: Error: Route "/api/modulos/[id]" used `params.id`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+2025-10-06T14:06:13:     at PUT (src/app/api/modulos/[id]/route.ts:188:26)
+2025-10-06T14:06:13:   186 |     // Atualizar o módulo
+2025-10-06T14:06:13:   187 |     const modulo = await db.moduloSistema.update({
+2025-10-06T14:06:13: > 188 |       where: { id: params.id },
+2025-10-06T14:06:13:       |                          ^
+2025-10-06T14:06:13:   189 |       data: updateData,
+2025-10-06T14:06:13:   190 |       include: {
+2025-10-06T14:06:13:   191 |         logs: {
+2025-10-06T14:06:13: Erro ao atualizar módulo: Error [PrismaClientValidationError]: 
+2025-10-06T14:06:13: Invalid `prisma.moduloSistemaLog.create()` invocation:
+2025-10-06T14:06:13: 
+2025-10-06T14:06:13: {
+2025-10-06T14:06:13:   data: {
+2025-10-06T14:06:13:     moduloId: "cmgf6x2is0004o0kvrx15ch09",
+2025-10-06T14:06:13:     acao: "ATUALIZADO",
+2025-10-06T14:06:13:     detalhes: "Permissão alterada; Categoria alterada",
+2025-10-06T14:06:13:     autorId: "cmg1g2hvl001go0vku0ki1oj6",
+2025-10-06T14:06:13: +   autorNome: String
+2025-10-06T14:06:13:   }
+2025-10-06T14:06:13: }
+2025-10-06T14:06:13: 
+2025-10-06T14:06:13: Argument `autorNome` is missing.
+2025-10-06T14:06:13:     at async PUT (src/app/api/modulos/[id]/route.ts:209:6)
+2025-10-06T14:06:13:   207 |     // Registrar log de alteração
+2025-10-06T14:06:13:   208 |     if (changes.length > 0) {
+2025-10-06T14:06:13: > 209 |       await db.moduloSistemaLog.create({
+2025-10-06T14:06:13:       |      ^
+2025-10-06T14:06:13:   210 |         data: {
+2025-10-06T14:06:13:   211 |           moduloId: modulo.id,
+2025-10-06T14:06:13:   212 |           acao: 'ATUALIZADO', {
+2025-10-06T14:06:13:   clientVersion: '6.15.0'
+2025-10-06T14:06:13: }
+2025-10-06T14:07:29: Error: Route "/api/modulos/[id]" used `params.id`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+2025-10-06T14:07:29:     at PUT (src/app/api/modulos/[id]/route.ts:105:26)
+2025-10-06T14:07:29:   103 |     // Buscar módulo atual
+2025-10-06T14:07:29:   104 |     const moduloAtual = await db.moduloSistema.findUnique({
+2025-10-06T14:07:29: > 105 |       where: { id: params.id }
+2025-10-06T14:07:29:       |                          ^
+2025-10-06T14:07:29:   106 |     });
+2025-10-06T14:07:29:   107 |
+2025-10-06T14:07:29:   108 |     if (!moduloAtual) {
+2025-10-06T14:07:30: Error: Route "/api/modulos/[id]" used `params.id`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+2025-10-06T14:07:30:     at PUT (src/app/api/modulos/[id]/route.ts:188:26)
+2025-10-06T14:07:30:   186 |     // Atualizar o módulo
+2025-10-06T14:07:30:   187 |     const modulo = await db.moduloSistema.update({
+2025-10-06T14:07:30: > 188 |       where: { id: params.id },
+2025-10-06T14:07:30:       |                          ^
+2025-10-06T14:07:30:   189 |       data: updateData,
+2025-10-06T14:07:30:   190 |       include: {
+2025-10-06T14:07:30:   191 |         logs: {
+2025-10-06T14:07:30: Erro ao atualizar módulo: Error [PrismaClientValidationError]: 
+2025-10-06T14:07:30: Invalid `prisma.moduloSistemaLog.create()` invocation:
+2025-10-06T14:07:30: 
+2025-10-06T14:07:30: {
+2025-10-06T14:07:30:   data: {
+2025-10-06T14:07:30:     moduloId: "cmgf6x2is0004o0kvrx15ch09",
+2025-10-06T14:07:30:     acao: "ATUALIZADO",
+2025-10-06T14:07:30:     detalhes: "Permissão alterada; Categoria alterada",
+2025-10-06T14:07:30:     autorId: "cmg1g2hvl001go0vku0ki1oj6",
+2025-10-06T14:07:30: +   autorNome: String
+2025-10-06T14:07:30:   }
+2025-10-06T14:07:30: }
+2025-10-06T14:07:30: 
+2025-10-06T14:07:30: Argument `autorNome` is missing.
+2025-10-06T14:07:30:     at async PUT (src/app/api/modulos/[id]/route.ts:209:6)
+2025-10-06T14:07:30:   207 |     // Registrar log de alteração
+2025-10-06T14:07:30:   208 |     if (changes.length > 0) {
+2025-10-06T14:07:30: > 209 |       await db.moduloSistemaLog.create({
+2025-10-06T14:07:30:       |      ^
+2025-10-06T14:07:30:   210 |         data: {
+2025-10-06T14:07:30:   211 |           moduloId: modulo.id,
+2025-10-06T14:07:30:   212 |           acao: 'ATUALIZADO', {
+2025-10-06T14:07:30:   clientVersion: '6.15.0'
+2025-10-06T14:07:30: }
+2025-10-06T14:10:00: Error: Route "/api/modulos/[id]" used `params.id`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+2025-10-06T14:10:00:     at PUT (src/app/api/modulos/[id]/route.ts:105:26)
+2025-10-06T14:10:00:   103 |     // Buscar módulo atual
+2025-10-06T14:10:00:   104 |     const moduloAtual = await db.moduloSistema.findUnique({
+2025-10-06T14:10:00: > 105 |       where: { id: params.id }
+2025-10-06T14:10:00:       |                          ^
+2025-10-06T14:10:00:   106 |     });
+2025-10-06T14:10:00:   107 |
+2025-10-06T14:10:00:   108 |     if (!moduloAtual) {
+2025-10-06T14:10:00: Error: Route "/api/modulos/[id]" used `params.id`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+2025-10-06T14:10:00:     at PUT (src/app/api/modulos/[id]/route.ts:188:26)
+2025-10-06T14:10:00:   186 |     // Atualizar o módulo
+2025-10-06T14:10:00:   187 |     const modulo = await db.moduloSistema.update({
+2025-10-06T14:10:00: > 188 |       where: { id: params.id },
+2025-10-06T14:10:00:       |                          ^
+2025-10-06T14:10:00:   189 |       data: updateData,
+2025-10-06T14:10:00:   190 |       include: {
+2025-10-06T14:10:00:   191 |         logs: {
+2025-10-06T14:10:00: Erro ao atualizar módulo: Error [PrismaClientValidationError]: 
+2025-10-06T14:10:00: Invalid `prisma.moduloSistemaLog.create()` invocation:
+2025-10-06T14:10:00: 
+2025-10-06T14:10:00: {
+2025-10-06T14:10:00:   data: {
+2025-10-06T14:10:00:     moduloId: "cmgf6x2is0004o0kvrx15ch09",
+2025-10-06T14:10:00:     acao: "ATUALIZADO",
+2025-10-06T14:10:00:     detalhes: "Permissão alterada; Categoria alterada",
+2025-10-06T14:10:00:     autorId: "cmg1g2hvl001go0vku0ki1oj6",
+2025-10-06T14:10:00: +   autorNome: String
+2025-10-06T14:10:00:   }
+2025-10-06T14:10:00: }
+2025-10-06T14:10:00: 
+2025-10-06T14:10:00: Argument `autorNome` is missing.
+2025-10-06T14:10:00:     at async PUT (src/app/api/modulos/[id]/route.ts:209:6)
+2025-10-06T14:10:00:   207 |     // Registrar log de alteração
+2025-10-06T14:10:00:   208 |     if (changes.length > 0) {
+2025-10-06T14:10:00: > 209 |       await db.moduloSistemaLog.create({
+2025-10-06T14:10:00:       |      ^
+2025-10-06T14:10:00:   210 |         data: {
+2025-10-06T14:10:00:   211 |           moduloId: modulo.id,
+2025-10-06T14:10:00:   212 |           acao: 'ATUALIZADO', {
+2025-10-06T14:10:00:   clientVersion: '6.15.0'
+2025-10-06T14:10:00: }
+2025-10-06T14:10:08: Error: Route "/api/modulos/[id]" used `params.id`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+2025-10-06T14:10:08:     at PUT (src/app/api/modulos/[id]/route.ts:105:26)
+2025-10-06T14:10:08:   103 |     // Buscar módulo atual
+2025-10-06T14:10:08:   104 |     const moduloAtual = await db.moduloSistema.findUnique({
+2025-10-06T14:10:08: > 105 |       where: { id: params.id }
+2025-10-06T14:10:08:       |                          ^
+2025-10-06T14:10:08:   106 |     });
+2025-10-06T14:10:08:   107 |
+2025-10-06T14:10:08:   108 |     if (!moduloAtual) {
+2025-10-06T14:10:08: Error: Route "/api/modulos/[id]" used `params.id`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+2025-10-06T14:10:08:     at PUT (src/app/api/modulos/[id]/route.ts:188:26)
+2025-10-06T14:10:08:   186 |     // Atualizar o módulo
+2025-10-06T14:10:08:   187 |     const modulo = await db.moduloSistema.update({
+2025-10-06T14:10:08: > 188 |       where: { id: params.id },
+2025-10-06T14:10:08:       |                          ^
+2025-10-06T14:10:08:   189 |       data: updateData,
+2025-10-06T14:10:08:   190 |       include: {
+2025-10-06T14:10:08:   191 |         logs: {
+2025-10-06T14:10:08: Erro ao atualizar módulo: Error [PrismaClientValidationError]: 
+2025-10-06T14:10:08: Invalid `prisma.moduloSistemaLog.create()` invocation:
+2025-10-06T14:10:08: 
+2025-10-06T14:10:08: {
+2025-10-06T14:10:08:   data: {
+2025-10-06T14:10:08:     moduloId: "cmgf6x2is0004o0kvrx15ch09",
+2025-10-06T14:10:08:     acao: "ATUALIZADO",
+2025-10-06T14:10:08:     detalhes: "Permissão alterada; Categoria alterada",
+2025-10-06T14:10:08:     autorId: "cmg1g2hvl001go0vku0ki1oj6",
+2025-10-06T14:10:08: +   autorNome: String
+2025-10-06T14:10:08:   }
+2025-10-06T14:10:08: }
+2025-10-06T14:10:08: 
+2025-10-06T14:10:08: Argument `autorNome` is missing.
+2025-10-06T14:10:08:     at async PUT (src/app/api/modulos/[id]/route.ts:209:6)
+2025-10-06T14:10:08:   207 |     // Registrar log de alteração
+2025-10-06T14:10:08:   208 |     if (changes.length > 0) {
+2025-10-06T14:10:08: > 209 |       await db.moduloSistemaLog.create({
+2025-10-06T14:10:08:       |      ^
+2025-10-06T14:10:08:   210 |         data: {
+2025-10-06T14:10:08:   211 |           moduloId: modulo.id,
+2025-10-06T14:10:08:   212 |           acao: 'ATUALIZADO', {
+2025-10-06T14:10:08:   clientVersion: '6.15.0'
+2025-10-06T14:10:08: }
+2025-10-06T14:13:39: Error: Route "/api/modulos/[id]" used `params.id`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+2025-10-06T14:13:39:     at PUT (src/app/api/modulos/[id]/route.ts:105:26)
+2025-10-06T14:13:39:   103 |     // Buscar módulo atual
+2025-10-06T14:13:39:   104 |     const moduloAtual = await db.moduloSistema.findUnique({
+2025-10-06T14:13:39: > 105 |       where: { id: params.id }
+2025-10-06T14:13:39:       |                          ^
+2025-10-06T14:13:39:   106 |     });
+2025-10-06T14:13:39:   107 |
+2025-10-06T14:13:39:   108 |     if (!moduloAtual) {
+2025-10-06T14:13:39: Error: Route "/api/modulos/[id]" used `params.id`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+2025-10-06T14:13:39:     at PUT (src/app/api/modulos/[id]/route.ts:188:26)
+2025-10-06T14:13:39:   186 |     // Atualizar o módulo
+2025-10-06T14:13:39:   187 |     const modulo = await db.moduloSistema.update({
+2025-10-06T14:13:39: > 188 |       where: { id: params.id },
+2025-10-06T14:13:39:       |                          ^
+2025-10-06T14:13:39:   189 |       data: updateData,
+2025-10-06T14:13:39:   190 |       include: {
+2025-10-06T14:13:39:   191 |         logs: {
+2025-10-06T14:13:39: Erro ao atualizar módulo: ReferenceError: moduloOriginal is not defined
+2025-10-06T14:13:39:     at PUT (src/app/api/modulos/[id]/route.ts:213:40)
+2025-10-06T14:13:39:   211 |           moduloId: modulo.id,
+2025-10-06T14:13:39:   212 |           acao: 'ATUALIZADO',
+2025-10-06T14:13:39: > 213 |           valorAnterior: JSON.stringify(moduloOriginal),
+2025-10-06T14:13:39:       |                                        ^
+2025-10-06T14:13:39:   214 |           valorNovo: JSON.stringify(modulo),
+2025-10-06T14:13:39:   215 |           observacoes: changes.join('; '),
+2025-10-06T14:13:39:   216 |           autorId: usuario?.colaborador?.id,
+2025-10-06T14:13:43: Error: Route "/api/modulos/[id]" used `params.id`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+2025-10-06T14:13:43:     at PUT (src/app/api/modulos/[id]/route.ts:105:26)
+2025-10-06T14:13:43:   103 |     // Buscar módulo atual
+2025-10-06T14:13:43:   104 |     const moduloAtual = await db.moduloSistema.findUnique({
+2025-10-06T14:13:43: > 105 |       where: { id: params.id }
+2025-10-06T14:13:43:       |                          ^
+2025-10-06T14:13:43:   106 |     });
+2025-10-06T14:13:43:   107 |
+2025-10-06T14:13:43:   108 |     if (!moduloAtual) {
+2025-10-06T14:13:43: Error: Route "/api/modulos/[id]" used `params.id`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+2025-10-06T14:13:43:     at PUT (src/app/api/modulos/[id]/route.ts:188:26)
+2025-10-06T14:13:43:   186 |     // Atualizar o módulo
+2025-10-06T14:13:43:   187 |     const modulo = await db.moduloSistema.update({
+2025-10-06T14:13:43: > 188 |       where: { id: params.id },
+2025-10-06T14:13:43:       |                          ^
+2025-10-06T14:13:43:   189 |       data: updateData,
+2025-10-06T14:13:43:   190 |       include: {
+2025-10-06T14:13:43:   191 |         logs: {
+2025-10-06T14:13:43: Erro ao atualizar módulo: ReferenceError: moduloOriginal is not defined
+2025-10-06T14:13:43:     at PUT (src/app/api/modulos/[id]/route.ts:213:40)
+2025-10-06T14:13:43:   211 |           moduloId: modulo.id,
+2025-10-06T14:13:43:   212 |           acao: 'ATUALIZADO',
+2025-10-06T14:13:43: > 213 |           valorAnterior: JSON.stringify(moduloOriginal),
+2025-10-06T14:13:43:       |                                        ^
+2025-10-06T14:13:43:   214 |           valorNovo: JSON.stringify(modulo),
+2025-10-06T14:13:43:   215 |           observacoes: changes.join('; '),
+2025-10-06T14:13:43:   216 |           autorId: usuario?.colaborador?.id,
+2025-10-06T14:13:58: Error: Route "/api/modulos/[id]" used `params.id`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+2025-10-06T14:13:58:     at PUT (src/app/api/modulos/[id]/route.ts:105:26)
+2025-10-06T14:13:58:   103 |     // Buscar módulo atual
+2025-10-06T14:13:58:   104 |     const moduloAtual = await db.moduloSistema.findUnique({
+2025-10-06T14:13:58: > 105 |       where: { id: params.id }
+2025-10-06T14:13:58:       |                          ^
+2025-10-06T14:13:58:   106 |     });
+2025-10-06T14:13:58:   107 |
+2025-10-06T14:13:58:   108 |     if (!moduloAtual) {
+2025-10-06T14:13:58: Error: Route "/api/modulos/[id]" used `params.id`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+2025-10-06T14:13:58:     at PUT (src/app/api/modulos/[id]/route.ts:188:26)
+2025-10-06T14:13:58:   186 |     // Atualizar o módulo
+2025-10-06T14:13:58:   187 |     const modulo = await db.moduloSistema.update({
+2025-10-06T14:13:58: > 188 |       where: { id: params.id },
+2025-10-06T14:13:58:       |                          ^
+2025-10-06T14:13:58:   189 |       data: updateData,
+2025-10-06T14:13:58:   190 |       include: {
+2025-10-06T14:13:58:   191 |         logs: {
+2025-10-06T14:13:58: Erro ao atualizar módulo: ReferenceError: moduloOriginal is not defined
+2025-10-06T14:13:58:     at PUT (src/app/api/modulos/[id]/route.ts:213:40)
+2025-10-06T14:13:58:   211 |           moduloId: modulo.id,
+2025-10-06T14:13:58:   212 |           acao: 'ATUALIZADO',
+2025-10-06T14:13:58: > 213 |           valorAnterior: JSON.stringify(moduloOriginal),
+2025-10-06T14:13:58:       |                                        ^
+2025-10-06T14:13:58:   214 |           valorNovo: JSON.stringify(modulo),
+2025-10-06T14:13:58:   215 |           observacoes: changes.join('; '),
+2025-10-06T14:13:58:   216 |           autorId: usuario?.colaborador?.id,

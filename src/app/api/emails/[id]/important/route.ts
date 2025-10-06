@@ -11,9 +11,18 @@ const importantSchema = z.object({
 // POST - Marcar/desmarcar email como importante
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
+    if (!id) {
+      return NextResponse.json(
+        { error: 'ID do email é obrigatório' },
+        { status: 400 }
+      );
+    }
+
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
       return NextResponse.json(
@@ -22,7 +31,7 @@ export async function POST(
       );
     }
 
-    const emailId = params.id;
+    const emailId = id;
     const body = await request.json();
     
     // Validar dados

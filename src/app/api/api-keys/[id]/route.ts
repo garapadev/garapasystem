@@ -92,9 +92,9 @@ import { ApiKeyManager } from '@/lib/api-key-manager';
  */
 
 interface RouteParams {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 // GET - Buscar chave de API específica
@@ -111,7 +111,15 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       return ApiMiddleware.createErrorResponse('Permissão insuficiente', 403);
     }
 
-    const { id } = params;
+    const { id } = await params;
+    
+    if (!id) {
+      return NextResponse.json(
+        { error: 'ID da chave de API é obrigatório' },
+        { status: 400 }
+      );
+    }
+
     const apiKey = await ApiKeyManager.getApiKey(id);
 
     if (!apiKey) {
@@ -145,7 +153,15 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       return ApiMiddleware.createErrorResponse('Permissão insuficiente', 403);
     }
 
-    const { id } = params;
+    const { id } = await params;
+    
+    if (!id) {
+      return NextResponse.json(
+        { error: 'ID da chave de API é obrigatório' },
+        { status: 400 }
+      );
+    }
+
     const body = await request.json();
     const { nome, permissoes, expiresAt, limiteTaxa, descricao } = body;
 
@@ -181,7 +197,15 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
       return ApiMiddleware.createErrorResponse('Permissão insuficiente', 403);
     }
 
-    const { id } = params;
+    const { id } = await params;
+    
+    if (!id) {
+      return NextResponse.json(
+        { error: 'ID da chave de API é obrigatório' },
+        { status: 400 }
+      );
+    }
+
     await ApiKeyManager.deleteApiKey(id);
 
     return NextResponse.json(

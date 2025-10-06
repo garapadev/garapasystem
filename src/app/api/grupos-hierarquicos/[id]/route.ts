@@ -3,11 +3,20 @@ import { db } from '@/lib/db';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
+    if (!id) {
+      return NextResponse.json(
+        { error: 'ID do grupo hierárquico é obrigatório' },
+        { status: 400 }
+      );
+    }
+
     const grupo = await db.grupoHierarquico.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         parent: {
           select: {
@@ -63,14 +72,23 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
+    if (!id) {
+      return NextResponse.json(
+        { error: 'ID do grupo hierárquico é obrigatório' },
+        { status: 400 }
+      );
+    }
+
     const body = await request.json();
 
     // Verificar se grupo existe
     const existingGrupo = await db.grupoHierarquico.findUnique({
-      where: { id: params.id }
+      where: { id }
     });
 
     if (!existingGrupo) {
@@ -83,7 +101,7 @@ export async function PUT(
     // Verificar se grupo com mesmo nome já existe no mesmo nível (excluindo o atual)
     const where: any = {
       nome: body.nome,
-      id: { not: params.id }
+      id: { not: id }
     };
 
     if (body.parentId) {
@@ -103,7 +121,7 @@ export async function PUT(
 
     // Verificar se está tentando criar referência circular
     if (body.parentId) {
-      const isCircular = await checkCircularReference(params.id, body.parentId);
+      const isCircular = await checkCircularReference(id, body.parentId);
       if (isCircular) {
         return NextResponse.json(
           { error: 'Não é possível criar referência circular na hierarquia' },
@@ -149,12 +167,21 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
+    if (!id) {
+      return NextResponse.json(
+        { error: 'ID do grupo hierárquico é obrigatório' },
+        { status: 400 }
+      );
+    }
+
     // Verificar se grupo existe
     const existingGrupo = await db.grupoHierarquico.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         _count: {
           select: {
@@ -187,7 +214,7 @@ export async function DELETE(
 
     // Excluir grupo hierárquico
     await db.grupoHierarquico.delete({
-      where: { id: params.id }
+      where: { id }
     });
 
     return NextResponse.json({ message: 'Grupo hierárquico excluído com sucesso' });

@@ -5,6 +5,9 @@ import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
 import { useWhatsAppModule } from '@/hooks/useWhatsAppModule';
+import { useNotificationBadges } from '@/hooks/useNotificationBadges';
+import { useModulos } from '@/hooks/useModulos';
+import { BadgeWrapper } from '@/components/ui/notification-badge';
 import { useState } from 'react';
 import { 
   Users, 
@@ -22,7 +25,8 @@ import {
   ChevronRight,
   MessageCircle,
   ClipboardList,
-  FileText
+  FileText,
+  FileCheck
 } from 'lucide-react';
 
 interface NavigationItem {
@@ -35,45 +39,52 @@ interface NavigationItem {
   };
   requireAdmin?: boolean;
   subItems?: NavigationItem[];
+  moduleName?: string; // Nome do módulo para verificar se está ativo
 }
 
 const navigation: NavigationItem[] = [
-  { name: 'Dashboard', href: '/', icon: Home },
+  { name: 'Dashboard', href: '/', icon: Home, moduleName: 'dashboard' },
   { 
     name: 'Webmail', 
     href: '/webmail', 
     icon: Mail,
-    requiredPermission: { recurso: 'webmail', acao: 'email.read' }
+    requiredPermission: { recurso: 'webmail', acao: 'email.read' },
+    moduleName: 'webmail'
   },
   { 
     name: 'Helpdesk', 
     href: '/helpdesk', 
     icon: Headphones,
-    requiredPermission: { recurso: 'helpdesk', acao: 'visualizar' }
+    requiredPermission: { recurso: 'helpdesk', acao: 'visualizar' },
+    moduleName: 'helpdesk'
   },
   { 
     name: 'WhatsApp Chat', 
     href: '/whatsappchat', 
     icon: MessageCircle,
-    requiredPermission: { recurso: 'whatsapp', acao: 'usar' }
+    requiredPermission: { recurso: 'whatsapp', acao: 'usar' },
+    moduleName: 'whatsapp-chat'
   },
   { 
     name: 'Tarefas', 
     href: '/tasks', 
     icon: CheckSquare,
     requiredPermission: { recurso: 'tasks', acao: 'ler' },
+    moduleName: 'tarefas',
     subItems: [
       {
         name: 'Dashboard',
         href: '/tasks/dashboard',
         icon: BarChart3,
-        requiredPermission: { recurso: 'tasks', acao: 'ler' }
+        requiredPermission: { recurso: 'tasks', acao: 'ler' },
+        moduleName: 'tarefas'
       },
       {
         name: 'Calendário',
         href: '/tasks/calendar',
         icon: Calendar,
-        requiredPermission: { recurso: 'tasks', acao: 'ler' }
+        requiredPermission: { recurso: 'tasks', acao: 'ler' },
+        moduleName: 'tarefas'
       }
     ]
   },
@@ -81,19 +92,29 @@ const navigation: NavigationItem[] = [
     name: 'Clientes', 
     href: '/clientes', 
     icon: Users,
-    requiredPermission: { recurso: 'clientes', acao: 'ler' }
+    requiredPermission: { recurso: 'clientes', acao: 'ler' },
+    moduleName: 'clientes'
   },
   { 
     name: 'Orçamentos', 
     href: '/orcamentos', 
     icon: FileText,
-    requiredPermission: { recurso: 'orcamentos', acao: 'ler' }
+    requiredPermission: { recurso: 'orcamentos', acao: 'ler' },
+    moduleName: 'orcamentos'
   },
   { 
     name: 'Ordens de Serviço', 
     href: '/ordens-servico', 
     icon: ClipboardList,
-    requiredPermission: { recurso: 'ordens_servico', acao: 'ler' }
+    requiredPermission: { recurso: 'ordens_servico', acao: 'ler' },
+    moduleName: 'ordens-servico'
+  },
+  { 
+    name: 'Laudos Técnicos', 
+    href: '/laudos-tecnicos', 
+    icon: FileCheck,
+    requiredPermission: { recurso: 'laudos', acao: 'ler' },
+    moduleName: 'laudos-tecnicos'
   },
   { 
     name: 'Negócios', 
@@ -113,10 +134,41 @@ const navigation: NavigationItem[] = [
 export function Sidebar() {
   const pathname = usePathname();
   const { hasPermission, isAdmin, isAuthenticated } = useAuth();
-  const { isModuleActive, isLoading: whatsappLoading } = useWhatsAppModule();
+  const { isModuleActive: isWhatsAppActive, isLoading: whatsappLoading } = useWhatsAppModule();
+  const { getBadgeByModule, getBadgeColor } = useNotificationBadges();
+  const { modulos, loading: modulosLoading, isModuleActive } = useModulos();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
+
+  // Mapeamento de rotas para módulos de notificação
+  const getModuleFromHref = (href: string): string | null => {
+    const moduleMap: Record<string, string> = {
+      '/helpdesk': 'helpdesk',
+      '/whatsappchat': 'whatsapp',
+      '/orcamentos': 'orcamentos',
+      '/tasks': 'tarefas',
+      '/tasks/dashboard': 'tarefas',
+      '/tasks/calendar': 'tarefas',
+    };
+    return moduleMap[href] || null;
+  };
+
+  // Obter badge para um item de navegação
+  const getItemBadge = (item: NavigationItem) => {
+    const module = getModuleFromHref(item.href);
+    if (!module) return undefined;
+    
+    const badge = getBadgeByModule(module);
+    if (!badge || badge.count === 0) return undefined;
+    
+    return {
+      count: badge.count,
+      variant: badge.type as any,
+      size: 'sm' as const,
+      position: 'top-right' as const,
+    };
+  };
 
   // Debug logs
   console.log('Sidebar render:', { 
@@ -124,31 +176,111 @@ export function Sidebar() {
     isAdmin, 
     isModuleActive, 
     whatsappLoading,
+    modulosLoading,
     pathname 
   });
+  
+  console.log('=== ESTADO DOS MÓDULOS ===');
+  console.log('modulosLoading:', modulosLoading);
+  console.log('modulos:', modulos);
+  console.log('isModuleActive function:', typeof isModuleActive, isModuleActive);
 
   if (!isAuthenticated) {
     console.log('Sidebar: usuário não autenticado');
     return null;
   }
 
+  console.log('=== INICIANDO FILTRO DE NAVEGAÇÃO ===');
+  console.log('Total de itens de navegação:', navigation.length);
+  console.log('Itens de navegação:', navigation.map(item => ({ name: item.name, href: item.href, moduleName: item.moduleName })));
+
   const filteredNavigation = navigation.filter((item) => {
+    console.log(`Verificando item: ${item.name}`, {
+      href: item.href,
+      moduleName: item.moduleName,
+      requireAdmin: item.requireAdmin,
+      requiredPermission: item.requiredPermission
+    });
+
+    // Se o usuário não está logado, não mostrar nada
+    if (!isAuthenticated) {
+      console.log(`${item.name}: rejeitado - usuário não autenticado`);
+      return false;
+    }
+
     // Dashboard é sempre visível
-    if (item.href === '/') return true;
-    
-    // Verificar se é o menu WhatsApp e se o módulo está ativo
-    if (item.href === '/whatsappchat' && !isModuleActive) return false;
+    if (item.href === '/') {
+      console.log(`${item.name}: aceito - é dashboard`);
+      return true;
+    }
     
     // Verificar se requer admin
-    if (item.requireAdmin && !isAdmin) return false;
+    if (item.requireAdmin && !isAdmin) {
+      console.log(`${item.name}: rejeitado - requer admin e usuário não é admin`);
+      return false;
+    }
     
     // Verificar permissão específica
     if (item.requiredPermission) {
-      return hasPermission(item.requiredPermission.recurso, item.requiredPermission.acao);
+      const hasRequiredPermission = hasPermission(item.requiredPermission.recurso, item.requiredPermission.acao);
+      if (!hasRequiredPermission) {
+        console.log(`${item.name}: rejeitado - sem permissão ${item.requiredPermission.recurso}.${item.requiredPermission.acao}`);
+        return false;
+      }
+      console.log(`${item.name}: permissão ${item.requiredPermission.recurso}.${item.requiredPermission.acao} OK`);
+    }
+
+    // Verificar se o módulo está ativo (exceto para dashboard que sempre deve aparecer)
+    if (item.moduleName && item.moduleName !== 'dashboard') {
+      // Para WhatsApp, usar o hook específico existente
+      if (item.moduleName === 'whatsapp-chat') {
+        console.log(`${item.name}: WhatsApp module active: ${isWhatsAppActive}`);
+        return isWhatsAppActive;
+      }
+      // Para outros módulos, usar o novo sistema de módulos
+      if (!modulosLoading) {
+        const moduleActive = isModuleActive(item.moduleName);
+        console.log(`${item.name}: módulo ${item.moduleName} ativo: ${moduleActive}`);
+        if (!moduleActive) {
+          console.log(`${item.name}: rejeitado - módulo ${item.moduleName} não está ativo`);
+          return false;
+        }
+      } else {
+        console.log(`${item.name}: aguardando carregamento dos módulos...`);
+      }
     }
     
+    console.log(`${item.name}: aceito`);
     return true;
   });
+
+  // Filtrar subitens também
+  const filteredNavigationWithSubItems = filteredNavigation.map(item => {
+    if (item.subItems) {
+      const filteredSubItems = item.subItems.filter(subItem => {
+        if (subItem.requireAdmin && !isAdmin) return false;
+        if (subItem.requiredPermission) {
+          if (!hasPermission(subItem.requiredPermission.recurso, subItem.requiredPermission.acao)) {
+            return false;
+          }
+        }
+        // Verificar módulo ativo para subitens
+        if (subItem.moduleName && subItem.moduleName !== 'dashboard') {
+          if (subItem.moduleName === 'whatsapp-chat') {
+            return isWhatsAppActive;
+          }
+          if (!modulosLoading && !isModuleActive(subItem.moduleName)) {
+            return false;
+          }
+        }
+        return true;
+      });
+      return { ...item, subItems: filteredSubItems };
+    }
+    return item;
+  });
+
+  const finalNavigation = filteredNavigationWithSubItems
 
   const toggleExpanded = (itemName: string) => {
     setExpandedItems(prev => 
@@ -163,6 +295,7 @@ export function Sidebar() {
       (item.href !== '/' && pathname.startsWith(item.href));
     const isExpanded = expandedItems.includes(item.name);
     const hasSubItems = item.subItems && item.subItems.length > 0;
+    const badgeProps = getItemBadge(item);
 
     return (
       <div key={item.name}>
@@ -182,10 +315,12 @@ export function Sidebar() {
               )}
               title={isCollapsed ? item.name : undefined}
             >
-              <item.icon className={cn(
-                "h-5 w-5 flex-shrink-0",
-                isCollapsed ? "" : "mr-3"
-              )} />
+              <BadgeWrapper badge={badgeProps}>
+                <item.icon className={cn(
+                  "h-5 w-5 flex-shrink-0",
+                  isCollapsed ? "" : "mr-3"
+                )} />
+              </BadgeWrapper>
               <span className={cn(
                 "transition-all duration-300 overflow-hidden flex-1",
                 isCollapsed ? "lg:hidden" : "block"
@@ -230,11 +365,13 @@ export function Sidebar() {
             )}
             title={isCollapsed ? item.name : undefined}
           >
-            <item.icon className={cn(
-              "h-5 w-5 flex-shrink-0",
-              isCollapsed ? "" : "mr-3",
-              isSubItem && "h-4 w-4"
-            )} />
+            <BadgeWrapper badge={badgeProps}>
+              <item.icon className={cn(
+                "h-5 w-5 flex-shrink-0",
+                isCollapsed ? "" : "mr-3",
+                isSubItem && "h-4 w-4"
+              )} />
+            </BadgeWrapper>
             <span className={cn(
               "transition-all duration-300 overflow-hidden",
               isCollapsed ? "lg:hidden" : "block"
@@ -305,7 +442,7 @@ export function Sidebar() {
           </button>
         </div>
         <nav className="flex-1 space-y-1 px-2 lg:px-3 py-4 overflow-y-auto">
-          {filteredNavigation.map(item => renderNavigationItem(item))}
+          {finalNavigation.map(item => renderNavigationItem(item))}
         </nav>
       </div>
     </>

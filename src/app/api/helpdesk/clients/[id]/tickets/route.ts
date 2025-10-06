@@ -3,10 +3,19 @@ import { db } from '@/lib/db';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const clientId = params.id;
+    const { id } = await params;
+    
+    if (!id) {
+      return NextResponse.json(
+        { error: 'ID do cliente é obrigatório' },
+        { status: 400 }
+      );
+    }
+
+    const clientId = id;
 
     // Verificar se o cliente existe
     const cliente = await db.cliente.findUnique({

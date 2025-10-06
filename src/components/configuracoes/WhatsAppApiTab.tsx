@@ -7,18 +7,15 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { useConfiguracoes } from '@/hooks/useConfiguracoes';
-import { useWhatsAppModule } from '@/hooks/useWhatsAppModule';
-import { Loader2, MessageSquare, Key, Globe, TestTube, Settings, Power } from 'lucide-react';
+import { Loader2, MessageSquare, Key, Globe, TestTube, Settings } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Switch } from '@/components/ui/switch';
 import { WhatsAppApiFactory } from '@/lib/whatsapp';
 
 export default function WhatsAppApiTab() {
   const { toast } = useToast();
   const { configuracoes, loading, updateConfiguracao, getConfiguracao } = useConfiguracoes();
-  const { isModuleActive, toggleModule, isLoading } = useWhatsAppModule();
   const [formData, setFormData] = useState({
     apiType: 'wuzapi',
     // WuzAPI configs
@@ -173,69 +170,10 @@ export default function WhatsAppApiTab() {
     );
   }
 
-  const handleModuleToggle = async (checked: boolean) => {
-    try {
-      await toggleModule(checked);
-      toast({
-        title: checked ? 'Módulo ativado' : 'Módulo desativado',
-        description: checked 
-          ? 'O módulo WhatsApp foi ativado e aparecerá no menu lateral.'
-          : 'O módulo WhatsApp foi desativado e será removido do menu lateral.',
-      });
-    } catch (error) {
-      toast({
-        title: 'Erro ao alterar módulo',
-        description: 'Ocorreu um erro ao alterar o estado do módulo WhatsApp.',
-        variant: 'destructive',
-      });
-    }
-  };
+
 
   return (
     <div className="space-y-6">
-      {/* Card de Ativação/Desativação do Módulo */}
-      <Card className={`border-2 ${isModuleActive ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}`}>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Power className={`h-5 w-5 ${isModuleActive ? 'text-green-600' : 'text-red-600'}`} />
-            Status do Módulo WhatsApp
-          </CardTitle>
-          <CardDescription>
-            Controle se o módulo WhatsApp está ativo no sistema
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="space-y-1">
-              <Label htmlFor="module-toggle" className="text-base font-medium">
-                {isModuleActive ? 'Módulo Ativo' : 'Módulo Inativo'}
-              </Label>
-              <p className="text-sm text-muted-foreground">
-                {isModuleActive 
-                  ? 'O menu "WhatsApp Chat" está visível no sidebar principal'
-                  : 'O menu "WhatsApp Chat" está oculto do sidebar principal'
-                }
-              </p>
-            </div>
-            <Switch
-              id="module-toggle"
-              checked={isModuleActive}
-              onCheckedChange={handleModuleToggle}
-              disabled={isLoading}
-            />
-          </div>
-          
-          {!isModuleActive && (
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-              <p className="text-sm text-yellow-800">
-                <strong>Atenção:</strong> Com o módulo desativado, os usuários não conseguirão acessar 
-                o WhatsApp Chat através do menu lateral, mas as configurações da API permanecerão salvas.
-              </p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">

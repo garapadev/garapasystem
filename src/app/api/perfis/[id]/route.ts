@@ -3,11 +3,20 @@ import { db } from '@/lib/db';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
+    if (!id) {
+      return NextResponse.json(
+        { error: 'ID do perfil é obrigatório' },
+        { status: 400 }
+      );
+    }
+
     const perfil = await db.perfil.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         permissoes: {
           include: {
@@ -37,9 +46,18 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
+    if (!id) {
+      return NextResponse.json(
+        { error: 'ID do perfil é obrigatório' },
+        { status: 400 }
+      );
+    }
+
     const body = await request.json();
     
     const {
@@ -51,7 +69,7 @@ export async function PUT(
 
     // Verificar se perfil existe
     const existingPerfil = await db.perfil.findUnique({
-      where: { id: params.id }
+      where: { id }
     });
 
     if (!existingPerfil) {
@@ -135,12 +153,21 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
+    if (!id) {
+      return NextResponse.json(
+        { error: 'ID do perfil é obrigatório' },
+        { status: 400 }
+      );
+    }
+
     // Verificar se perfil existe
     const existingPerfil = await db.perfil.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         colaboradores: true
       }
@@ -164,13 +191,13 @@ export async function DELETE(
     // Excluir as associações de permissões primeiro
     await db.perfilPermissao.deleteMany({
       where: {
-        perfilId: params.id
+        perfilId: id
       }
     });
 
     // Depois excluir o perfil
     await db.perfil.delete({
-      where: { id: params.id }
+      where: { id }
     });
 
     return NextResponse.json({ message: 'Perfil excluído com sucesso' });

@@ -207,7 +207,7 @@ export async function PUT(
       );
 
       await TicketAuditService.logTicketUpdate(
-        params.id,
+        id,
         ticketExistente,
         ticket,
         auditContext
@@ -216,11 +216,11 @@ export async function PUT(
       // Log específico para fechamento/reabertura
       if (data.status === 'FECHADO' || data.status === 'RESOLVIDO') {
         if (ticketExistente.status !== 'FECHADO' && ticketExistente.status !== 'RESOLVIDO') {
-          await TicketAuditService.logTicketClosure(params.id, auditContext);
+          await TicketAuditService.logTicketClosure(id, auditContext);
         }
       } else if (ticketExistente.status === 'FECHADO' || ticketExistente.status === 'RESOLVIDO') {
         if (data.status && data.status !== 'FECHADO' && data.status !== 'RESOLVIDO') {
-          await TicketAuditService.logTicketReopening(params.id, auditContext);
+          await TicketAuditService.logTicketReopening(id, auditContext);
         }
       }
     }

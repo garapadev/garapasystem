@@ -3,11 +3,20 @@ import { db } from '@/lib/db';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
+    if (!id) {
+      return NextResponse.json(
+        { error: 'ID do cliente é obrigatório' },
+        { status: 400 }
+      );
+    }
+
     const cliente = await db.cliente.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         grupoHierarquico: {
           select: {
@@ -39,14 +48,23 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
+    if (!id) {
+      return NextResponse.json(
+        { error: 'ID do cliente é obrigatório' },
+        { status: 400 }
+      );
+    }
+
     const body = await request.json();
 
     // Verificar se cliente existe
     const existingCliente = await db.cliente.findUnique({
-      where: { id: params.id }
+      where: { id }
     });
 
     if (!existingCliente) {
@@ -88,7 +106,7 @@ export async function PUT(
 
     // Atualizar cliente
     const cliente = await db.cliente.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         nome: body.nome,
         email: body.email,
@@ -123,12 +141,21 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
+    if (!id) {
+      return NextResponse.json(
+        { error: 'ID do cliente é obrigatório' },
+        { status: 400 }
+      );
+    }
+
     // Verificar se cliente existe
     const existingCliente = await db.cliente.findUnique({
-      where: { id: params.id }
+      where: { id }
     });
 
     if (!existingCliente) {
@@ -140,7 +167,7 @@ export async function DELETE(
 
     // Excluir cliente
     await db.cliente.delete({
-      where: { id: params.id }
+      where: { id }
     });
 
     return NextResponse.json({ message: 'Cliente excluído com sucesso' });

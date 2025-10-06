@@ -3,11 +3,20 @@ import { db } from '@/lib/db';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
+    if (!id) {
+      return NextResponse.json(
+        { error: 'ID da permissão é obrigatório' },
+        { status: 400 }
+      );
+    }
+
     const permissao = await db.permissao.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         perfis: {
           select: {
@@ -42,9 +51,18 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
+    if (!id) {
+      return NextResponse.json(
+        { error: 'ID da permissão é obrigatório' },
+        { status: 400 }
+      );
+    }
+
     const body = await request.json();
 
     // Validar dados obrigatórios
@@ -57,7 +75,7 @@ export async function PUT(
 
     // Verificar se permissão existe
     const existingPermissao = await db.permissao.findUnique({
-      where: { id: params.id }
+      where: { id }
     });
 
     if (!existingPermissao) {
@@ -71,7 +89,7 @@ export async function PUT(
     const nomeExists = await db.permissao.findFirst({
       where: {
         nome: body.nome,
-        id: { not: params.id }
+        id: { not: id }
       }
     });
 
@@ -121,12 +139,21 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
+    if (!id) {
+      return NextResponse.json(
+        { error: 'ID da permissão é obrigatório' },
+        { status: 400 }
+      );
+    }
+
     // Verificar se permissão existe
     const existingPermissao = await db.permissao.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         _count: {
           select: {
@@ -153,7 +180,7 @@ export async function DELETE(
 
     // Excluir permissão
     await db.permissao.delete({
-      where: { id: params.id }
+      where: { id }
     });
 
     return NextResponse.json({ message: 'Permissão excluída com sucesso' });

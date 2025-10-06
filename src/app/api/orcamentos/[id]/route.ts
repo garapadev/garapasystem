@@ -3,11 +3,20 @@ import { db } from '@/lib/db';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
+    if (!id) {
+      return NextResponse.json(
+        { error: 'ID do orçamento é obrigatório' },
+        { status: 400 }
+      );
+    }
+
     const orcamento = await db.orcamento.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         ordemServico: {
           include: {
@@ -95,14 +104,23 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
+    if (!id) {
+      return NextResponse.json(
+        { error: 'ID do orçamento é obrigatório' },
+        { status: 400 }
+      );
+    }
+
     const body = await request.json();
 
     // Verificar se orçamento existe
     const orcamentoExistente = await db.orcamento.findUnique({
-      where: { id: params.id }
+      where: { id }
     });
 
     if (!orcamentoExistente) {
@@ -243,12 +261,21 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
+    if (!id) {
+      return NextResponse.json(
+        { error: 'ID do orçamento é obrigatório' },
+        { status: 400 }
+      );
+    }
+
     // Verificar se orçamento existe
     const orcamento = await db.orcamento.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         itens: true,
         anexos: true,
@@ -273,7 +300,7 @@ export async function DELETE(
 
     // Excluir orçamento e todos os registros relacionados
     await db.orcamento.delete({
-      where: { id: params.id }
+      where: { id }
     });
 
     return NextResponse.json({ message: 'Orçamento excluído com sucesso' });

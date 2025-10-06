@@ -1,16 +1,38 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useAuth } from './useAuth';
+
+interface Modulo {
+  id: string;
+  nome: string;
+  titulo: string;
+  ativo: boolean;
+  core: boolean;
+  icone?: string;
+  ordem: number;
+  permissao?: string;
+  rota?: string;
+  categoria?: string;
+}
 
 export function useWhatsAppModule() {
-  const [isModuleActive, setIsModuleActive] = useState(true); // Padrão como ativo para evitar problemas
+  const [isModuleActive, setIsModuleActive] = useState(false); // Padrão como inativo
   const [isLoading, setIsLoading] = useState(true);
+  const [whatsappModule, setWhatsappModule] = useState<Modulo | null>(null);
+  const { isAuthenticated } = useAuth();
 
-  // Buscar configuração atual do módulo WhatsApp
-  const fetchModuleStatus = async () => {
+  // Buscar status atual do módulo WhatsApp na lista de módulos ativos
+  const fetchModuleStatus = useCallback(async () => {
+    if (!isAuthenticated) {
+      setIsModuleActive(false);
+      setIsLoading(false);
+      return;
+    }
+
     try {
       setIsLoading(true);
-      const response = await fetch('/api/configuracoes?chave=whatsapp_module_active', {
+      const response = await fetch('/api/modulos/active', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -19,67 +41,59 @@ export function useWhatsAppModule() {
       
       if (response.ok) {
         const data = await response.json();
-        setIsModuleActive(data.valor === 'true');
-      } else if (response.status === 404) {
-        // Se a configuração não existe, assume como ativo por padrão
-        console.log('Configuração whatsapp_module_active não encontrada, usando padrão: ativo');
-        setIsModuleActive(true);
+        const modulos: Modulo[] = data.data || [];
+        const whatsappMod = modulos.find(modulo => 
+          modulo.nome === 'whatsapp-chat' || 
+          modulo.nome === 'WhatsApp Chat' ||
+          modulo.nome.toLowerCase().replace(/\s+/g, '-') === 'whatsapp-chat'
+        );
+        
+        setWhatsappModule(whatsappMod || null);
+        setIsModuleActive(whatsappMod?.ativo || false);
       } else {
-        console.warn('Erro ao buscar configuração do módulo WhatsApp:', response.status);
-        // Em caso de erro, mantém como ativo para não quebrar a interface
-        setIsModuleActive(true);
+        console.warn('Erro ao buscar módulos ativos:', response.status);
+        setIsModuleActive(false);
       }
     } catch (error) {
-      console.error('Erro ao buscar configuração do módulo WhatsApp:', error);
-      // Em caso de erro de rede, mantém como ativo para não quebrar a interface
-      setIsModuleActive(true);
+      console.error('Erro ao buscar módulos ativos:', error);
+      setIsModuleActive(false);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [isAuthenticated]);
 
   useEffect(() => {
-    // Timeout para evitar carregamento indefinido
-    const timeoutId = setTimeout(() => {
-      if (isLoading) {
-        console.warn('Timeout ao carregar configuração do WhatsApp, usando padrão');
-        setIsModuleActive(true);
-        setIsLoading(false);
-      }
-    }, 5000); // 5 segundos de timeout
-
-    fetchModuleStatus().finally(() => {
-      clearTimeout(timeoutId);
-    });
-
-    return () => {
-      clearTimeout(timeoutId);
-    };
-  }, []);
+    fetchModuleStatus();
+  }, [fetchModuleStatus]);
 
   const toggleModule = async (active: boolean) => {
+    if (!whatsappModule) {
+      console.error('Módulo WhatsApp não encontrado');
+      return false;
+    }
+
     try {
-      const response = await fetch('/api/configuracoes', {
+      const response = await fetch(`/api/modulos/${whatsappModule.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          chave: 'whatsapp_module_active',
-          valor: active.toString(),
-          descricao: 'Controla se o módulo WhatsApp está ativo no sistema'
+          ativo: active
         }),
       });
 
       if (response.ok) {
         setIsModuleActive(active);
+        // Atualizar o módulo local
+        setWhatsappModule(prev => prev ? { ...prev, ativo: active } : null);
         return true;
       } else {
-        console.error('Erro ao atualizar configuração:', response.statusText);
+        console.error('Erro ao atualizar módulo:', response.statusText);
         return false;
       }
     } catch (error) {
-      console.error('Erro ao atualizar configuração do módulo WhatsApp:', error);
+      console.error('Erro ao atualizar módulo WhatsApp:', error);
       return false;
     }
   };
@@ -87,6 +101,7 @@ export function useWhatsAppModule() {
   return {
     isModuleActive,
     toggleModule,
-    isLoading
+    isLoading,
+    refetch: fetchModuleStatus
   };
 }

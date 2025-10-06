@@ -15,9 +15,9 @@ const createMensagemSchema = z.object({
 });
 
 interface RouteParams {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 // GET - Listar mensagens do ticket
@@ -26,6 +26,15 @@ export async function GET(
   { params }: RouteParams
 ) {
   try {
+    const { id } = await params;
+    
+    if (!id) {
+      return NextResponse.json(
+        { error: 'ID do ticket é obrigatório' },
+        { status: 400 }
+      );
+    }
+
     const session = await getServerSession(authOptions);
     if (!session) {
       return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
@@ -33,7 +42,7 @@ export async function GET(
 
     // Verificar se o ticket existe
     const ticket = await db.helpdeskTicket.findUnique({
-      where: { id: params.id }
+      where: { id }
     });
 
     if (!ticket) {
@@ -46,7 +55,7 @@ export async function GET(
     // Buscar mensagens do ticket
     const mensagens = await db.helpdeskMensagem.findMany({
       where: {
-        ticketId: params.id
+        ticketId: id
       },
       include: {
         autor: {
@@ -87,6 +96,15 @@ export async function POST(
   { params }: RouteParams
 ) {
   try {
+    const { id } = await params;
+    
+    if (!id) {
+      return NextResponse.json(
+        { error: 'ID do ticket é obrigatório' },
+        { status: 400 }
+      );
+    }
+
     const session = await getServerSession(authOptions);
     if (!session) {
       return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
@@ -97,7 +115,7 @@ export async function POST(
 
     // Verificar se o ticket existe
     const ticket = await db.helpdeskTicket.findUnique({
-      where: { id: params.id }
+      where: { id }
     });
 
     if (!ticket) {

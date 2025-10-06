@@ -267,6 +267,9 @@ model Colaborador {
   anexosOrcamento       AnexoOrcamento[]       @relation("AnexoOrcamento")
   historicoOrcamento    HistoricoOrcamento[]   @relation("HistoricoOrcamento")
 
+  // Sistema de Módulos
+  moduloSistemaLogs     ModuloSistemaLog[]     @relation("ModuloSistemaLog")
+
   @@map("colaboradores")
 }
 
@@ -1782,4 +1785,64 @@ enum TipoItemOrcamento {
   MAO_DE_OBRA // Mão de obra
 
   @@map("tipo_item_orcamento")
+}
+
+// Sistema de Gerenciamento de Módulos
+
+// Configuração de Módulos do Sistema
+model ModuloSistema {
+  id          String   @id @default(cuid())
+  nome        String   @unique // Identificador único do módulo (ex: "helpdesk", "whatsapp")
+  titulo      String   // Nome amigável para exibição (ex: "Sistema de Helpdesk")
+  descricao   String?  // Descrição detalhada do módulo
+  ativo       Boolean  @default(true) // Se o módulo está ativo
+  core        Boolean  @default(false) // Módulos core não podem ser desativados
+  icone       String?  // Nome do ícone (Lucide React)
+  ordem       Int      @default(0) // Ordem de exibição no menu
+  permissao   String?  // Permissão necessária para acessar o módulo
+  rota        String?  // Rota principal do módulo
+  categoria   String?  // Categoria do módulo (ex: "comunicacao", "vendas", "operacional")
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relacionamentos
+  logs ModuloSistemaLog[]
+
+  @@map("modulos_sistema")
+}
+
+// Log de alterações dos módulos
+model ModuloSistemaLog {
+  id            String   @id @default(cuid())
+  moduloId      String   // ID do módulo alterado
+  acao          String   // "ativado", "desativado", "configurado"
+  valorAnterior String?  // Valor anterior (JSON)
+  valorNovo     String?  // Novo valor (JSON)
+  observacoes   String?  // Observações sobre a alteração
+  
+  // Informações do autor da alteração
+  autorId       String?
+  autorNome     String
+  autorEmail    String
+  
+  createdAt     DateTime @default(now())
+  
+  // Relacionamentos
+  modulo        ModuloSistema @relation(fields: [moduloId], references: [id], onDelete: Cascade)
+  autor         Colaborador?  @relation("ModuloSistemaLog", fields: [autorId], references: [id])
+
+  @@map("modulos_sistema_logs")
+}
+
+// Enum para categorias de módulos
+enum CategoriaModulo {
+  CORE // Módulos essenciais do sistema
+  COMUNICACAO // Módulos de comunicação (email, whatsapp, etc)
+  VENDAS // Módulos de vendas e marketing
+  OPERACIONAL // Módulos operacionais (OS, tarefas, etc)
+  RELATORIOS // Módulos de relatórios e analytics
+  INTEGRACAO // Módulos de integração com sistemas externos
+
+  @@map("categoria_modulo")
 }

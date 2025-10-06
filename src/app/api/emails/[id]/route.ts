@@ -7,9 +7,18 @@ import { processEmailContent } from '@/lib/html-utils';
 // GET - Buscar email específico por ID
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
+    if (!id) {
+      return NextResponse.json(
+        { error: 'ID do email é obrigatório' },
+        { status: 400 }
+      );
+    }
+
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
       return NextResponse.json(
@@ -18,7 +27,7 @@ export async function GET(
       );
     }
 
-    const emailId = params.id;
+    const emailId = id;
 
     // Buscar colaborador pelo email da sessão
     const colaborador = await db.colaborador.findFirst({
@@ -170,9 +179,18 @@ export async function GET(
 // DELETE - Excluir email
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
+    if (!id) {
+      return NextResponse.json(
+        { error: 'ID do email é obrigatório' },
+        { status: 400 }
+      );
+    }
+
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
       return NextResponse.json(
@@ -181,7 +199,7 @@ export async function DELETE(
       );
     }
 
-    const emailId = params.id;
+    const emailId = id;
 
     // Buscar colaborador pelo email da sessão
     const colaborador = await db.colaborador.findFirst({

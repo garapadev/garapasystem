@@ -1,0 +1,67 @@
+{
+  "modulos": {
+    "Ordens de Serviço": {
+      "status": "REPROVADO",
+      "sucessos": 4,
+      "avisos": 0,
+      "erros": 1,
+      "detalhes": {
+        "sucessos": [
+          "Banco de dados: 1 ordens encontradas",
+          "Interface: 1 elementos de lista/tabela encontrados",
+          "Interface: Ordem OS-001 encontrada na interface",
+          "Interface: Botão para criar nova ordem encontrado"
+        ],
+        "erros": [
+          "Interface: Título da página não encontrado ou incorreto"
+        ],
+        "avisos": []
+      }
+    },
+    "Orçamentos": {
+      "status": "REPROVADO",
+      "sucessos": 1,
+      "avisos": 2,
+      "erros": 2,
+      "detalhes": {
+        "sucessos": [
+          "Banco de dados: 1 orçamentos encontrados"
+        ],
+        "avisos": [
+          "Interface: Orçamento ORC-001 não encontrado na interface",
+          "Interface: Botão para criar novo orçamento não encontrado"
+        ],
+        "erros": [
+          "Interface: Título da página não encontrado ou incorreto",
+          "Interface: Nenhum elemento de lista/tabela encontrado"
+        ]
+      }
+    },
+    "Laudos Técnicos": {
+      "status": "REPROVADO",
+      "sucessos": 1,
+      "avisos": 2,
+      "erros": 2,
+      "detalhes": {
+        "sucessos": [
+          "Banco de dados: 1 laudos técnicos encontrados"
+        ],
+        "avisos": [
+          "Interface: Laudo LT-001 não encontrado na interface",
+          "Interface: Botão para criar novo laudo não encontrado"
+        ],
+        "erros": [
+          "Interface: Título da página não encontrado ou incorreto",
+          "Interface: Nenhum elemento de lista/tabela encontrado"
+        ]
+      }
+    }
+  },
+  "resumo": {
+    "totalSucessos": 6,
+    "totalAvisos": 4,
+    "totalErros": 5,
+    "modulosAprovados": 0,
+    "modulosReprovados": 3
+  }
+}

@@ -8,10 +8,19 @@ const associateClientSchema = z.object({
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const ticketId = params.id;
+    const { id } = await params;
+    
+    if (!id) {
+      return NextResponse.json(
+        { error: 'ID do ticket é obrigatório' },
+        { status: 400 }
+      );
+    }
+
+    const ticketId = id;
     
     // Validar se o ticket existe
     const ticket = await db.helpdeskTicket.findUnique({

@@ -225,14 +225,23 @@ import { z } from 'zod';
  */
 
 interface RouteParams {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 // GET - Buscar configuração de webhook específica
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
+    const { id } = await params;
+    
+    if (!id) {
+      return NextResponse.json(
+        { error: 'ID do webhook é obrigatório' },
+        { status: 400 }
+      );
+    }
+
     // Validar autenticação (sessão ou API Key)
     const authResult = await ApiMiddleware.validateAuth(request);
     if (!authResult.valid) {
@@ -246,7 +255,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 
     const webhook = await db.webhookConfig.findUnique({
       where: {
-        id: params.id
+        id
       }
     });
 
@@ -281,6 +290,15 @@ const updateWebhookSchema = z.object({
 // PUT - Atualizar configuração de webhook
 export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
+    const { id } = await params;
+    
+    if (!id) {
+      return NextResponse.json(
+        { error: 'ID do webhook é obrigatório' },
+        { status: 400 }
+      );
+    }
+
     // Validar autenticação (sessão ou API Key)
     const authResult = await ApiMiddleware.validateAuth(request);
     if (!authResult.valid) {
@@ -308,7 +326,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 
     // Verifica se o webhook existe
     const existingWebhook = await db.webhookConfig.findUnique({
-      where: { id: params.id }
+      where: { id }
     });
 
     if (!existingWebhook) {
@@ -349,6 +367,15 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 // DELETE - Remover configuração de webhook
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
+    const { id } = await params;
+    
+    if (!id) {
+      return NextResponse.json(
+        { error: 'ID do webhook é obrigatório' },
+        { status: 400 }
+      );
+    }
+
     // Validar autenticação (sessão ou API Key)
     const authResult = await ApiMiddleware.validateAuth(request);
     if (!authResult.valid) {
@@ -362,7 +389,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
 
     // Verifica se o webhook existe
     const existingWebhook = await db.webhookConfig.findUnique({
-      where: { id: params.id }
+      where: { id }
     });
 
     if (!existingWebhook) {
@@ -374,7 +401,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
 
     // Remove o webhook
     await db.webhookConfig.delete({
-      where: { id: params.id }
+      where: { id }
     });
 
     return NextResponse.json(

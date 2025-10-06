@@ -7,7 +7,7 @@ import { existsSync } from 'fs';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Validar autenticação
@@ -21,9 +21,15 @@ export async function GET(
       return ApiMiddleware.createErrorResponse('Sem permissão para visualizar anexos', 403);
     }
 
+    const { id } = await params;
+    
+    if (!id) {
+      return ApiMiddleware.createErrorResponse('ID da tarefa é obrigatório', 400);
+    }
+
     // Verificar se a tarefa existe
     const task = await db.task.findUnique({
-      where: { id: params.id }
+      where: { id }
     });
 
     if (!task) {
@@ -34,7 +40,7 @@ export async function GET(
     }
 
     const attachments = await db.taskAttachment.findMany({
-      where: { taskId: params.id },
+      where: { taskId: id },
       include: {
         uploadPor: {
           select: {
@@ -61,7 +67,7 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Validar autenticação
@@ -75,9 +81,15 @@ export async function POST(
       return ApiMiddleware.createErrorResponse('Sem permissão para adicionar anexos', 403);
     }
 
+    const { id } = await params;
+    
+    if (!id) {
+      return ApiMiddleware.createErrorResponse('ID da tarefa é obrigatório', 400);
+    }
+
     // Verificar se a tarefa existe
     const task = await db.task.findUnique({
-      where: { id: params.id }
+      where: { id }
     });
 
     if (!task) {
@@ -129,7 +141,7 @@ export async function POST(
     }
 
     // Criar diretório de uploads se não existir
-    const uploadsDir = join(process.cwd(), 'uploads', 'tasks', params.id);
+    const uploadsDir = join(process.cwd(), 'uploads', 'tasks', id);
     if (!existsSync(uploadsDir)) {
       await mkdir(uploadsDir, { recursive: true });
     }
@@ -138,7 +150,7 @@ export async function POST(
     const timestamp = Date.now();
     const fileName = `${timestamp}-${file.name}`;
     const filePath = join(uploadsDir, fileName);
-    const relativePath = join('uploads', 'tasks', params.id, fileName);
+    const relativePath = join('uploads', 'tasks', id, fileName);
 
     // Salvar arquivo
     const bytes = await file.arrayBuffer();
@@ -148,7 +160,7 @@ export async function POST(
     // Criar registro no banco
     const attachment = await db.taskAttachment.create({
       data: {
-        taskId: params.id,
+        taskId: id,
         uploadPorId: colaboradorId,
         nomeArquivo: file.name,
         tipoConteudo: file.type,
@@ -169,7 +181,7 @@ export async function POST(
     // Criar log do anexo
     await db.taskLog.create({
       data: {
-        taskId: params.id,
+        taskId: id,
         autorId: colaboradorId,
         tipo: 'ANEXO_ADICIONADO',
         descricao: `Anexo adicionado: ${file.name}`,

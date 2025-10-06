@@ -153,6 +153,15 @@ export function useAuth() {
         generate: hasPermission('orcamentos', 'gerar'),
         any: hasAnyPermission('orcamentos', ['criar', 'ler', 'editar', 'excluir', 'aprovar', 'gerar'])
       },
+      // Laudos Técnicos
+      laudos: {
+        create: hasPermission('laudos', 'criar'),
+        read: hasPermission('laudos', 'ler'),
+        update: hasPermission('laudos', 'editar'),
+        delete: hasPermission('laudos', 'excluir'),
+        approve: hasPermission('laudos', 'aprovar'),
+        any: hasAnyPermission('laudos', ['criar', 'ler', 'editar', 'excluir', 'aprovar'])
+      },
       // Webmail
        webmail: {
           access: WebmailPermissionUtils.hasWebmailPermission(permissions.map(p => p.nome), WEBMAIL_PERMISSIONS.EMAIL_READ),

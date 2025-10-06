@@ -4,11 +4,20 @@ import bcrypt from 'bcryptjs';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
+    if (!id) {
+      return NextResponse.json(
+        { error: 'ID do usuário é obrigatório' },
+        { status: 400 }
+      );
+    }
+
     const usuario = await db.usuario.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         colaborador: {
           select: {
@@ -54,9 +63,18 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
+    if (!id) {
+      return NextResponse.json(
+        { error: 'ID do usuário é obrigatório' },
+        { status: 400 }
+      );
+    }
+
     const body = await request.json();
 
     // Validar dados obrigatórios
@@ -69,7 +87,7 @@ export async function PUT(
 
     // Verificar se usuário existe
     const existingUsuario = await db.usuario.findUnique({
-      where: { id: params.id }
+      where: { id }
     });
 
     if (!existingUsuario) {
@@ -111,7 +129,7 @@ export async function PUT(
         const existingUserForCollaborator = await db.usuario.findFirst({
           where: {
             colaboradorId: body.colaboradorId,
-            id: { not: params.id }
+            id: { not: id }
           }
         });
 
@@ -140,7 +158,7 @@ export async function PUT(
 
     // Atualizar usuário
     const usuario = await db.usuario.update({
-      where: { id: params.id },
+      where: { id },
       data: updateData,
       include: {
         colaborador: {
@@ -166,12 +184,21 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
+    if (!id) {
+      return NextResponse.json(
+        { error: 'ID do usuário é obrigatório' },
+        { status: 400 }
+      );
+    }
+
     // Verificar se usuário existe
     const existingUsuario = await db.usuario.findUnique({
-      where: { id: params.id }
+      where: { id }
     });
 
     if (!existingUsuario) {
@@ -181,9 +208,12 @@ export async function DELETE(
       );
     }
 
+    // Verificar se usuário pode ser excluído (não tem dependências)
+    // Aqui você pode adicionar verificações específicas do seu negócio
+
     // Excluir usuário
     await db.usuario.delete({
-      where: { id: params.id }
+      where: { id }
     });
 
     return NextResponse.json({ message: 'Usuário excluído com sucesso' });

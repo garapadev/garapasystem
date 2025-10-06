@@ -22,7 +22,7 @@ const laudoSchema = z.object({
 // GET - Buscar laudo técnico da ordem de serviço
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -30,7 +30,15 @@ export async function GET(
       return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
     }
 
-    const ordemServicoId = params.id;
+    // Aguardar a resolução do objeto params antes de acessar a propriedade id
+    const { id } = await params;
+    
+    // Validar se o ID foi fornecido
+    if (!id) {
+      return NextResponse.json({ error: 'ID da ordem de serviço é obrigatório' }, { status: 400 });
+    }
+
+    const ordemServicoId = id;
 
     // Verificar se a ordem de serviço existe
     const ordemServico = await prisma.ordemServico.findUnique({
@@ -90,7 +98,7 @@ export async function GET(
 // POST - Criar novo laudo técnico
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -98,7 +106,15 @@ export async function POST(
       return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
     }
 
-    const ordemServicoId = params.id;
+    // Aguardar a resolução do objeto params antes de acessar a propriedade id
+    const { id } = await params;
+    
+    // Validar se o ID foi fornecido
+    if (!id) {
+      return NextResponse.json({ error: 'ID da ordem de serviço é obrigatório' }, { status: 400 });
+    }
+
+    const ordemServicoId = id;
     const body = await request.json();
 
     // Validar dados

@@ -5,15 +5,24 @@ import { db as prisma } from '@/lib/db';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
+    if (!id) {
+      return NextResponse.json(
+        { error: 'ID do email é obrigatório' },
+        { status: 400 }
+      );
+    }
+
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
     }
 
-    const emailId = params.id;
+    const emailId = id;
 
     // Buscar colaborador pelo email da sessão
     const colaborador = await prisma.colaborador.findFirst({

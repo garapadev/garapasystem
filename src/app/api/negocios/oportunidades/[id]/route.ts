@@ -21,7 +21,7 @@ const updateOportunidadeSchema = z.object({
 // GET - Buscar oportunidade por ID
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -29,8 +29,17 @@ export async function GET(
       return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
     }
 
+    const { id } = await params;
+    
+    if (!id) {
+      return NextResponse.json(
+        { error: 'ID da oportunidade é obrigatório' },
+        { status: 400 }
+      );
+    }
+
     const oportunidade = await db.oportunidade.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         cliente: {
           select: {
@@ -94,7 +103,7 @@ export async function GET(
 // PUT - Atualizar oportunidade
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -102,12 +111,21 @@ export async function PUT(
       return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
     }
 
+    const { id } = await params;
+    
+    if (!id) {
+      return NextResponse.json(
+        { error: 'ID da oportunidade é obrigatório' },
+        { status: 400 }
+      );
+    }
+
     const body = await request.json();
     const validatedData = updateOportunidadeSchema.parse(body);
 
     // Verificar se oportunidade existe
     const oportunidadeExistente = await db.oportunidade.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         etapa: true
       }
@@ -259,7 +277,7 @@ export async function PUT(
 // DELETE - Excluir oportunidade
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -267,9 +285,18 @@ export async function DELETE(
       return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
     }
 
+    const { id } = await params;
+    
+    if (!id) {
+      return NextResponse.json(
+        { error: 'ID da oportunidade é obrigatório' },
+        { status: 400 }
+      );
+    }
+
     // Verificar se oportunidade existe
     const oportunidade = await db.oportunidade.findUnique({
-      where: { id: params.id },
+      where: { id },
       select: {
         id: true,
         titulo: true
@@ -285,12 +312,12 @@ export async function DELETE(
 
     // Excluir histórico primeiro (devido à foreign key)
     await db.historicoOportunidade.deleteMany({
-      where: { oportunidadeId: params.id }
+      where: { oportunidadeId: id }
     });
 
     // Excluir oportunidade
     await db.oportunidade.delete({
-      where: { id: params.id }
+      where: { id }
     });
 
     // Emitir evento Socket.IO
@@ -298,7 +325,7 @@ export async function DELETE(
     if (io) {
       io.emit('oportunidade-notification', {
         action: 'deleted',
-        oportunidadeId: params.id,
+        oportunidadeId: id,
         oportunidadeTitulo: oportunidade.titulo,
         userId: session.user.id
       });

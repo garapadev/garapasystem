@@ -17,7 +17,8 @@ import {
   Webhook,
   KeyRound,
   Activity,
-  Building
+  Building,
+  Puzzle
 } from 'lucide-react';
 
 interface ConfigMenuItem {
@@ -59,6 +60,13 @@ const configMenuItems: ConfigMenuItem[] = [
     href: '/configuracoes/logs',
     icon: Activity,
     description: 'Monitoramento e logs do sistema',
+    requireAdmin: true
+  },
+  {
+    name: 'Módulos',
+    href: '/configuracoes/modulos',
+    icon: Puzzle,
+    description: 'Gerenciar módulos do sistema',
     requireAdmin: true
   },
   {

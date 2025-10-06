@@ -4,7 +4,7 @@ import { ApiMiddleware, API_PERMISSIONS } from '@/lib/api-middleware';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Validar autenticação
@@ -18,8 +18,14 @@ export async function GET(
       return ApiMiddleware.createErrorResponse('Sem permissão para visualizar tarefas', 403);
     }
 
+    const { id } = await params;
+    
+    if (!id) {
+      return ApiMiddleware.createErrorResponse('ID da tarefa é obrigatório', 400);
+    }
+
     const task = await db.task.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         responsavel: {
           select: {
@@ -128,7 +134,7 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Validar autenticação
@@ -142,11 +148,17 @@ export async function PUT(
       return ApiMiddleware.createErrorResponse('Sem permissão para editar tarefas', 403);
     }
 
+    const { id } = await params;
+    
+    if (!id) {
+      return ApiMiddleware.createErrorResponse('ID da tarefa é obrigatório', 400);
+    }
+
     const body = await request.json();
 
     // Buscar tarefa atual
     const currentTask = await db.task.findUnique({
-      where: { id: params.id }
+      where: { id }
     });
 
     if (!currentTask) {
@@ -281,7 +293,7 @@ export async function PUT(
 
     // Atualizar tarefa
     const updatedTask = await db.task.update({
-      where: { id: params.id },
+      where: { id },
       data: updateData,
       include: {
         responsavel: {
@@ -319,7 +331,7 @@ export async function PUT(
     if (autorId && changedFields.length > 0) {
       await db.taskLog.create({
         data: {
-          taskId: params.id,
+          taskId: id,
           autorId: autorId,
           tipo: 'ATUALIZACAO',
           descricao: `Alterações: ${changedFields.join(', ')}`,
@@ -341,7 +353,7 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Validar autenticação
@@ -355,9 +367,15 @@ export async function DELETE(
       return ApiMiddleware.createErrorResponse('Sem permissão para excluir tarefas', 403);
     }
 
+    const { id } = await params;
+    
+    if (!id) {
+      return ApiMiddleware.createErrorResponse('ID da tarefa é obrigatório', 400);
+    }
+
     // Verificar se a tarefa existe
     const task = await db.task.findUnique({
-      where: { id: params.id }
+      where: { id }
     });
 
     if (!task) {
@@ -378,14 +396,14 @@ export async function DELETE(
 
     // Excluir tarefa (cascade irá remover relacionamentos)
     await db.task.delete({
-      where: { id: params.id }
+      where: { id }
     });
 
     // Criar log da exclusão
     if (colaboradorId) {
       await db.taskLog.create({
         data: {
-          taskId: params.id,
+          taskId: id,
           colaboradorId: colaboradorId,
           acao: 'EXCLUIDA',
           descricao: `Tarefa excluída: ${task.titulo}`,

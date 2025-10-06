@@ -15,6 +15,7 @@ import {
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { LogOut, Settings, User } from 'lucide-react'
 import { NotificationCenter } from '@/components/realtime/NotificationCenter'
+import { GlobalSearch } from '@/components/search/GlobalSearch'
 import { useRouter } from 'next/navigation'
 
 export function Header() {
@@ -66,6 +67,11 @@ export function Header() {
           <h1 className="text-xl font-semibold text-gray-900">
             {getConfiguracao('sistema_nome')?.valor || 'Sistema de Gestão'}
           </h1>
+        </div>
+        
+        {/* Busca Global */}
+        <div className="flex-1 max-w-md mx-8">
+          <GlobalSearch />
         </div>
         
         <div className="flex items-center space-x-4">

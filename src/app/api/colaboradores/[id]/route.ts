@@ -4,11 +4,20 @@ import bcrypt from 'bcryptjs';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
+    if (!id) {
+      return NextResponse.json(
+        { error: 'ID do colaborador é obrigatório' },
+        { status: 400 }
+      );
+    }
+
     const colaborador = await db.colaborador.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         perfil: {
           select: {
@@ -53,9 +62,18 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
+    if (!id) {
+      return NextResponse.json(
+        { error: 'ID do colaborador é obrigatório' },
+        { status: 400 }
+      );
+    }
+
     const body = await request.json();
 
     // Validar dados obrigatórios
@@ -85,7 +103,7 @@ export async function PUT(
 
     // Verificar se colaborador existe
     const existingColaborador = await db.colaborador.findUnique({
-      where: { id: params.id }
+      where: { id }
     });
 
     if (!existingColaborador) {
@@ -152,7 +170,7 @@ export async function PUT(
 
     // Atualizar colaborador
     const colaborador = await db.colaborador.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         nome: body.nome,
         email: body.email,
@@ -252,12 +270,21 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
+    if (!id) {
+      return NextResponse.json(
+        { error: 'ID do colaborador é obrigatório' },
+        { status: 400 }
+      );
+    }
+
     // Verificar se colaborador existe
     const existingColaborador = await db.colaborador.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         _count: {
           select: {
@@ -284,7 +311,7 @@ export async function DELETE(
 
     // Excluir colaborador
     await db.colaborador.delete({
-      where: { id: params.id }
+      where: { id }
     });
 
     return NextResponse.json({ message: 'Colaborador excluído com sucesso' });

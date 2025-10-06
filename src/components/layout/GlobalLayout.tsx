@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { Sidebar } from './Sidebar';
 import { Header } from './Header';
+import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { useEmailNotifications } from '@/hooks/useEmailNotifications';
 import { isUserLoggedOut } from '@/lib/logout';
 
@@ -65,6 +66,9 @@ export function GlobalLayout({ children }: GlobalLayoutProps) {
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header />
+        <div className="border-b border-gray-200 bg-white px-6 py-3">
+          <Breadcrumbs />
+        </div>
         <main className="flex-1 overflow-auto">
           <div className="p-6">
             {children}

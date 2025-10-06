@@ -3,11 +3,20 @@ import { db } from '@/lib/db';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
+    if (!id) {
+      return NextResponse.json(
+        { error: 'ID do template é obrigatório' },
+        { status: 400 }
+      );
+    }
+
     const template = await db.templateChecklist.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         itens: {
           orderBy: {
@@ -43,9 +52,18 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
+    if (!id) {
+      return NextResponse.json(
+        { error: 'ID do template é obrigatório' },
+        { status: 400 }
+      );
+    }
+
     const body = await request.json();
     const { nome, descricao, ativo, itens } = body;
 
@@ -94,7 +112,7 @@ export async function PUT(
     if (itens) {
       // Deletar itens existentes
       await db.itemTemplateChecklist.deleteMany({
-        where: { templateId: params.id }
+        where: { templateId: id }
       });
 
       // Criar novos itens
@@ -103,7 +121,7 @@ export async function PUT(
         descricao: item.descricao,
         obrigatorio: item.obrigatorio || false,
         ordem: item.ordem || index + 1,
-        templateId: params.id
+        templateId: id
       }));
 
       updateData.itens = {
@@ -113,7 +131,7 @@ export async function PUT(
 
     // Atualizar template
     const template = await db.templateChecklist.update({
-      where: { id: params.id },
+      where: { id },
       data: updateData,
       include: {
         itens: {
@@ -143,12 +161,21 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
+    if (!id) {
+      return NextResponse.json(
+        { error: 'ID do template é obrigatório' },
+        { status: 400 }
+      );
+    }
+
     // Verificar se template existe
     const template = await db.templateChecklist.findUnique({
-      where: { id: params.id }
+      where: { id }
     });
 
     if (!template) {
@@ -160,7 +187,7 @@ export async function DELETE(
 
     // Verificar se template está sendo usado em alguma ordem de serviço
     const checklistsUsando = await db.checklistOrdemServico.count({
-      where: { templateId: params.id }
+      where: { templateId: id }
     });
 
     if (checklistsUsando > 0) {
@@ -172,7 +199,7 @@ export async function DELETE(
 
     // Deletar template (cascade irá deletar itens)
     await db.templateChecklist.delete({
-      where: { id: params.id }
+      where: { id }
     });
 
     return NextResponse.json({ message: 'Template de checklist deletado com sucesso' });

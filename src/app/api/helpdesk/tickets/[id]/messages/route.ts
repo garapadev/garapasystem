@@ -13,9 +13,9 @@ const createMessageSchema = z.object({
 });
 
 interface RouteParams {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 // GET - Listar mensagens do ticket
@@ -24,12 +24,21 @@ export async function GET(
   { params }: RouteParams
 ) {
   try {
+    const { id } = await params;
+    
+    if (!id) {
+      return NextResponse.json(
+        { error: 'ID do ticket é obrigatório' },
+        { status: 400 }
+      );
+    }
+
     const session = await auth();
     if (!session?.user) {
       return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
     }
 
-    const ticketId = params.id;
+    const ticketId = id;
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '50');
@@ -114,12 +123,21 @@ export async function POST(
   { params }: RouteParams
 ) {
   try {
+    const { id } = await params;
+    
+    if (!id) {
+      return NextResponse.json(
+        { error: 'ID do ticket é obrigatório' },
+        { status: 400 }
+      );
+    }
+
     const session = await auth();
     if (!session?.user) {
       return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
     }
 
-    const ticketId = params.id;
+    const ticketId = id;
     const body = await request.json();
     const validatedData = createMessageSchema.parse(body);
 
