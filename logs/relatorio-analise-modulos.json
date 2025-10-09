@@ -1,0 +1,472 @@
+{
+  "timestamp": "2025-10-09T12:20:16.240Z",
+  "totalModulos": 12,
+  "resumo": {
+    "conformes": 4,
+    "parcialmenteConformes": 8,
+    "naoConformes": 0
+  },
+  "modulos": [
+    {
+      "nome": "dashboard",
+      "titulo": "Dashboard",
+      "status": "PARCIALMENTE_CONFORME",
+      "problemas": [
+        "Arquivos faltando: /app/src/app/dashboard/page.tsx, /app/src/app/api/dashboard/route.ts, /app/src/components/dashboard/"
+      ],
+      "conformidades": [
+        "Categoria válida: core",
+        "Ícone definido: LayoutDashboard",
+        "Rota definida: /dashboard"
+      ],
+      "estruturaArquivos": {
+        "existe": false,
+        "arquivos": [],
+        "faltando": [
+          "/app/src/app/dashboard/page.tsx",
+          "/app/src/app/api/dashboard/route.ts",
+          "/app/src/components/dashboard/"
+        ]
+      }
+    },
+    {
+      "nome": "clientes",
+      "titulo": "Clientes",
+      "status": "CONFORME",
+      "problemas": [],
+      "conformidades": [
+        "Categoria válida: core",
+        "Ícone definido: Users",
+        "Rota definida: /clientes",
+        "Permissão definida: clientes.ler",
+        "Arquivos encontrados: 3"
+      ],
+      "estruturaArquivos": {
+        "existe": true,
+        "arquivos": [
+          "/app/src/app/clientes/page.tsx",
+          "/app/src/app/api/clientes/route.ts",
+          "/app/src/components/clientes/"
+        ],
+        "faltando": []
+      }
+    },
+    {
+      "nome": "colaboradores",
+      "titulo": "Colaboradores",
+      "status": "PARCIALMENTE_CONFORME",
+      "problemas": [
+        "Arquivos faltando: /app/src/app/colaboradores/page.tsx, /app/src/components/colaboradores/"
+      ],
+      "conformidades": [
+        "Categoria válida: core",
+        "Ícone definido: UserCheck",
+        "Rota definida: /colaboradores",
+        "Arquivos encontrados: 1"
+      ],
+      "estruturaArquivos": {
+        "existe": true,
+        "arquivos": [
+          "/app/src/app/api/colaboradores/route.ts"
+        ],
+        "faltando": [
+          "/app/src/app/colaboradores/page.tsx",
+          "/app/src/components/colaboradores/"
+        ]
+      }
+    },
+    {
+      "nome": "webmail",
+      "titulo": "Webmail",
+      "status": "PARCIALMENTE_CONFORME",
+      "problemas": [
+        "Arquivos faltando: /app/src/app/api/webmail/route.ts"
+      ],
+      "conformidades": [
+        "Categoria válida: comunicacao",
+        "Ícone definido: Mail",
+        "Rota definida: /webmail",
+        "Permissão definida: webmail.view",
+        "Arquivos encontrados: 2"
+      ],
+      "estruturaArquivos": {
+        "existe": true,
+        "arquivos": [
+          "/app/src/app/webmail/page.tsx",
+          "/app/src/components/webmail/"
+        ],
+        "faltando": [
+          "/app/src/app/api/webmail/route.ts"
+        ]
+      }
+    },
+    {
+      "nome": "helpdesk",
+      "titulo": "Helpdesk",
+      "status": "PARCIALMENTE_CONFORME",
+      "problemas": [
+        "Categoria inválida ou ausente: atendimento",
+        "Arquivos faltando: /app/src/app/api/helpdesk/route.ts"
+      ],
+      "conformidades": [
+        "Ícone definido: HeadphonesIcon",
+        "Rota definida: /helpdesk",
+        "Permissão definida: helpdesk.view",
+        "Arquivos encontrados: 2"
+      ],
+      "estruturaArquivos": {
+        "existe": true,
+        "arquivos": [
+          "/app/src/app/helpdesk/page.tsx",
+          "/app/src/components/helpdesk/"
+        ],
+        "faltando": [
+          "/app/src/app/api/helpdesk/route.ts"
+        ]
+      }
+    },
+    {
+      "nome": "whatsapp-chat",
+      "titulo": "WhatsApp Chat",
+      "status": "PARCIALMENTE_CONFORME",
+      "problemas": [
+        "Arquivos faltando: /app/src/app/whatsapp-chat/page.tsx, /app/src/app/api/whatsapp-chat/route.ts, /app/src/components/whatsapp-chat/"
+      ],
+      "conformidades": [
+        "Categoria válida: comunicacao",
+        "Ícone definido: MessageCircle",
+        "Rota definida: /whatsapp-chat",
+        "Permissão definida: whatsapp.view"
+      ],
+      "estruturaArquivos": {
+        "existe": false,
+        "arquivos": [],
+        "faltando": [
+          "/app/src/app/whatsapp-chat/page.tsx",
+          "/app/src/app/api/whatsapp-chat/route.ts",
+          "/app/src/components/whatsapp-chat/"
+        ]
+      }
+    },
+    {
+      "nome": "tarefas",
+      "titulo": "Tarefas",
+      "status": "PARCIALMENTE_CONFORME",
+      "problemas": [
+        "Categoria inválida ou ausente: produtividade",
+        "Arquivos faltando: /app/src/app/tarefas/page.tsx, /app/src/app/api/tarefas/route.ts, /app/src/components/tarefas/"
+      ],
+      "conformidades": [
+        "Ícone definido: CheckSquare",
+        "Rota definida: /tarefas",
+        "Permissão definida: tasks.view"
+      ],
+      "estruturaArquivos": {
+        "existe": false,
+        "arquivos": [],
+        "faltando": [
+          "/app/src/app/tarefas/page.tsx",
+          "/app/src/app/api/tarefas/route.ts",
+          "/app/src/components/tarefas/"
+        ]
+      }
+    },
+    {
+      "nome": "orcamentos",
+      "titulo": "Orçamentos",
+      "status": "CONFORME",
+      "problemas": [],
+      "conformidades": [
+        "Categoria válida: vendas",
+        "Ícone definido: FileText",
+        "Rota definida: /orcamentos",
+        "Permissão definida: orcamentos.view",
+        "Arquivos encontrados: 3"
+      ],
+      "estruturaArquivos": {
+        "existe": true,
+        "arquivos": [
+          "/app/src/app/orcamentos/page.tsx",
+          "/app/src/app/api/orcamentos/route.ts",
+          "/app/src/components/orcamentos/"
+        ],
+        "faltando": []
+      }
+    },
+    {
+      "nome": "ordens-servico",
+      "titulo": "Ordens de Serviço",
+      "status": "CONFORME",
+      "problemas": [],
+      "conformidades": [
+        "Categoria válida: operacional",
+        "Ícone definido: Wrench",
+        "Rota definida: /ordens-servico",
+        "Permissão definida: ordens_servico.view",
+        "Arquivos encontrados: 3"
+      ],
+      "estruturaArquivos": {
+        "existe": true,
+        "arquivos": [
+          "/app/src/app/ordens-servico/page.tsx",
+          "/app/src/app/api/ordens-servico/route.ts",
+          "/app/src/components/ordens-servico/"
+        ],
+        "faltando": []
+      }
+    },
+    {
+      "nome": "negocios",
+      "titulo": "Negócios",
+      "status": "PARCIALMENTE_CONFORME",
+      "problemas": [
+        "Arquivos faltando: /app/src/app/api/negocios/route.ts, /app/src/components/negocios/"
+      ],
+      "conformidades": [
+        "Categoria válida: vendas",
+        "Ícone definido: TrendingUp",
+        "Rota definida: /negocios",
+        "Permissão definida: negocios.view",
+        "Arquivos encontrados: 1"
+      ],
+      "estruturaArquivos": {
+        "existe": true,
+        "arquivos": [
+          "/app/src/app/negocios/page.tsx"
+        ],
+        "faltando": [
+          "/app/src/app/api/negocios/route.ts",
+          "/app/src/components/negocios/"
+        ]
+      }
+    },
+    {
+      "nome": "laudos-tecnicos",
+      "titulo": "Laudos Técnicos",
+      "status": "PARCIALMENTE_CONFORME",
+      "problemas": [
+        "Arquivos faltando: /app/src/components/laudos-tecnicos/"
+      ],
+      "conformidades": [
+        "Categoria válida: operacional",
+        "Ícone definido: FileCheck",
+        "Rota definida: /laudos-tecnicos",
+        "Permissão definida: laudos.view",
+        "Arquivos encontrados: 2"
+      ],
+      "estruturaArquivos": {
+        "existe": true,
+        "arquivos": [
+          "/app/src/app/laudos-tecnicos/page.tsx",
+          "/app/src/app/api/laudos-tecnicos/route.ts"
+        ],
+        "faltando": [
+          "/app/src/components/laudos-tecnicos/"
+        ]
+      }
+    },
+    {
+      "nome": "configuracoes",
+      "titulo": "Configurações",
+      "status": "CONFORME",
+      "problemas": [],
+      "conformidades": [
+        "Categoria válida: core",
+        "Ícone definido: Settings",
+        "Rota definida: /configuracoes",
+        "Arquivos encontrados: 3"
+      ],
+      "estruturaArquivos": {
+        "existe": true,
+        "arquivos": [
+          "/app/src/app/configuracoes/page.tsx",
+          "/app/src/app/api/configuracoes/route.ts",
+          "/app/src/components/configuracoes/"
+        ],
+        "faltando": []
+      }
+    }
+  ],
+  "modulosDetalhados": [
+    {
+      "id": "cmgf6x2hv0000o0kvc2vjbb7v",
+      "nome": "dashboard",
+      "titulo": "Dashboard",
+      "descricao": "Painel principal do sistema",
+      "ativo": true,
+      "core": true,
+      "icone": "LayoutDashboard",
+      "ordem": 1,
+      "permissao": null,
+      "rota": "/dashboard",
+      "categoria": "core",
+      "createdAt": "2025-10-06T13:52:20.707Z",
+      "updatedAt": "2025-10-06T23:08:29.642Z"
+    },
+    {
+      "id": "cmgf6x2i30001o0kvzdvci5zr",
+      "nome": "clientes",
+      "titulo": "Clientes",
+      "descricao": "Gerenciamento de clientes",
+      "ativo": true,
+      "core": false,
+      "icone": "Users",
+      "ordem": 2,
+      "permissao": "clientes.ler",
+      "rota": "/clientes",
+      "categoria": "core",
+      "createdAt": "2025-10-06T13:52:20.715Z",
+      "updatedAt": "2025-10-06T23:08:29.658Z"
+    },
+    {
+      "id": "cmgf6x2ib0002o0kvrldrowvw",
+      "nome": "colaboradores",
+      "titulo": "Colaboradores",
+      "descricao": null,
+      "ativo": true,
+      "core": true,
+      "icone": "UserCheck",
+      "ordem": 3,
+      "permissao": null,
+      "rota": "/colaboradores",
+      "categoria": "core",
+      "createdAt": "2025-10-06T13:52:20.723Z",
+      "updatedAt": "2025-10-06T23:08:29.664Z"
+    },
+    {
+      "id": "cmgf6x2is0004o0kvrx15ch09",
+      "nome": "webmail",
+      "titulo": "Webmail",
+      "descricao": "Sistema de e-mail integrado",
+      "ativo": true,
+      "core": false,
+      "icone": "Mail",
+      "ordem": 10,
+      "permissao": "webmail.view",
+      "rota": "/webmail",
+      "categoria": "comunicacao",
+      "createdAt": "2025-10-06T13:52:20.740Z",
+      "updatedAt": "2025-10-06T23:08:29.673Z"
+    },
+    {
+      "id": "cmgf6x2kr0005o0kv9clb56be",
+      "nome": "helpdesk",
+      "titulo": "Helpdesk",
+      "descricao": "Sistema de atendimento ao cliente",
+      "ativo": true,
+      "core": false,
+      "icone": "HeadphonesIcon",
+      "ordem": 11,
+      "permissao": "helpdesk.view",
+      "rota": "/helpdesk",
+      "categoria": "atendimento",
+      "createdAt": "2025-10-06T13:52:20.811Z",
+      "updatedAt": "2025-10-06T23:08:29.680Z"
+    },
+    {
+      "id": "cmgf6x2nw0006o0kvn97u8ltc",
+      "nome": "whatsapp-chat",
+      "titulo": "WhatsApp Chat",
+      "descricao": "Chat integrado com WhatsApp",
+      "ativo": false,
+      "core": false,
+      "icone": "MessageCircle",
+      "ordem": 12,
+      "permissao": "whatsapp.view",
+      "rota": "/whatsapp-chat",
+      "categoria": "comunicacao",
+      "createdAt": "2025-10-06T13:52:20.924Z",
+      "updatedAt": "2025-10-06T23:08:29.685Z"
+    },
+    {
+      "id": "cmgf6x2p50007o0kvr3m69q2g",
+      "nome": "tarefas",
+      "titulo": "Tarefas",
+      "descricao": "Gerenciamento de tarefas e projetos",
+      "ativo": true,
+      "core": false,
+      "icone": "CheckSquare",
+      "ordem": 20,
+      "permissao": "tasks.view",
+      "rota": "/tarefas",
+      "categoria": "produtividade",
+      "createdAt": "2025-10-06T13:52:20.969Z",
+      "updatedAt": "2025-10-06T23:08:29.689Z"
+    },
+    {
+      "id": "cmgf6x2q30008o0kvaebfqlat",
+      "nome": "orcamentos",
+      "titulo": "Orçamentos",
+      "descricao": "Sistema de orçamentos",
+      "ativo": true,
+      "core": false,
+      "icone": "FileText",
+      "ordem": 30,
+      "permissao": "orcamentos.view",
+      "rota": "/orcamentos",
+      "categoria": "vendas",
+      "createdAt": "2025-10-06T13:52:21.004Z",
+      "updatedAt": "2025-10-06T23:08:29.693Z"
+    },
+    {
+      "id": "cmgf6x2r10009o0kvb7vjq65o",
+      "nome": "ordens-servico",
+      "titulo": "Ordens de Serviço",
+      "descricao": "Gerenciamento de ordens de serviço",
+      "ativo": true,
+      "core": false,
+      "icone": "Wrench",
+      "ordem": 31,
+      "permissao": "ordens_servico.view",
+      "rota": "/ordens-servico",
+      "categoria": "operacional",
+      "createdAt": "2025-10-06T13:52:21.037Z",
+      "updatedAt": "2025-10-06T23:08:29.698Z"
+    },
+    {
+      "id": "cmgf6x2rn000ao0kv3hic4cz8",
+      "nome": "negocios",
+      "titulo": "Negócios",
+      "descricao": null,
+      "ativo": true,
+      "core": false,
+      "icone": "TrendingUp",
+      "ordem": 40,
+      "permissao": "negocios.view",
+      "rota": "/negocios",
+      "categoria": "vendas",
+      "createdAt": "2025-10-06T13:52:21.060Z",
+      "updatedAt": "2025-10-06T23:08:29.703Z"
+    },
+    {
+      "id": "cmgf6x2t4000bo0kvn0ym2lqo",
+      "nome": "laudos-tecnicos",
+      "titulo": "Laudos Técnicos",
+      "descricao": null,
+      "ativo": true,
+      "core": false,
+      "icone": "FileCheck",
+      "ordem": 50,
+      "permissao": "laudos.view",
+      "rota": "/laudos-tecnicos",
+      "categoria": "operacional",
+      "createdAt": "2025-10-06T13:52:21.113Z",
+      "updatedAt": "2025-10-06T23:08:29.707Z"
+    },
+    {
+      "id": "cmgf6x2ik0003o0kveqs6ii1x",
+      "nome": "configuracoes",
+      "titulo": "Configurações",
+      "descricao": "Configurações do sistema",
+      "ativo": true,
+      "core": true,
+      "icone": "Settings",
+      "ordem": 99,
+      "permissao": null,
+      "rota": "/configuracoes",
+      "categoria": "core",
+      "createdAt": "2025-10-06T13:52:20.732Z",
+      "updatedAt": "2025-10-06T23:08:29.669Z"
+    }
+  ]
+}

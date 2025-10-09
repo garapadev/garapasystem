@@ -92,7 +92,7 @@ export async function seedModules() {
       icone: 'CheckSquare',
       ordem: 20,
       rota: '/tarefas',
-      categoria: 'produtividade',
+      categoria: 'operacional',
       permissao: 'tasks.view',
     },
     {

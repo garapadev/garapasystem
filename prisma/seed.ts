@@ -680,6 +680,24 @@ async function main() {
     }
   })
 
+  // Verificar e criar módulos do sistema
+  console.log('🔧 Verificando módulos do sistema...')
+  const modulosCount = await prisma.moduloSistema.count()
+  
+  if (modulosCount === 0) {
+    console.log('📦 Criando módulos do sistema...')
+    // Executar o script de seed de módulos
+    const { execSync } = require('child_process')
+    try {
+      execSync('tsx /app/scripts/seed-modulos.ts', { stdio: 'inherit' })
+      console.log('✅ Módulos criados com sucesso!')
+    } catch (error) {
+      console.error('❌ Erro ao criar módulos:', error)
+    }
+  } else {
+    console.log(`📊 Módulos já existem (${modulosCount} encontrados)`)
+  }
+
   console.log('✅ Seed concluído com sucesso!')
   console.log('📧 Email: admin@garapasystem.com')
   console.log('🔑 Senha: password')

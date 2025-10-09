@@ -1,28 +1,13 @@
 import { Client } from 'pg';
 
 // Configuração do cliente PostgreSQL direto
-// Parse da DATABASE_URL se disponível
-let dbConfig;
-if (process.env.DATABASE_URL) {
-  const url = new URL(process.env.DATABASE_URL);
-  dbConfig = {
-    host: url.hostname,
-    port: parseInt(url.port || '5432'),
-    database: url.pathname.slice(1), // Remove a barra inicial
-    user: url.username,
-    password: url.password,
-  };
-} else {
-  dbConfig = {
-    host: process.env.DATABASE_HOST || 'garapasystem-postgres',
-    port: parseInt(process.env.DATABASE_PORT || '5432'),
-    database: process.env.DATABASE_NAME || 'crm_erp',
-    user: process.env.DATABASE_USER || 'postgres',
-    password: process.env.DATABASE_PASSWORD || 'postgres',
-  };
-}
-
-const pgClient = new Client(dbConfig);
+const pgClient = new Client({
+  host: process.env.DATABASE_HOST || 'garapasystem-postgres',
+  port: parseInt(process.env.DATABASE_PORT || '5432'),
+  database: process.env.DATABASE_NAME || 'crm_erp',
+  user: process.env.DATABASE_USER || 'postgres',
+  password: process.env.DATABASE_PASSWORD || 'postgres',
+});
 
 interface ModuloData {
   id: string;
@@ -39,7 +24,7 @@ interface ModuloData {
 }
 
 async function seedModulos() {
-  console.log('🌱 Iniciando seed dos módulos do sistema (v2)...');
+  console.log('🌱 Iniciando seed dos módulos do sistema...');
 
   // Conectar ao PostgreSQL
   await pgClient.connect();

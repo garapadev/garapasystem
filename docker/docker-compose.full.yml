@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: garapasystem-postgres
+    environment:
+      POSTGRES_DB: crm_erp
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - garapasystem-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d crm_erp"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  gaparasystem-app:
+    image: garapasystem:v0.2.38.17-fix-connectivity-v4
+    container_name: garapasystem-app
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: crm_erp
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/crm_erp?schema=public
+      NODE_ENV: production
+      PORT: 3000
+    ports:
+      - "3000:3000"
+    networks:
+      - garapasystem-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: garapasystem-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@garapasystem.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - "8080:80"
+    depends_on:
+      - postgres
+    networks:
+      - garapasystem-network
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+
+volumes:
+  postgres_data:
+  pgadmin_data:
+    driver: local
+
+networks:
+  garapasystem-network:
+    driver: bridge
