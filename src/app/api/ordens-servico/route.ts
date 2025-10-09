@@ -1,18 +1,59 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import { ApiMiddleware } from '@/lib/api-middleware';
+import { 
+  ordemServicoFilterSchema, 
+  createOrdemServicoSchema, 
+  updateOrdemServicoSchema 
+} from '@/lib/validations/ordem-servico';
 
 export async function GET(request: NextRequest) {
   try {
+    // Validar autenticação
+    const auth = await ApiMiddleware.validateAuth(request);
+    if (!auth.valid) {
+      return ApiMiddleware.createErrorResponse(auth.error || 'Não autorizado');
+    }
+
+    // Verificar permissões
+    if (!ApiMiddleware.hasAuthPermission(auth, '/api/ordens-servico', 'GET')) {
+      return ApiMiddleware.createErrorResponse('Sem permissão para visualizar ordens de serviço', 403);
+    }
+
     const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '10');
-    const search = searchParams.get('search') || '';
-    const status = searchParams.get('status') || '';
-    const prioridade = searchParams.get('prioridade') || '';
-    const clienteId = searchParams.get('clienteId') || '';
-    const responsavelId = searchParams.get('responsavelId') || '';
-    const dataInicio = searchParams.get('dataInicio') || '';
-    const dataFim = searchParams.get('dataFim') || '';
+    
+    // Validar parâmetros de consulta com Zod
+    const queryParams = {
+      page: searchParams.get('page') || '1',
+      limit: searchParams.get('limit') || '10',
+      search: searchParams.get('search') || '',
+      status: searchParams.get('status') || '',
+      prioridade: searchParams.get('prioridade') || '',
+      clienteId: searchParams.get('clienteId') || '',
+      responsavelId: searchParams.get('responsavelId') || '',
+      dataInicio: searchParams.get('dataInicio') || '',
+      dataFim: searchParams.get('dataFim') || ''
+    };
+
+    const validationResult = ordemServicoFilterSchema.safeParse(queryParams);
+    if (!validationResult.success) {
+      return ApiMiddleware.createErrorResponse(
+        `Parâmetros de consulta inválidos: ${validationResult.error.errors.map(e => e.message).join(', ')}`,
+        400
+      );
+    }
+
+    const { 
+      page, 
+      limit, 
+      search, 
+      status, 
+      prioridade, 
+      clienteId, 
+      responsavelId, 
+      dataInicio, 
+      dataFim 
+    } = validationResult.data;
 
     const skip = (page - 1) * limit;
 
@@ -129,61 +170,48 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error('Erro ao buscar ordens de serviço:', error);
-    return NextResponse.json(
-      { error: 'Erro ao buscar ordens de serviço' },
-      { status: 500 }
-    );
+    return ApiMiddleware.createErrorResponse('Erro interno do servidor ao buscar ordens de serviço', 500);
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
+    // Validar autenticação
+    const auth = await ApiMiddleware.validateAuth(request);
+    if (!auth.valid) {
+      return ApiMiddleware.createErrorResponse(auth.error || 'Não autorizado');
+    }
+
+    // Verificar permissões
+    if (!ApiMiddleware.hasAuthPermission(auth, '/api/ordens-servico', 'POST')) {
+      return ApiMiddleware.createErrorResponse('Sem permissão para criar ordens de serviço', 403);
+    }
+
     const body = await request.json();
 
-    // Validar dados obrigatórios
-    if (!body.titulo) {
-      return NextResponse.json(
-        { error: 'Título é obrigatório' },
-        { status: 400 }
+    // Validar dados com Zod
+    const validationResult = createOrdemServicoSchema.safeParse(body);
+    if (!validationResult.success) {
+      return ApiMiddleware.createErrorResponse(
+        `Dados inválidos: ${validationResult.error.errors.map(e => e.message).join(', ')}`,
+        400
       );
     }
 
-    if (!body.descricao) {
-      return NextResponse.json(
-        { error: 'Descrição é obrigatória' },
-        { status: 400 }
-      );
-    }
-
-    if (!body.clienteId) {
-      return NextResponse.json(
-        { error: 'Cliente é obrigatório' },
-        { status: 400 }
-      );
-    }
-
-    if (!body.criadoPorId) {
-      return NextResponse.json(
-        { error: 'Criador é obrigatório' },
-        { status: 400 }
-      );
-    }
+    const validatedData = validationResult.data;
 
     // Verificar se cliente existe
     const cliente = await db.cliente.findUnique({
-      where: { id: body.clienteId }
+      where: { id: validatedData.clienteId }
     });
 
     if (!cliente) {
-      return NextResponse.json(
-        { error: 'Cliente não encontrado' },
-        { status: 404 }
-      );
+      return ApiMiddleware.createErrorResponse('Cliente não encontrado', 404);
     }
 
     // Verificar se colaborador criador existe
     const criadoPor = await db.colaborador.findUnique({
-      where: { id: body.criadoPorId }
+      where: { id: validatedData.criadoPorId }
     });
 
     if (!criadoPor) {
@@ -194,21 +222,18 @@ export async function POST(request: NextRequest) {
     }
 
     // Verificar se responsável existe (se fornecido)
-    if (body.responsavelId) {
+    if (validatedData.responsavelId) {
       const responsavel = await db.colaborador.findUnique({
-        where: { id: body.responsavelId }
+        where: { id: validatedData.responsavelId }
       });
 
       if (!responsavel) {
-        return NextResponse.json(
-          { error: 'Responsável não encontrado' },
-          { status: 404 }
-        );
+        return ApiMiddleware.createErrorResponse('Responsável não encontrado', 404);
       }
     }
 
     // Processar itens da OS
-    const itensData = body.itens || [];
+    const itensData = validatedData.itens || [];
     
     // Calcular valor final baseado nos itens
     let valorFinal = 0;
@@ -249,20 +274,21 @@ export async function POST(request: NextRequest) {
     const ordemServico = await db.ordemServico.create({
       data: {
         numero: numeroOS,
-        titulo: body.titulo,
-        descricao: body.descricao,
-        localExecucao: body.localExecucao || null,
-        dataInicio: body.dataInicio ? new Date(body.dataInicio) : null,
-        dataFim: body.dataFim ? new Date(body.dataFim) : null,
-        valorOrcamento: body.valorOrcamento ? parseFloat(body.valorOrcamento) : null,
+        titulo: validatedData.titulo,
+        descricao: validatedData.descricao,
+        localExecucao: validatedData.localExecucao || null,
+        dataInicio: validatedData.dataInicio ? new Date(validatedData.dataInicio) : null,
+        dataFim: validatedData.dataFim ? new Date(validatedData.dataFim) : null,
+        prazoEstimado: validatedData.prazoEstimado ? new Date(validatedData.prazoEstimado) : null,
+        valorOrcamento: validatedData.valorOrcamento || null,
         valorFinal: valorFinal,
-        status: body.status || 'RASCUNHO',
-        prioridade: body.prioridade || 'MEDIA',
-        observacoes: body.observacoes || null,
-        clienteId: body.clienteId,
-        responsavelId: body.responsavelId || null,
-        criadoPorId: body.criadoPorId,
-        oportunidadeId: body.oportunidadeId || null,
+        status: validatedData.status || 'RASCUNHO',
+        prioridade: validatedData.prioridade || 'MEDIA',
+        observacoes: validatedData.observacoes || null,
+        clienteId: validatedData.clienteId,
+        responsavelId: validatedData.responsavelId || null,
+        criadoPorId: validatedData.criadoPorId,
+        oportunidadeId: validatedData.oportunidadeId || null,
         itens: {
           create: itensData.map((item: any) => {
             const quantidade = parseFloat(item.quantidade || 1);
@@ -280,7 +306,7 @@ export async function POST(request: NextRequest) {
           create: {
             acao: 'criada',
             descricao: 'Ordem de serviço criada',
-            colaboradorId: body.criadoPorId
+            colaboradorId: validatedData.criadoPorId
           }
         }
       },
@@ -334,9 +360,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(ordemServico, { status: 201 });
   } catch (error) {
     console.error('Erro ao criar ordem de serviço:', error);
-    return NextResponse.json(
-      { error: 'Erro ao criar ordem de serviço' },
-      { status: 500 }
-    );
+    return ApiMiddleware.createErrorResponse('Erro interno do servidor ao criar ordem de serviço', 500);
   }
 }

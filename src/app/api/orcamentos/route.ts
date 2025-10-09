@@ -1,19 +1,61 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import { ApiMiddleware } from '@/lib/api-middleware';
+import { 
+  orcamentoFilterSchema, 
+  createOrcamentoSchema, 
+  updateOrcamentoSchema 
+} from '@/lib/validations/orcamento';
 
 export async function GET(request: NextRequest) {
   try {
+    // Validar autenticação
+    const auth = await ApiMiddleware.validateAuth(request);
+    if (!auth.valid) {
+      return ApiMiddleware.createErrorResponse(auth.error || 'Não autorizado');
+    }
+
+    // Verificar permissões
+    if (!ApiMiddleware.hasAuthPermission(auth, '/api/orcamentos', 'GET')) {
+      return ApiMiddleware.createErrorResponse('Sem permissão para visualizar orçamentos', 403);
+    }
+
     const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '10');
-    const search = searchParams.get('search') || '';
-    const status = searchParams.get('status') || '';
-    const clienteId = searchParams.get('clienteId') || '';
-    const ordemServicoId = searchParams.get('ordemServicoId') || '';
-    const laudoTecnicoId = searchParams.get('laudoTecnicoId') || '';
-    const dataInicio = searchParams.get('dataInicio') || '';
-    const dataFim = searchParams.get('dataFim') || '';
-    const geradoAutomaticamente = searchParams.get('geradoAutomaticamente');
+    
+    // Validar parâmetros de consulta com Zod
+    const queryParams = {
+      page: searchParams.get('page') || '1',
+      limit: searchParams.get('limit') || '10',
+      search: searchParams.get('search') || '',
+      status: searchParams.get('status') || '',
+      clienteId: searchParams.get('clienteId') || '',
+      ordemServicoId: searchParams.get('ordemServicoId') || '',
+      laudoTecnicoId: searchParams.get('laudoTecnicoId') || '',
+      dataInicio: searchParams.get('dataInicio') || '',
+      dataFim: searchParams.get('dataFim') || '',
+      geradoAutomaticamente: searchParams.get('geradoAutomaticamente') || ''
+    };
+
+    const validationResult = orcamentoFilterSchema.safeParse(queryParams);
+    if (!validationResult.success) {
+      return ApiMiddleware.createErrorResponse(
+        `Parâmetros de consulta inválidos: ${validationResult.error.errors.map(e => e.message).join(', ')}`,
+        400
+      );
+    }
+
+    const { 
+      page, 
+      limit, 
+      search, 
+      status, 
+      clienteId, 
+      ordemServicoId, 
+      laudoTecnicoId, 
+      dataInicio, 
+      dataFim, 
+      geradoAutomaticamente 
+    } = validationResult.data;
 
     const skip = (page - 1) * limit;
 
@@ -127,89 +169,70 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error('Erro ao buscar orçamentos:', error);
-    return NextResponse.json(
-      { error: 'Erro ao buscar orçamentos' },
-      { status: 500 }
-    );
+    return ApiMiddleware.createErrorResponse('Erro interno do servidor ao buscar orçamentos', 500);
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
+    // Validar autenticação
+    const auth = await ApiMiddleware.validateAuth(request);
+    if (!auth.valid) {
+      return ApiMiddleware.createErrorResponse(auth.error || 'Não autorizado');
+    }
+
+    // Verificar permissões
+    if (!ApiMiddleware.hasAuthPermission(auth, '/api/orcamentos', 'POST')) {
+      return ApiMiddleware.createErrorResponse('Sem permissão para criar orçamentos', 403);
+    }
+
     const body = await request.json();
 
-    // Validar dados obrigatórios
-    if (!body.titulo) {
-      return NextResponse.json(
-        { error: 'Título é obrigatório' },
-        { status: 400 }
+    // Validar dados com Zod
+    const validationResult = createOrcamentoSchema.safeParse(body);
+    if (!validationResult.success) {
+      return ApiMiddleware.createErrorResponse(
+        `Dados inválidos: ${validationResult.error.errors.map(e => e.message).join(', ')}`,
+        400
       );
     }
 
-    if (!body.ordemServicoId) {
-      return NextResponse.json(
-        { error: 'Ordem de serviço é obrigatória' },
-        { status: 400 }
-      );
-    }
-
-    if (!body.criadoPorId) {
-      return NextResponse.json(
-        { error: 'Criador é obrigatório' },
-        { status: 400 }
-      );
-    }
-
-    if (!body.valorTotal || parseFloat(body.valorTotal) <= 0) {
-      return NextResponse.json(
-        { error: 'Valor total deve ser maior que zero' },
-        { status: 400 }
-      );
-    }
+    const validatedData = validationResult.data;
 
     // Verificar se ordem de serviço existe
     const ordemServico = await db.ordemServico.findUnique({
-      where: { id: body.ordemServicoId },
+      where: { id: validatedData.ordemServicoId },
       include: {
         cliente: true
       }
     });
 
     if (!ordemServico) {
-      return NextResponse.json(
-        { error: 'Ordem de serviço não encontrada' },
-        { status: 404 }
-      );
+      return ApiMiddleware.createErrorResponse('Ordem de serviço não encontrada', 404);
     }
 
     // Verificar se colaborador criador existe
     const criadoPor = await db.colaborador.findUnique({
-      where: { id: body.criadoPorId }
+      where: { id: validatedData.criadoPorId }
     });
 
     if (!criadoPor) {
-      return NextResponse.json(
-        { error: 'Colaborador criador não encontrado' },
-        { status: 404 }
-      );
+      return ApiMiddleware.createErrorResponse('Colaborador criador não encontrado', 404);
     }
 
     // Verificar se laudo técnico existe (se fornecido)
-    if (body.laudoTecnicoId) {
+    if (validatedData.laudoTecnicoId) {
       const laudoTecnico = await db.laudoTecnico.findUnique({
-        where: { id: body.laudoTecnicoId }
+        where: { id: validatedData.laudoTecnicoId }
       });
 
       if (!laudoTecnico) {
-        return NextResponse.json(
-          { error: 'Laudo técnico não encontrado' },
-          { status: 404 }
-        );
+        return ApiMiddleware.createErrorResponse('Laudo técnico não encontrado', 404);
       }
     }
 
     // Processar itens do orçamento
-    const itensData = body.itens || [];
+    const itensData = validatedData.itens || [];
     
     // Gerar número sequencial do orçamento
     const hoje = new Date();
@@ -244,18 +267,18 @@ export async function POST(request: NextRequest) {
     const orcamento = await db.orcamento.create({
       data: {
         numero: numeroOrcamento,
-        titulo: body.titulo,
-        descricao: body.descricao || null,
-        valorTotal: parseFloat(body.valorTotal),
-        valorDesconto: body.valorDesconto ? parseFloat(body.valorDesconto) : null,
-        percentualDesconto: body.percentualDesconto ? parseFloat(body.percentualDesconto) : null,
-        dataValidade: dataValidade,
-        observacoes: body.observacoes || null,
-        status: body.status || 'RASCUNHO',
-        geradoAutomaticamente: body.geradoAutomaticamente || false,
-        ordemServicoId: body.ordemServicoId,
-        laudoTecnicoId: body.laudoTecnicoId || null,
-        criadoPorId: body.criadoPorId,
+        titulo: validatedData.titulo,
+        descricao: validatedData.descricao || null,
+        valorTotal: validatedData.valorTotal,
+        valorDesconto: validatedData.valorDesconto || null,
+        percentualDesconto: validatedData.percentualDesconto || null,
+        dataValidade: validatedData.dataValidade ? new Date(validatedData.dataValidade) : null,
+        observacoes: validatedData.observacoes || null,
+        status: validatedData.status || 'RASCUNHO',
+        geradoAutomaticamente: validatedData.geradoAutomaticamente || false,
+        ordemServicoId: validatedData.ordemServicoId,
+        laudoTecnicoId: validatedData.laudoTecnicoId || null,
+        criadoPorId: validatedData.criadoPorId,
         itens: {
           create: itensData.map((item: any) => ({
             tipo: item.tipo || 'SERVICO',
@@ -270,7 +293,7 @@ export async function POST(request: NextRequest) {
           create: {
             acao: 'criado',
             descricao: 'Orçamento criado',
-            colaboradorId: body.criadoPorId
+            colaboradorId: validatedData.criadoPorId
           }
         }
       },
@@ -322,9 +345,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(orcamento, { status: 201 });
   } catch (error) {
     console.error('Erro ao criar orçamento:', error);
-    return NextResponse.json(
-      { error: 'Erro ao criar orçamento' },
-      { status: 500 }
-    );
+    return ApiMiddleware.createErrorResponse('Erro interno do servidor ao criar orçamento', 500);
   }
 }

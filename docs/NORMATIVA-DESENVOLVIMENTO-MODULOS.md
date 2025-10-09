@@ -94,6 +94,7 @@ O sistema utiliza:
 
 - **Desenvolvimento Incremental:** Implementar funcionalidades em pequenos incrementos
 - **Code Review:** Todo código deve passar por revisão de pelo menos 2 desenvolvedores
+- **Testes Automatizados:** Cobertura mínima de 80% para novas funcionalidades
 - **Documentação Contínua:** Documentar durante o desenvolvimento, não após
 
 ---
@@ -181,91 +182,6 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
 - Facilita integração com frontend
 - Permite reutilização de componentes
 - Simplifica manutenção
-
-#### 3.2.2 Padrões de Tratamento de Erros (OBRIGATÓRIO)
-
-**REGRA OBRIGATÓRIA:** Todas as APIs devem utilizar o método `ApiMiddleware.createErrorResponse` para tratamento de erros, garantindo consistência e padronização em todo o sistema.
-
-##### 3.2.2.1 Uso Correto (OBRIGATÓRIO)
-```typescript
-// ✅ CORRETO - Usar ApiMiddleware.createErrorResponse
-import { ApiMiddleware } from '@/lib/api-middleware';
-
-// Erro de validação Zod
-const validationResult = createItemSchema.safeParse(body);
-if (!validationResult.success) {
-  return ApiMiddleware.createErrorResponse(
-    `Dados inválidos: ${validationResult.error.errors.map(e => e.message).join(', ')}`,
-    400
-  );
-}
-
-// Erro de recurso não encontrado
-if (!item) {
-  return ApiMiddleware.createErrorResponse('Item não encontrado', 404);
-}
-
-// Erro interno do servidor
-} catch (error) {
-  console.error('Erro ao processar:', error);
-  return ApiMiddleware.createErrorResponse('Erro interno do servidor', 500);
-}
-```
-
-##### 3.2.2.2 Uso Incorreto (PROIBIDO)
-```typescript
-// ❌ INCORRETO - NÃO usar NextResponse.json diretamente para erros
-return NextResponse.json(
-  { error: 'Mensagem de erro' },
-  { status: 400 }
-);
-
-// ❌ INCORRETO - Formato inconsistente
-return Response.json(
-  { message: 'Erro', success: false },
-  { status: 500 }
-);
-```
-
-##### 3.2.2.3 Validação com Zod (OBRIGATÓRIO)
-```typescript
-import { createItemSchema } from '@/lib/validations/item';
-
-// Validação de dados de entrada
-const validationResult = createItemSchema.safeParse(body);
-if (!validationResult.success) {
-  return ApiMiddleware.createErrorResponse(
-    `Dados inválidos: ${validationResult.error.errors.map(e => e.message).join(', ')}`,
-    400
-  );
-}
-
-const validatedData = validationResult.data;
-```
-
-##### 3.2.2.4 Códigos de Status Padronizados
-- **400 Bad Request:** Dados inválidos, validação Zod falhou
-- **401 Unauthorized:** Não autenticado
-- **403 Forbidden:** Sem permissão para a operação
-- **404 Not Found:** Recurso não encontrado
-- **409 Conflict:** Conflito de dados (ex: email já existe)
-- **500 Internal Server Error:** Erro interno do servidor
-
-##### 3.2.2.5 Formato de Resposta Padronizado
-```json
-{
-  "message": "Descrição do erro",
-  "status": 400,
-  "timestamp": "2025-01-XX T XX:XX:XX.XXXZ"
-}
-```
-
-**Justificativa Técnica:** Padronização de erros garante:
-- **Consistência:** Todas as respostas de erro seguem o mesmo formato
-- **Manutenibilidade:** Mudanças no formato podem ser feitas centralizadamente
-- **Debugging:** Timestamp automático facilita rastreamento
-- **Frontend:** Interface pode tratar erros de forma uniforme
-- **Logs:** Estrutura padronizada melhora análise de logs
 
 ### 3.3 Sistema de Permissões (OBRIGATÓRIO)
 
@@ -800,9 +716,68 @@ Breve descrição do que o módulo faz.
 Instruções de configuração específicas.
 ```
 
-### 7.4 Controles de Versão (OBRIGATÓRIO)
+### 7.4 Testes Automatizados (OBRIGATÓRIO)
 
-#### 7.4.1 Padrão de Commits
+#### 7.4.1 Estrutura de Testes
+```
+/tests/
+├── unit/
+│   └── novo-modulo/
+│       ├── novo-modulo.test.ts
+│       └── components/
+│           └── NovoModuloForm.test.tsx
+├── integration/
+│   └── novo-modulo/
+│       └── api.test.ts
+└── e2e/
+    └── novo-modulo/
+        └── crud.test.ts
+```
+
+#### 7.4.2 Cobertura Mínima (OBRIGATÓRIO)
+- **Testes Unitários:** 80% de cobertura
+- **Testes de Integração:** APIs principais
+- **Testes E2E:** Fluxos críticos
+
+#### 7.4.3 Exemplo de Teste Unitário
+```typescript
+// /tests/unit/novo-modulo/novo-modulo.test.ts
+import { describe, it, expect, beforeEach } from 'vitest';
+import { criarNovoModulo } from '@/lib/novo-modulo';
+
+describe('NovoModulo', () => {
+  beforeEach(() => {
+    // Setup
+  });
+
+  it('deve criar um novo item com dados válidos', async () => {
+    const data = {
+      nome: 'Teste',
+      descricao: 'Descrição teste'
+    };
+    
+    const result = await criarNovoModulo(data, 'user-id');
+    
+    expect(result).toBeDefined();
+    expect(result.nome).toBe('Teste');
+  });
+
+  it('deve falhar com dados inválidos', async () => {
+    const data = {
+      nome: '', // Nome vazio
+      descricao: 'Descrição'
+    };
+    
+    await expect(criarNovoModulo(data, 'user-id'))
+      .rejects
+      .toThrow('Nome é obrigatório');
+  });
+});
+```
+
+### 7.5 Controles de Versão (OBRIGATÓRIO)
+
+#### 7.5.1 Padrão de Commits
 ```bash
 # Formato obrigatório
 tipo(escopo): descrição
@@ -822,7 +797,7 @@ fix(novo-modulo): corrigir validação de formulário
 docs(novo-modulo): adicionar documentação da API
 ```
 
-#### 7.4.2 Fluxo de Branches
+#### 7.5.2 Fluxo de Branches
 ```bash
 # Branch principal
 main
@@ -840,6 +815,115 @@ hotfix/novo-modulo-critical-bug
 # Branches de release
 release/v1.2.0
 ```
+
+---
+
+## 7.6. PADRÕES DE TRATAMENTO DE ERROS (OBRIGATÓRIO)
+
+### 7.6.1 Padronização de Respostas de Erro
+
+**REGRA OBRIGATÓRIA:** Todas as APIs devem utilizar o método `ApiMiddleware.createErrorResponse` para tratamento de erros, garantindo consistência e padronização em todo o sistema.
+
+#### 7.6.1.1 Uso Correto (OBRIGATÓRIO)
+```typescript
+// ✅ CORRETO - Usar ApiMiddleware.createErrorResponse
+import { ApiMiddleware } from '@/lib/api-middleware';
+
+// Erro de validação
+if (!validationResult.success) {
+  return ApiMiddleware.createErrorResponse(
+    `Dados inválidos: ${validationResult.error.errors.map(e => e.message).join(', ')}`,
+    400
+  );
+}
+
+// Erro de recurso não encontrado
+if (!item) {
+  return ApiMiddleware.createErrorResponse('Item não encontrado', 404);
+}
+
+// Erro interno do servidor
+} catch (error) {
+  console.error('Erro ao processar:', error);
+  return ApiMiddleware.createErrorResponse('Erro interno do servidor', 500);
+}
+```
+
+#### 7.6.1.2 Uso Incorreto (PROIBIDO)
+```typescript
+// ❌ INCORRETO - NÃO usar NextResponse.json diretamente para erros
+return NextResponse.json(
+  { error: 'Mensagem de erro' },
+  { status: 400 }
+);
+
+// ❌ INCORRETO - Formato inconsistente
+return Response.json(
+  { message: 'Erro', success: false },
+  { status: 500 }
+);
+```
+
+### 7.6.2 Validação com Zod (OBRIGATÓRIO)
+
+#### 7.6.2.1 Implementação Padrão
+```typescript
+import { createItemSchema } from '@/lib/validations/item';
+
+// Validação de dados de entrada
+const validationResult = createItemSchema.safeParse(body);
+if (!validationResult.success) {
+  return ApiMiddleware.createErrorResponse(
+    `Dados inválidos: ${validationResult.error.errors.map(e => e.message).join(', ')}`,
+    400
+  );
+}
+
+const validatedData = validationResult.data;
+```
+
+### 7.6.3 Códigos de Status Padronizados
+
+#### 7.6.3.1 Mapeamento de Erros
+- **400 Bad Request:** Dados inválidos, validação Zod falhou
+- **401 Unauthorized:** Não autenticado
+- **403 Forbidden:** Sem permissão para a operação
+- **404 Not Found:** Recurso não encontrado
+- **409 Conflict:** Conflito de dados (ex: email já existe)
+- **500 Internal Server Error:** Erro interno do servidor
+
+#### 7.6.3.2 Formato de Resposta Padronizado
+```json
+{
+  "message": "Descrição do erro",
+  "status": 400,
+  "timestamp": "2025-01-XX T XX:XX:XX.XXXZ"
+}
+```
+
+### 7.6.4 Benefícios da Padronização
+
+- **Consistência:** Todas as respostas de erro seguem o mesmo formato
+- **Manutenibilidade:** Mudanças no formato podem ser feitas centralizadamente
+- **Debugging:** Timestamp automático facilita rastreamento
+- **Frontend:** Interface pode tratar erros de forma uniforme
+- **Logs:** Estrutura padronizada melhora análise de logs
+
+### 7.6.5 Checklist de Implementação
+
+#### 7.6.5.1 Para Novas APIs (OBRIGATÓRIO)
+- [ ] Importar `ApiMiddleware` de `@/lib/api-middleware`
+- [ ] Usar `createErrorResponse` para todos os erros
+- [ ] Implementar validação Zod com schemas apropriados
+- [ ] Mapear códigos de status corretamente
+- [ ] Testar todas as condições de erro
+
+#### 7.6.5.2 Para APIs Existentes (OBRIGATÓRIO)
+- [ ] Substituir `NextResponse.json` por `ApiMiddleware.createErrorResponse`
+- [ ] Migrar validação manual para schemas Zod
+- [ ] Verificar códigos de status (404 para "não encontrado")
+- [ ] Atualizar testes para novo formato
+- [ ] Documentar mudanças na API
 
 ---
 
@@ -862,6 +946,8 @@ release/v1.2.0
 - [ ] Validações de segurança aplicadas
 
 #### 8.1.3 Antes do Deploy
+- [ ] Todos os testes passando
+- [ ] Cobertura de testes ≥ 80%
 - [ ] Lint sem erros
 - [ ] Build bem-sucedido
 - [ ] Migrations testadas
@@ -1054,6 +1140,7 @@ export async function POST(request: NextRequest) {
 - **IDE:** VS Code com extensões TypeScript, Prisma, Tailwind
 - **Linting:** ESLint com configuração do projeto
 - **Formatação:** Prettier
+- **Testes:** Vitest + Testing Library
 - **Documentação:** JSDoc + Markdown
 
 #### 9.2.2 Recursos de Referência

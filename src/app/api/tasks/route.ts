@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { ApiMiddleware, API_PERMISSIONS } from '@/lib/api-middleware';
+import { createTaskSchema } from '@/lib/validations/task';
 
 export async function GET(request: NextRequest) {
   try {
@@ -151,10 +152,7 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error('Erro ao buscar tarefas:', error);
-    return NextResponse.json(
-      { error: 'Erro ao buscar tarefas' },
-      { status: 500 }
-    );
+    return ApiMiddleware.createErrorResponse('Erro interno do servidor ao buscar tarefas', 500);
   }
 }
 
@@ -179,25 +177,12 @@ export async function POST(request: NextRequest) {
     console.log('responsavelId no body:', body.responsavelId);
     console.log('=== FIM DEBUG API ===');
 
-    // Validar dados obrigatórios
-    if (!body.titulo) {
-      return NextResponse.json(
-        { error: 'Título é obrigatório' },
-        { status: 400 }
-      );
-    }
-
-    if (!body.responsavelId) {
-      return NextResponse.json(
-        { error: 'Responsável é obrigatório' },
-        { status: 400 }
-      );
-    }
-
-    if (!body.dataVencimento) {
-      return NextResponse.json(
-        { error: 'Data de vencimento é obrigatória' },
-        { status: 400 }
+    // Validar dados com Zod
+    const validationResult = createTaskSchema.safeParse(body);
+    if (!validationResult.success) {
+      return ApiMiddleware.createErrorResponse(
+        `Dados inválidos: ${validationResult.error.errors.map(e => e.message).join(', ')}`,
+        400
       );
     }
 
@@ -213,10 +198,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (!responsavel) {
-      return NextResponse.json(
-        { error: 'Responsável não encontrado' },
-        { status: 400 }
-      );
+      return ApiMiddleware.createErrorResponse('Responsável não encontrado', 404);
     }
 
     // Verificar se cliente existe (se fornecido)
@@ -226,10 +208,7 @@ export async function POST(request: NextRequest) {
       });
 
       if (!cliente) {
-        return NextResponse.json(
-          { error: 'Cliente não encontrado' },
-          { status: 400 }
-        );
+        return ApiMiddleware.createErrorResponse('Cliente não encontrado', 404);
       }
     }
 
@@ -240,10 +219,7 @@ export async function POST(request: NextRequest) {
       });
 
       if (!oportunidade) {
-        return NextResponse.json(
-          { error: 'Oportunidade não encontrada' },
-          { status: 400 }
-        );
+        return ApiMiddleware.createErrorResponse('Oportunidade não encontrada', 404);
       }
     }
 
@@ -389,9 +365,6 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error('Erro geral ao criar tarefa:', error);
     console.error('Stack trace:', error?.stack);
-    return NextResponse.json(
-      { error: 'Erro ao criar tarefa', details: error?.message || 'Erro desconhecido' },
-      { status: 500 }
-    );
+    return ApiMiddleware.createErrorResponse('Erro interno do servidor ao criar tarefa', 500);
   }
 }
