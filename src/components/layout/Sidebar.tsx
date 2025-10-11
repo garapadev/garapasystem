@@ -26,7 +26,10 @@ import {
   MessageCircle,
   ClipboardList,
   FileText,
-  FileCheck
+  FileCheck,
+  ShoppingCart,
+  Package,
+  Archive
 } from 'lucide-react';
 
 interface NavigationItem {
@@ -121,6 +124,27 @@ const navigation: NavigationItem[] = [
     href: '/negocios', 
     icon: TrendingUp,
     requiredPermission: { recurso: 'negocios', acao: 'ler' }
+  },
+  { 
+    name: 'Compras', 
+    href: '/compras', 
+    icon: ShoppingCart,
+    requiredPermission: { recurso: 'compras', acao: 'ler' },
+    moduleName: 'compras'
+  },
+  { 
+    name: 'Estoque', 
+    href: '/estoque', 
+    icon: Package,
+    requiredPermission: { recurso: 'estoque', acao: 'ler' },
+    moduleName: 'estoque'
+  },
+  { 
+    name: 'Tombamento', 
+    href: '/tombamento', 
+    icon: Archive,
+    requiredPermission: { recurso: 'tombamento', acao: 'ler' },
+    moduleName: 'tombamento'
   },
 
   { 
@@ -280,7 +304,11 @@ export function Sidebar() {
     return item;
   });
 
-  const finalNavigation = filteredNavigationWithSubItems
+  const finalNavigation = filteredNavigationWithSubItems;
+
+  console.log('=== NAVEGAÇÃO FINAL ===');
+  console.log('Total de itens de navegação final:', finalNavigation.length);
+  console.log('Itens finais:', finalNavigation.map(item => ({ name: item.name, href: item.href })));
 
   const toggleExpanded = (itemName: string) => {
     setExpandedItems(prev => 

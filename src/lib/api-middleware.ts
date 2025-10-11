@@ -194,6 +194,30 @@ export class ApiMiddleware {
       'GET:/api/tasks/automation/stats',
       'GET:/api/tasks/automation/summary',
       'POST:/api/tasks/from-email',
+      // Ordens de Serviço
+      'GET:/api/ordens-servico',
+      'POST:/api/ordens-servico',
+      'PUT:/api/ordens-servico',
+      'DELETE:/api/ordens-servico',
+      'GET:/api/ordens-servico/[id]',
+      'PUT:/api/ordens-servico/[id]',
+      'DELETE:/api/ordens-servico/[id]',
+      'GET:/api/ordens-servico/[id]/laudo',
+      'POST:/api/ordens-servico/[id]/laudo',
+      'PUT:/api/ordens-servico/[id]/laudo',
+      'DELETE:/api/ordens-servico/[id]/laudo',
+      // Laudos Técnicos
+      'GET:/api/laudos-tecnicos',
+      'POST:/api/laudos-tecnicos',
+      'PUT:/api/laudos-tecnicos',
+      'DELETE:/api/laudos-tecnicos',
+      // Tombamento
+      'GET:/api/tombamento',
+      'POST:/api/tombamento',
+      'PUT:/api/tombamento',
+      'DELETE:/api/tombamento',
+      'GET:/api/tombamento/movimentacoes',
+      'POST:/api/tombamento/movimentacoes',
       // Endpoints Gazapi - WhatsApp
       'POST:/api/gazapi/start',
       'POST:/api/gazapi/getQrCode',
@@ -294,6 +318,26 @@ export class ApiMiddleware {
       'PUT:/api/tasks': ['tasks.write'],
       'PATCH:/api/tasks': ['tasks.write'],
       'DELETE:/api/tasks': ['tasks.delete'],
+      
+      // Ordens de Serviço
+      'GET:/api/ordens-servico': ['ordens-servico.read', 'ordens-servico.write'],
+      'POST:/api/ordens-servico': ['ordens-servico.write'],
+      'PUT:/api/ordens-servico': ['ordens-servico.write'],
+      'DELETE:/api/ordens-servico': ['ordens-servico.delete'],
+      
+      // Laudos Técnicos
+      'GET:/api/laudos-tecnicos': ['laudos-tecnicos.read', 'laudos-tecnicos.write'],
+      'POST:/api/laudos-tecnicos': ['laudos-tecnicos.write'],
+      'PUT:/api/laudos-tecnicos': ['laudos-tecnicos.write'],
+      'DELETE:/api/laudos-tecnicos': ['laudos-tecnicos.delete'],
+      
+      // Tombamento
+      'GET:/api/tombamento': ['tombamento.read', 'tombamento.write'],
+      'POST:/api/tombamento': ['tombamento.write'],
+      'PUT:/api/tombamento': ['tombamento.write'],
+      'DELETE:/api/tombamento': ['tombamento.delete'],
+      'GET:/api/tombamento/movimentacoes': ['tombamento.read', 'tombamento.write'],
+      'POST:/api/tombamento/movimentacoes': ['tombamento.write'],
       
       // Gazapi - WhatsApp
       'POST:/api/gazapi/start': ['gazapi.write', 'gazapi.admin'],
@@ -493,6 +537,21 @@ export const API_PERMISSIONS = {
   TASKS_READ: 'tasks.read',
   TASKS_WRITE: 'tasks.write',
   TASKS_DELETE: 'tasks.delete',
+  
+  // Ordens de Serviço
+  ORDENS_SERVICO_READ: 'ordens-servico.read',
+  ORDENS_SERVICO_WRITE: 'ordens-servico.write',
+  ORDENS_SERVICO_DELETE: 'ordens-servico.delete',
+  
+  // Laudos Técnicos
+  LAUDOS_TECNICOS_READ: 'laudos-tecnicos.read',
+  LAUDOS_TECNICOS_WRITE: 'laudos-tecnicos.write',
+  LAUDOS_TECNICOS_DELETE: 'laudos-tecnicos.delete',
+  
+  // Tombamento
+  TOMBAMENTO_READ: 'tombamento.read',
+  TOMBAMENTO_WRITE: 'tombamento.write',
+  TOMBAMENTO_DELETE: 'tombamento.delete',
   
   // Gazapi - WhatsApp
   GAZAPI_READ: 'gazapi.read',

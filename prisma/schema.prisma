@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,42 +7,58 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Entidades de Domínio - CRM/ERP
-
-// Usuários do sistema (autenticação)
 model Usuario {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  senha     String
-  nome      String
-  ativo     Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relacionamentos
-  colaboradorId String?      @unique
-  colaborador   Colaborador? @relation(fields: [colaboradorId], references: [id])
-
-  // Histórico de oportunidades
+  id                     String                  @id @default(cuid())
+  email                  String                  @unique
+  senha                  String
+  nome                   String
+  ativo                  Boolean                 @default(true)
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
+  colaboradorId          String?                 @unique
   historicoOportunidades HistoricoOportunidade[]
+  colaborador            Colaborador?            @relation(fields: [colaboradorId], references: [id])
 
   @@map("usuarios")
 }
 
-// Configuração da Empresa
 model Empresa {
-  id                    String   @id @default(cuid())
-  razaoSocial           String
-  nomeFantasia          String?
-  cnpj                  String?  @unique
-  inscricaoEstadual     String?
-  inscricaoMunicipal    String?
-  email                 String?
-  telefone              String?
-  celular               String?
-  website               String?
-  
-  // Endereço
+  id                 String   @id @default(cuid())
+  razaoSocial        String
+  nomeFantasia       String?
+  cnpj               String?  @unique
+  inscricaoEstadual  String?
+  inscricaoMunicipal String?
+  email              String?
+  telefone           String?
+  celular            String?
+  website            String?
+  cep                String?
+  logradouro         String?
+  numero             String?
+  complemento        String?
+  bairro             String?
+  cidade             String?
+  estado             String?
+  pais               String?  @default("Brasil")
+  banco              String?
+  agencia            String?
+  conta              String?
+  tipoConta          String?
+  pix                String?
+  logo               String?
+  cor_primaria       String?
+  cor_secundaria     String?
+  observacoes        String?
+  ativo              Boolean  @default(true)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@map("empresa")
+}
+
+model Endereco {
+  id                    String       @id @default(cuid())
   cep                   String?
   logradouro            String?
   numero                String?
@@ -56,37 +66,6 @@ model Empresa {
   bairro                String?
   cidade                String?
   estado                String?
-  pais                  String?  @default("Brasil")
-  
-  // Dados bancários
-  banco                 String?
-  agencia               String?
-  conta                 String?
-  tipoConta             String?
-  pix                   String?
-  
-  // Configurações
-  logo                  String? // URL ou path do logo
-  cor_primaria          String? // Cor principal da empresa
-  cor_secundaria        String? // Cor secundária
-  observacoes           String?
-  ativo                 Boolean  @default(true)
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
-
-  @@map("empresa")
-}
-
-// Endereços dos clientes
-model Endereco {
-  id                    String       @id @default(cuid())
-  cep                   String?
-  logradouro            String? // Rua, Avenida, etc.
-  numero                String? // Número do endereço
-  complemento           String? // Apartamento, sala, etc.
-  bairro                String? // Bairro/Distrito
-  cidade                String?
-  estado                String? // Estado/UF
   pais                  String?      @default("Brasil")
   tipo                  TipoEndereco @default(RESIDENCIAL)
   informacoesAdicionais String?
@@ -94,343 +73,1406 @@ model Endereco {
   ativo                 Boolean      @default(true)
   createdAt             DateTime     @default(now())
   updatedAt             DateTime     @updatedAt
-
-  // Relacionamentos
-  clienteId String
-  cliente   Cliente @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  clienteId             String
+  cliente               Cliente      @relation(fields: [clienteId], references: [id], onDelete: Cascade)
 
   @@map("enderecos")
 }
 
-// Clientes e Leads
 model Cliente {
-  id             String        @id @default(cuid())
-  nome           String
-  email          String?       @unique
-  telefone       String?
-  documento      String? // CPF/CNPJ
-  tipo           TipoCliente   @default(PESSOA_FISICA)
-  status         StatusCliente @default(LEAD)
-  observacoes    String?
-  valorPotencial Float?
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
-
-  // Relacionamentos
+  id                 String            @id @default(cuid())
+  nome               String
+  email              String?           @unique
+  telefone           String?
+  documento          String?
+  tipo               TipoCliente       @default(PESSOA_FISICA)
+  status             StatusCliente     @default(LEAD)
+  observacoes        String?
+  valorPotencial     Float?
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
   grupoHierarquicoId String?
   grupoHierarquico   GrupoHierarquico? @relation(fields: [grupoHierarquicoId], references: [id])
-
-  // Endereços
-  enderecos Endereco[]
-
-  // Oportunidades
-  oportunidades Oportunidade[]
-
-  // Tickets do Helpdesk
-  helpdeskTickets HelpdeskTicket[]
-
-  // Tarefas
-  tasks Task[]
-
-  // Ordens de Serviço
-  ordensServico OrdemServico[]
+  enderecos          Endereco[]
+  helpdeskTickets    HelpdeskTicket[]
+  oportunidades      Oportunidade[]
+  ordensServico      OrdemServico[]
+  tasks              Task[]
 
   @@map("clientes")
 }
 
-// Grupos Hierárquicos (departamentos, equipes, etc.)
 model GrupoHierarquico {
-  id        String   @id @default(cuid())
-  nome      String
-  descricao String?
-  ativo     Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Hierarquia
-  parentId String?
-  parent   GrupoHierarquico?  @relation("GrupoHierarquia", fields: [parentId], references: [id])
-  children GrupoHierarquico[] @relation("GrupoHierarquia")
-
-  // Relacionamentos
+  id                    String                 @id @default(cuid())
+  nome                  String
+  descricao             String?
+  ativo                 Boolean                @default(true)
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  parentId              String?
   clientes              Cliente[]
   colaboradores         Colaborador[]
+  parent                GrupoHierarquico?      @relation("GrupoHierarquia", fields: [parentId], references: [id])
+  children              GrupoHierarquico[]     @relation("GrupoHierarquia")
   helpdeskDepartamentos HelpdeskDepartamento[]
 
   @@map("grupos_hierarquicos")
 }
 
-// Permissões do sistema (RBAC)
 model Permissao {
-  id        String   @id @default(cuid())
-  nome      String   @unique
+  id        String            @id @default(cuid())
+  nome      String            @unique
   descricao String?
-  recurso   String // ex: "clientes", "colaboradores"
-  acao      String // ex: "criar", "ler", "editar", "excluir"
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relacionamentos
-  perfis PerfilPermissao[]
+  recurso   String
+  acao      String
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  perfis    PerfilPermissao[]
 
   @@map("permissoes")
 }
 
-// Perfis de acesso (RBAC)
 model Perfil {
-  id        String   @id @default(cuid())
-  nome      String   @unique
-  descricao String?
-  ativo     Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relacionamentos
-  permissoes    PerfilPermissao[]
+  id            String            @id @default(cuid())
+  nome          String            @unique
+  descricao     String?
+  ativo         Boolean           @default(true)
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
   colaboradores Colaborador[]
+  permissoes    PerfilPermissao[]
 
   @@map("perfis")
 }
 
-// Tabela associativa entre Perfil e Permissão
 model PerfilPermissao {
   perfilId    String
   permissaoId String
-
-  perfil    Perfil    @relation(fields: [perfilId], references: [id], onDelete: Cascade)
-  permissao Permissao @relation(fields: [permissaoId], references: [id], onDelete: Cascade)
+  perfil      Perfil    @relation(fields: [perfilId], references: [id], onDelete: Cascade)
+  permissao   Permissao @relation(fields: [permissaoId], references: [id], onDelete: Cascade)
 
   @@id([perfilId, permissaoId])
   @@map("perfil_permissao")
 }
 
-// Colaboradores/Empregados
 model Colaborador {
-  id           String    @id @default(cuid())
-  nome         String
-  email        String    @unique
-  telefone     String?
-  documento    String? // CPF
-  cargo        String?
-  dataAdmissao DateTime?
-  ativo        Boolean   @default(true)
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-
-  // Relacionamentos
-  usuarios           Usuario[]
-  perfilId           String?
-  perfil             Perfil?           @relation(fields: [perfilId], references: [id])
-  grupoHierarquicoId String?
-  grupoHierarquico   GrupoHierarquico? @relation(fields: [grupoHierarquicoId], references: [id])
-
-  // Oportunidades como responsável
-  oportunidades Oportunidade[]
-
-  // Configuração de email
-  emailConfig EmailConfig?
-
-  // Helpdesk
-  helpdeskTicketsResponsavel HelpdeskTicket[]
-  helpdeskMensagens          HelpdeskMensagem[]
-  helpdeskTicketLogs         HelpdeskTicketLog[]
-
-  // Tarefas
-  tasksResponsavel  Task[]
-  tasksCriadas      Task[]             @relation("TaskCriador")
-  taskComments      TaskComment[]
-  taskAttachments   TaskAttachment[]
-  taskLogs          TaskLog[]
-  taskNotifications TaskNotification[]
-
-  // Ordens de Serviço
-  ordensServicoResponsavel OrdemServico[]           @relation("OrdemServicoResponsavel")
-  ordensServicoCriadas     OrdemServico[]           @relation("OrdemServicoCriador")
-  comentariosOrdemServico  ComentarioOrdemServico[]
-  anexosOrdemServico       AnexoOrdemServico[]
-  historicoOrdemServico    HistoricoOrdemServico[]
-
-  // WhatsApp
-  whatsappToken         String?
-  whatsappInstanceName  String?
-  whatsappConversations WhatsAppConversation[]
-  whatsappMessages      WhatsAppMessage[]
-  whatsappSession       WhatsAppSession?
-
-  // Laudos Técnicos
-  laudosTecnicos        LaudoTecnico[]         @relation("LaudoTecnico")
-  anexosLaudoTecnico    AnexoLaudoTecnico[]    @relation("AnexoLaudoTecnico")
-  historicoLaudoTecnico HistoricoLaudoTecnico[] @relation("HistoricoLaudoTecnico")
-
-  // Orçamentos
-  orcamentosCriados     Orcamento[]            @relation("OrcamentoCriador")
-  anexosOrcamento       AnexoOrcamento[]       @relation("AnexoOrcamento")
-  historicoOrcamento    HistoricoOrcamento[]   @relation("HistoricoOrcamento")
-
-  // Sistema de Módulos
-  moduloSistemaLogs     ModuloSistemaLog[]     @relation("ModuloSistemaLog")
+  id                            String                   @id @default(cuid())
+  nome                          String
+  email                         String                   @unique
+  telefone                      String?
+  documento                     String?
+  cargo                         String?
+  dataAdmissao                  DateTime?
+  ativo                         Boolean                  @default(true)
+  createdAt                     DateTime                 @default(now())
+  updatedAt                     DateTime                 @updatedAt
+  perfilId                      String?
+  grupoHierarquicoId            String?
+  whatsappInstanceName          String?
+  whatsappToken                 String?
+  anexosLaudoTecnico            AnexoLaudoTecnico[]      @relation("AnexoLaudoTecnico")
+  anexosOrcamento               AnexoOrcamento[]         @relation("AnexoOrcamento")
+  anexosOrdemServico            AnexoOrdemServico[]
+  grupoHierarquico              GrupoHierarquico?        @relation(fields: [grupoHierarquicoId], references: [id])
+  perfil                        Perfil?                  @relation(fields: [perfilId], references: [id])
+  comentariosOrdemServico       ComentarioOrdemServico[]
+  cotacoesAprovadorFinal        Cotacao[]                @relation("CotacaoAprovadorFinal")
+  cotacoesAprovadorNivel1       Cotacao[]                @relation("CotacaoAprovadorNivel1")
+  cotacoesAprovadorNivel2       Cotacao[]                @relation("CotacaoAprovadorNivel2")
+  emailConfig                   EmailConfig?
+  helpdeskMensagens             HelpdeskMensagem[]
+  helpdeskTicketLogs            HelpdeskTicketLog[]
+  helpdeskTicketsResponsavel    HelpdeskTicket[]
+  historicoLaudoTecnico         HistoricoLaudoTecnico[]  @relation("HistoricoLaudoTecnico")
+  historicoOrcamento            HistoricoOrcamento[]     @relation("HistoricoOrcamento")
+  historicoOrdemServico         HistoricoOrdemServico[]
+  laudosTecnicos                LaudoTecnico[]           @relation("LaudoTecnico")
+  moduloSistemaLogs             ModuloSistemaLog[]       @relation("ModuloSistemaLog")
+  movimentacoesEstoque          MovimentacaoEstoque[]    @relation("MovimentacaoEstoqueResponsavel")
+  movimentacoesTombamento       MovimentacaoTombamento[] @relation("MovimentacaoTombamentoResponsavel")
+  oportunidades                 Oportunidade[]
+  orcamentosCriados             Orcamento[]              @relation("OrcamentoCriador")
+  ordensServicoCriadas          OrdemServico[]           @relation("OrdemServicoCriador")
+  ordensServicoResponsavel      OrdemServico[]           @relation("OrdemServicoResponsavel")
+  solicitacoesCompraAprovador   SolicitacaoCompra[]      @relation("SolicitacaoCompraAprovador")
+  solicitacoesCompraSolicitante SolicitacaoCompra[]      @relation("SolicitacaoCompraSolicitante")
+  taskAttachments               TaskAttachment[]
+  taskComments                  TaskComment[]
+  taskLogs                      TaskLog[]
+  taskNotifications             TaskNotification[]
+  tasksCriadas                  Task[]                   @relation("TaskCriador")
+  tasksResponsavel              Task[]
+  usuarios                      Usuario?
+  whatsappConversations         WhatsAppConversation[]
+  whatsappMessages              WhatsAppMessage[]
+  whatsappSession               WhatsAppSession?
 
   @@map("colaboradores")
 }
 
-// Pipeline de Negócios
 model EtapaPipeline {
-  id        String   @id @default(cuid())
-  nome      String
-  descricao String?
-  ordem     Int // Ordem das etapas no pipeline
-  cor       String? // Cor para visualização no kanban
-  ativo     Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relacionamentos
+  id            String         @id @default(cuid())
+  nome          String
+  descricao     String?
+  ordem         Int
+  cor           String?
+  ativo         Boolean        @default(true)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
   oportunidades Oportunidade[]
 
   @@map("etapas_pipeline")
 }
 
 model Oportunidade {
-  id             String    @id @default(cuid())
+  id             String                  @id @default(cuid())
   titulo         String
   descricao      String?
   valor          Float?
-  probabilidade  Int? // Percentual de 0 a 100
+  probabilidade  Int?
   dataFechamento DateTime?
   observacoes    String?
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-
-  // Relacionamentos
-  clienteId String
-  cliente   Cliente @relation(fields: [clienteId], references: [id])
-
-  responsavelId String?
-  responsavel   Colaborador? @relation(fields: [responsavelId], references: [id])
-
-  etapaId String
-  etapa   EtapaPipeline @relation(fields: [etapaId], references: [id])
-
-  // Histórico
-  historico HistoricoOportunidade[]
-
-  // Tarefas
-  tasks Task[]
-
-  // Ordens de Serviço
-  ordensServico OrdemServico[]
+  createdAt      DateTime                @default(now())
+  updatedAt      DateTime                @updatedAt
+  clienteId      String
+  responsavelId  String?
+  etapaId        String
+  historico      HistoricoOportunidade[]
+  cliente        Cliente                 @relation(fields: [clienteId], references: [id])
+  etapa          EtapaPipeline           @relation(fields: [etapaId], references: [id])
+  responsavel    Colaborador?            @relation(fields: [responsavelId], references: [id])
+  ordensServico  OrdemServico[]
+  tasks          Task[]
 
   @@map("oportunidades")
 }
 
 model HistoricoOportunidade {
-  id            String   @id @default(cuid())
-  acao          String // "criada", "etapa_alterada", "valor_alterado", etc.
-  valorAnterior String? // JSON com valores anteriores
-  valorNovo     String? // JSON com valores novos
-  observacao    String?
-  createdAt     DateTime @default(now())
-
-  // Relacionamentos
+  id             String       @id @default(cuid())
+  acao           String
+  valorAnterior  String?
+  valorNovo      String?
+  observacao     String?
+  createdAt      DateTime     @default(now())
   oportunidadeId String
+  usuarioId      String?
   oportunidade   Oportunidade @relation(fields: [oportunidadeId], references: [id], onDelete: Cascade)
-
-  usuarioId String?
-  usuario   Usuario? @relation(fields: [usuarioId], references: [id])
+  usuario        Usuario?     @relation(fields: [usuarioId], references: [id])
 
   @@map("historico_oportunidades")
 }
 
-// Configurações do Sistema
 model Configuracao {
   id        String   @id @default(cuid())
-  chave     String   @unique // ex: "sistema_nome", "projeto_titulo"
-  valor     String // Valor da configuração
-  descricao String? // Descrição da configuração
+  chave     String   @unique
+  valor     String
+  descricao String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@map("configuracoes")
 }
 
-// Chaves de API
 model ApiKey {
   id         String    @id @default(cuid())
-  nome       String // Nome descritivo da chave
-  chave      String    @unique // Chave de API gerada
+  nome       String
+  chave      String    @unique
   ativo      Boolean   @default(true)
   ultimoUso  DateTime?
-  expiresAt  DateTime? // Data de expiração (opcional)
-  permissoes String? // JSON com permissões específicas
+  expiresAt  DateTime?
+  permissoes String?
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
-
-  // Relacionamentos
-  logs ApiLog[]
+  logs       ApiLog[]
 
   @@map("api_keys")
 }
 
-// Configurações de Webhook
 model WebhookConfig {
-  id        String   @id @default(cuid())
-  nome      String // Nome descritivo do webhook
-  url       String // URL de destino
-  eventos   String // JSON array com eventos que disparam o webhook
-  ativo     Boolean  @default(true)
-  secret    String? // Secret para validação de assinatura
-  headers   String? // JSON com headers customizados
-  timeout   Int      @default(30) // Timeout em segundos
-  retries   Int      @default(3) // Número de tentativas
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relacionamentos
-  logs WebhookLog[]
+  id        String       @id @default(cuid())
+  nome      String
+  url       String
+  eventos   String
+  ativo     Boolean      @default(true)
+  secret    String?
+  headers   String?
+  timeout   Int          @default(30)
+  retries   Int          @default(3)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  logs      WebhookLog[]
 
   @@map("webhook_configs")
 }
 
-// Logs de API
 model ApiLog {
   id           String   @id @default(cuid())
-  method       String // GET, POST, PUT, DELETE
-  endpoint     String // Endpoint acessado
-  statusCode   Int // Código de resposta HTTP
-  responseTime Int // Tempo de resposta em ms
-  userAgent    String? // User agent da requisição
-  ipAddress    String? // IP de origem
-  payload      String? // Payload da requisição (limitado)
-  response     String? // Resposta da API (limitado)
+  method       String
+  endpoint     String
+  statusCode   Int
+  responseTime Int
+  userAgent    String?
+  ipAddress    String?
+  payload      String?
+  response     String?
   createdAt    DateTime @default(now())
-
-  // Relacionamentos
-  apiKeyId String?
-  apiKey   ApiKey? @relation(fields: [apiKeyId], references: [id])
+  apiKeyId     String?
+  apiKey       ApiKey?  @relation(fields: [apiKeyId], references: [id])
 
   @@map("api_logs")
 }
 
-// Logs de Webhook
 model WebhookLog {
-  id           String   @id @default(cuid())
-  evento       String // Tipo de evento que disparou
-  payload      String // Payload enviado
-  statusCode   Int? // Código de resposta HTTP
-  responseTime Int? // Tempo de resposta em ms
-  tentativa    Int      @default(1) // Número da tentativa
-  sucesso      Boolean  @default(false)
-  errorMessage String? // Mensagem de erro se houver
-  createdAt    DateTime @default(now())
-
-  // Relacionamentos
+  id              String        @id @default(cuid())
+  evento          String
+  payload         String
+  statusCode      Int?
+  responseTime    Int?
+  tentativa       Int           @default(1)
+  sucesso         Boolean       @default(false)
+  errorMessage    String?
+  createdAt       DateTime      @default(now())
   webhookConfigId String
   webhookConfig   WebhookConfig @relation(fields: [webhookConfigId], references: [id], onDelete: Cascade)
 
   @@map("webhook_logs")
 }
 
-// Enums
+model EmailConfig {
+  id            String        @id @default(cuid())
+  imapHost      String
+  imapPort      Int           @default(993)
+  imapSecure    Boolean       @default(true)
+  smtpHost      String
+  smtpPort      Int           @default(587)
+  smtpSecure    Boolean       @default(false)
+  email         String
+  password      String
+  syncEnabled   Boolean       @default(true)
+  syncInterval  Int           @default(180)
+  lastSync      DateTime?
+  ativo         Boolean       @default(true)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  colaboradorId String        @unique
+  colaborador   Colaborador   @relation(fields: [colaboradorId], references: [id], onDelete: Cascade)
+  folders       EmailFolder[]
+  emails        Email[]
+
+  @@map("email_configs")
+}
+
+model EmailFolder {
+  id             String      @id @default(cuid())
+  name           String
+  path           String
+  delimiter      String      @default("/")
+  specialUse     String?
+  subscribed     Boolean     @default(true)
+  totalMessages  Int         @default(0)
+  unreadMessages Int         @default(0)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  emailConfigId  String
+  emailConfig    EmailConfig @relation(fields: [emailConfigId], references: [id], onDelete: Cascade)
+  emails         Email[]
+
+  @@unique([emailConfigId, path])
+  @@map("email_folders")
+}
+
+model Email {
+  id            String            @id @default(cuid())
+  messageId     String
+  uid           Int
+  subject       String?
+  from          String
+  to            String?
+  cc            String?
+  bcc           String?
+  replyTo       String?
+  textContent   String?
+  htmlContent   String?
+  date          DateTime
+  size          Int?
+  flags         String?
+  isRead        Boolean           @default(false)
+  isFlagged     Boolean           @default(false)
+  isDeleted     Boolean           @default(false)
+  inReplyTo     String?
+  references    String?
+  threadId      String?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  emailConfigId String
+  folderId      String
+  attachments   EmailAttachment[]
+  emailConfig   EmailConfig       @relation(fields: [emailConfigId], references: [id], onDelete: Cascade)
+  folder        EmailFolder       @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  tasks         Task[]
+
+  @@unique([emailConfigId, messageId])
+  @@unique([emailConfigId, folderId, uid])
+  @@map("emails")
+}
+
+model EmailAttachment {
+  id          String   @id @default(cuid())
+  filename    String
+  contentType String
+  size        Int
+  contentId   String?
+  disposition String?
+  filePath    String?
+  createdAt   DateTime @default(now())
+  emailId     String
+  email       Email    @relation(fields: [emailId], references: [id], onDelete: Cascade)
+
+  @@map("email_attachments")
+}
+
+model HelpdeskDepartamento {
+  id                 String            @id @default(cuid())
+  nome               String
+  descricao          String?
+  ativo              Boolean           @default(true)
+  imapHost           String?
+  imapPort           Int?              @default(993)
+  imapSecure         Boolean           @default(true)
+  imapEmail          String?
+  imapPassword       String?
+  smtpHost           String?
+  smtpPort           Int?              @default(587)
+  smtpSecure         Boolean           @default(false)
+  smtpEmail          String?
+  smtpPassword       String?
+  syncEnabled        Boolean           @default(true)
+  syncInterval       Int               @default(300)
+  lastSync           DateTime?
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  grupoHierarquicoId String?
+  grupoHierarquico   GrupoHierarquico? @relation(fields: [grupoHierarquicoId], references: [id])
+  tickets            HelpdeskTicket[]
+
+  @@map("helpdesk_departamentos")
+}
+
+model HelpdeskTicket {
+  id                  String               @id @default(cuid())
+  numero              Int                  @unique
+  assunto             String
+  descricao           String?
+  prioridade          HelpdeskPrioridade   @default(MEDIA)
+  status              HelpdeskStatus       @default(ABERTO)
+  solicitanteNome     String
+  solicitanteEmail    String
+  solicitanteTelefone String?
+  emailMessageId      String?
+  emailUid            Int?
+  dataAbertura        DateTime             @default(now())
+  dataFechamento      DateTime?
+  dataUltimaResposta  DateTime?
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  departamentoId      String
+  clienteId           String?
+  responsavelId       String?
+  mensagens           HelpdeskMensagem[]
+  logs                HelpdeskTicketLog[]
+  cliente             Cliente?             @relation(fields: [clienteId], references: [id])
+  departamento        HelpdeskDepartamento @relation(fields: [departamentoId], references: [id])
+  responsavel         Colaborador?         @relation(fields: [responsavelId], references: [id])
+  tasks               Task[]
+
+  @@map("helpdesk_tickets")
+}
+
+model HelpdeskMensagem {
+  id             String               @id @default(cuid())
+  conteudo       String
+  tipoConteudo   HelpdeskTipoConteudo @default(TEXTO)
+  remetenteNome  String
+  remetenteEmail String
+  isInterno      Boolean              @default(false)
+  emailMessageId String?
+  emailUid       Int?
+  createdAt      DateTime             @default(now())
+  ticketId       String
+  autorId        String?
+  anexos         HelpdeskAnexo[]
+  autor          Colaborador?         @relation(fields: [autorId], references: [id])
+  ticket         HelpdeskTicket       @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@map("helpdesk_mensagens")
+}
+
+model HelpdeskAnexo {
+  id             String           @id @default(cuid())
+  nomeArquivo    String
+  tipoConteudo   String
+  tamanho        Int
+  caminhoArquivo String
+  createdAt      DateTime         @default(now())
+  mensagemId     String
+  mensagem       HelpdeskMensagem @relation(fields: [mensagemId], references: [id], onDelete: Cascade)
+
+  @@map("helpdesk_anexos")
+}
+
+model HelpdeskTicketLog {
+  id            String          @id @default(cuid())
+  tipo          HelpdeskLogTipo
+  descricao     String
+  valorAnterior String?
+  valorNovo     String?
+  autorNome     String
+  autorEmail    String
+  autorId       String?
+  createdAt     DateTime        @default(now())
+  ticketId      String
+  autor         Colaborador?    @relation(fields: [autorId], references: [id])
+  ticket        HelpdeskTicket  @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@map("helpdesk_ticket_logs")
+}
+
+model Task {
+  id               String             @id @default(cuid())
+  titulo           String
+  descricao        String?
+  prioridade       TaskPrioridade     @default(MEDIA)
+  status           TaskStatus         @default(PENDENTE)
+  dataVencimento   DateTime
+  dataInicio       DateTime?
+  dataConclusao    DateTime?
+  isRecorrente     Boolean            @default(false)
+  tempoEstimado    Int?
+  tempoGasto       Int?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  responsavelId    String
+  criadoPorId      String
+  clienteId        String?
+  oportunidadeId   String?
+  emailId          String?
+  helpdeskTicketId String?
+  recorrenciaId    String?
+  ordemServicoId   String?
+  anexos           TaskAttachment[]
+  comentarios      TaskComment[]
+  logs             TaskLog[]
+  notificacoes     TaskNotification[]
+  cliente          Cliente?           @relation(fields: [clienteId], references: [id])
+  criadoPor        Colaborador        @relation("TaskCriador", fields: [criadoPorId], references: [id])
+  email            Email?             @relation(fields: [emailId], references: [id])
+  helpdeskTicket   HelpdeskTicket?    @relation(fields: [helpdeskTicketId], references: [id])
+  oportunidade     Oportunidade?      @relation(fields: [oportunidadeId], references: [id])
+  ordemServico     OrdemServico?      @relation(fields: [ordemServicoId], references: [id])
+  recorrencia      TaskRecurrence?    @relation(fields: [recorrenciaId], references: [id])
+  responsavel      Colaborador        @relation(fields: [responsavelId], references: [id])
+
+  @@map("tasks")
+}
+
+model TaskComment {
+  id        String      @id @default(cuid())
+  conteudo  String
+  isInterno Boolean     @default(false)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  taskId    String
+  autorId   String
+  autor     Colaborador @relation(fields: [autorId], references: [id])
+  task      Task        @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@map("task_comments")
+}
+
+model TaskAttachment {
+  id             String      @id @default(cuid())
+  nomeArquivo    String
+  tipoConteudo   String
+  tamanho        Int
+  caminhoArquivo String
+  createdAt      DateTime    @default(now())
+  taskId         String
+  uploadPorId    String
+  task           Task        @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  uploadPor      Colaborador @relation(fields: [uploadPorId], references: [id])
+
+  @@map("task_attachments")
+}
+
+model TaskRecurrence {
+  id              String             @id @default(cuid())
+  tipo            TaskRecurrenceType
+  intervalo       Int                @default(1)
+  diasSemana      String?
+  diaMes          Int?
+  dataFim         DateTime?
+  maxOcorrencias  Int?
+  ativo           Boolean            @default(true)
+  proximaExecucao DateTime?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  tasks           Task[]
+
+  @@map("task_recurrences")
+}
+
+model TaskLog {
+  id            String      @id @default(cuid())
+  tipo          TaskLogType
+  descricao     String
+  valorAnterior String?
+  valorNovo     String?
+  createdAt     DateTime    @default(now())
+  taskId        String
+  autorId       String
+  autor         Colaborador @relation(fields: [autorId], references: [id])
+  task          Task        @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@map("task_logs")
+}
+
+model TaskNotification {
+  id             String               @id @default(cuid())
+  tipo           TaskNotificationType
+  titulo         String
+  mensagem       String
+  enviado        Boolean              @default(false)
+  dataEnvio      DateTime?
+  tentativas     Int                  @default(0)
+  agendadoPara   DateTime
+  createdAt      DateTime             @default(now())
+  taskId         String
+  destinatarioId String
+  destinatario   Colaborador          @relation(fields: [destinatarioId], references: [id])
+  task           Task                 @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@map("task_notifications")
+}
+
+model WhatsAppConnection {
+  id          String            @id @default(cuid())
+  sessionId   String            @unique
+  phoneNumber String?
+  isConnected Boolean           @default(false)
+  qrCode      String?
+  lastSeen    DateTime?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  contacts    WhatsAppContact[]
+  groups      WhatsAppGroup[]
+  messages    WhatsAppMessage[]
+
+  @@map("whatsapp_connections")
+}
+
+model WhatsAppConversation {
+  id            String            @id @default(cuid())
+  colaboradorId String
+  chatId        String
+  nome          String
+  telefone      String
+  avatar        String?
+  tipo          WhatsAppChatType  @default(INDIVIDUAL)
+  lastMessageAt DateTime          @default(now())
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  colaborador   Colaborador       @relation(fields: [colaboradorId], references: [id], onDelete: Cascade)
+  messages      WhatsAppMessage[]
+
+  @@unique([colaboradorId, chatId])
+  @@map("whatsapp_conversations")
+}
+
+model WhatsAppMessage {
+  id            String                @id @default(cuid())
+  messageId     String?               @unique
+  connectionId  String?
+  conversaId    String
+  colaboradorId String
+  from          String
+  to            String
+  body          String
+  messageType   WhatsAppMessageType   @default(TEXT)
+  mediaUrl      String?
+  mediaType     String?
+  timestamp     DateTime              @default(now())
+  isFromMe      Boolean               @default(false)
+  status        WhatsAppMessageStatus @default(SENT)
+  createdAt     DateTime              @default(now())
+  colaborador   Colaborador           @relation(fields: [colaboradorId], references: [id], onDelete: Cascade)
+  connection    WhatsAppConnection?   @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  conversa      WhatsAppConversation  @relation(fields: [conversaId], references: [id], onDelete: Cascade)
+
+  @@map("whatsapp_messages")
+}
+
+model WhatsAppContact {
+  id           String             @id @default(cuid())
+  connectionId String
+  contactId    String
+  name         String?
+  phoneNumber  String
+  profilePic   String?
+  isBlocked    Boolean            @default(false)
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+  connection   WhatsAppConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+
+  @@unique([connectionId, contactId])
+  @@map("whatsapp_contacts")
+}
+
+model WhatsAppGroup {
+  id           String             @id @default(cuid())
+  connectionId String
+  groupId      String
+  name         String
+  description  String?
+  profilePic   String?
+  isAdmin      Boolean            @default(false)
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+  connection   WhatsAppConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+
+  @@unique([connectionId, groupId])
+  @@map("whatsapp_groups")
+}
+
+model WhatsAppSession {
+  id            String      @id @default(cuid())
+  colaboradorId String      @unique
+  status        String      @default("not_connected")
+  qrCode        String?
+  phoneNumber   String?
+  sessionData   Json?
+  lastActivity  DateTime    @default(now())
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  colaborador   Colaborador @relation(fields: [colaboradorId], references: [id], onDelete: Cascade)
+
+  @@map("whatsapp_sessions")
+}
+
+model WhatsAppAutomation {
+  id          String              @id @default(cuid())
+  name        String
+  description String?
+  isActive    Boolean             @default(true)
+  trigger     WhatsAppTriggerType
+  conditions  Json
+  actions     Json
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+
+  @@map("whatsapp_automations")
+}
+
+model OrdemServico {
+  id                 String                   @id @default(cuid())
+  numero             String                   @unique
+  titulo             String
+  descricao          String
+  observacoes        String?
+  localExecucao      String?
+  dataInicio         DateTime?
+  dataFim            DateTime?
+  prazoEstimado      DateTime?
+  valorOrcamento     Float?
+  valorFinal         Float?
+  status             StatusOrdemServico       @default(RASCUNHO)
+  prioridade         PrioridadeOS             @default(MEDIA)
+  codigoAprovacao    String?                  @unique
+  dataAprovacao      DateTime?
+  aprovadoPor        String?
+  comentariosCliente String?
+  createdAt          DateTime                 @default(now())
+  updatedAt          DateTime                 @updatedAt
+  clienteId          String
+  responsavelId      String?
+  criadoPorId        String
+  oportunidadeId     String?
+  anexos             AnexoOrdemServico[]
+  aprovacoes         AprovacaoOrdemServico[]
+  checklists         ChecklistOrdemServico[]
+  comentarios        ComentarioOrdemServico[]
+  historico          HistoricoOrdemServico[]
+  itens              ItemOrdemServico[]
+  laudoTecnico       LaudoTecnico?
+  orcamentos         Orcamento[]
+  cliente            Cliente                  @relation(fields: [clienteId], references: [id])
+  criadoPor          Colaborador              @relation("OrdemServicoCriador", fields: [criadoPorId], references: [id])
+  oportunidade       Oportunidade?            @relation(fields: [oportunidadeId], references: [id])
+  responsavel        Colaborador?             @relation("OrdemServicoResponsavel", fields: [responsavelId], references: [id])
+  tasks              Task[]
+
+  @@map("ordens_servico")
+}
+
+model AprovacaoOrdemServico {
+  id                 String          @id @default(cuid())
+  codigo             String          @unique
+  status             StatusAprovacao @default(PENDENTE)
+  aprovadoPor        String?
+  dataAprovacao      DateTime?
+  comentariosCliente String?
+  observacoes        String?
+  dataExpiracao      DateTime
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+  ordemServicoId     String
+  ordemServico       OrdemServico    @relation(fields: [ordemServicoId], references: [id], onDelete: Cascade)
+
+  @@map("aprovacoes_ordem_servico")
+}
+
+model ItemOrdemServico {
+  id             String       @id @default(cuid())
+  descricao      String
+  quantidade     Float        @default(1)
+  unidade        String?
+  valorUnitario  Float?
+  valorTotal     Float?
+  observacoes    String?
+  ordemServicoId String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  ordemServico   OrdemServico @relation(fields: [ordemServicoId], references: [id], onDelete: Cascade)
+
+  @@map("itens_ordem_servico")
+}
+
+model TemplateChecklist {
+  id         String                  @id @default(cuid())
+  nome       String
+  descricao  String?
+  categoria  String?
+  ativo      Boolean                 @default(true)
+  createdAt  DateTime                @default(now())
+  updatedAt  DateTime                @updatedAt
+  checklists ChecklistOrdemServico[]
+  itens      ItemTemplateChecklist[]
+
+  @@map("templates_checklist")
+}
+
+model ItemTemplateChecklist {
+  id          String            @id @default(cuid())
+  descricao   String
+  obrigatorio Boolean           @default(false)
+  ordem       Int
+  templateId  String
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  template    TemplateChecklist @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  @@map("itens_template_checklist")
+}
+
+model ChecklistOrdemServico {
+  id             String             @id @default(cuid())
+  nome           String
+  ordemServicoId String
+  templateId     String?
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  ordemServico   OrdemServico       @relation(fields: [ordemServicoId], references: [id], onDelete: Cascade)
+  template       TemplateChecklist? @relation(fields: [templateId], references: [id])
+  itens          ItemChecklistOS[]
+
+  @@map("checklists_ordem_servico")
+}
+
+model ItemChecklistOS {
+  id            String                @id @default(cuid())
+  descricao     String
+  concluido     Boolean               @default(false)
+  obrigatorio   Boolean               @default(false)
+  ordem         Int
+  observacoes   String?
+  concluidoPor  String?
+  dataConclucao DateTime?
+  checklistId   String
+  createdAt     DateTime              @default(now())
+  updatedAt     DateTime              @updatedAt
+  checklist     ChecklistOrdemServico @relation(fields: [checklistId], references: [id], onDelete: Cascade)
+
+  @@map("itens_checklist_os")
+}
+
+model HistoricoOrdemServico {
+  id             String       @id @default(cuid())
+  acao           String
+  descricao      String
+  valorAnterior  String?
+  valorNovo      String?
+  ordemServicoId String
+  usuarioId      String?
+  usuario        String?
+  colaboradorId  String?
+  createdAt      DateTime     @default(now())
+  colaborador    Colaborador? @relation(fields: [colaboradorId], references: [id])
+  ordemServico   OrdemServico @relation(fields: [ordemServicoId], references: [id], onDelete: Cascade)
+
+  @@map("historico_ordem_servico")
+}
+
+model ComentarioOrdemServico {
+  id             String       @id @default(cuid())
+  comentario     String
+  interno        Boolean      @default(true)
+  ordemServicoId String
+  autorId        String?
+  autor          String
+  autorEmail     String?
+  colaboradorId  String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  colaborador    Colaborador? @relation(fields: [colaboradorId], references: [id])
+  ordemServico   OrdemServico @relation(fields: [ordemServicoId], references: [id], onDelete: Cascade)
+
+  @@map("comentarios_ordem_servico")
+}
+
+model AnexoOrdemServico {
+  id             String       @id @default(cuid())
+  nomeArquivo    String
+  caminhoArquivo String
+  tamanho        Int?
+  tipoMime       String?
+  descricao      String?
+  ordemServicoId String
+  uploadPor      String?
+  colaboradorId  String?
+  createdAt      DateTime     @default(now())
+  colaborador    Colaborador? @relation(fields: [colaboradorId], references: [id])
+  ordemServico   OrdemServico @relation(fields: [ordemServicoId], references: [id], onDelete: Cascade)
+
+  @@map("anexos_ordem_servico")
+}
+
+model LaudoTecnico {
+  id                  String                  @id @default(cuid())
+  numero              String                  @unique
+  titulo              String
+  problemaRelatado    String
+  analiseProblema     String
+  diagnostico         String
+  solucaoRecomendada  String
+  observacoesTecnicas String?
+  gerarOrcamento      Boolean                 @default(false)
+  valorOrcamento      Float?
+  justificativaValor  String?
+  status              StatusLaudo             @default(RASCUNHO)
+  aprovadoCliente     Boolean?
+  dataAprovacao       DateTime?
+  comentariosCliente  String?
+  createdAt           DateTime                @default(now())
+  updatedAt           DateTime                @updatedAt
+  ordemServicoId      String                  @unique
+  tecnicoId           String
+  anexos              AnexoLaudoTecnico[]
+  historico           HistoricoLaudoTecnico[]
+  itens               ItemLaudoTecnico[]
+  ordemServico        OrdemServico            @relation(fields: [ordemServicoId], references: [id], onDelete: Cascade)
+  tecnico             Colaborador             @relation("LaudoTecnico", fields: [tecnicoId], references: [id])
+  orcamentos          Orcamento[]
+
+  @@map("laudos_tecnicos")
+}
+
+model ItemLaudoTecnico {
+  id             String          @id @default(cuid())
+  tipo           TipoItemLaudo
+  descricao      String
+  quantidade     Float           @default(1)
+  unidade        String?
+  valorUnitario  Float?
+  valorTotal     Float?
+  necessario     Boolean         @default(true)
+  observacoes    String?
+  laudoId        String
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  laudo          LaudoTecnico    @relation(fields: [laudoId], references: [id], onDelete: Cascade)
+  itensOrcamento ItemOrcamento[]
+
+  @@map("itens_laudo_tecnico")
+}
+
+model AnexoLaudoTecnico {
+  id             String               @id @default(cuid())
+  nomeArquivo    String
+  caminhoArquivo String
+  tamanho        Int?
+  tipoMime       String?
+  descricao      String?
+  categoria      CategoriaAnexoLaudo?
+  laudoId        String
+  uploadPor      String?
+  tecnicoId      String?
+  createdAt      DateTime             @default(now())
+  laudo          LaudoTecnico         @relation(fields: [laudoId], references: [id], onDelete: Cascade)
+  tecnico        Colaborador?         @relation("AnexoLaudoTecnico", fields: [tecnicoId], references: [id])
+
+  @@map("anexos_laudo_tecnico")
+}
+
+model HistoricoLaudoTecnico {
+  id            String       @id @default(cuid())
+  acao          String
+  descricao     String
+  valorAnterior String?
+  valorNovo     String?
+  laudoId       String
+  tecnicoId     String?
+  createdAt     DateTime     @default(now())
+  laudo         LaudoTecnico @relation(fields: [laudoId], references: [id], onDelete: Cascade)
+  tecnico       Colaborador? @relation("HistoricoLaudoTecnico", fields: [tecnicoId], references: [id])
+
+  @@map("historico_laudo_tecnico")
+}
+
+model Orcamento {
+  id                    String               @id @default(cuid())
+  numero                String               @unique
+  titulo                String
+  descricao             String?
+  observacoes           String?
+  valorSubtotal         Float                @default(0)
+  valorDesconto         Float                @default(0)
+  percentualDesconto    Float?
+  valorTotal            Float                @default(0)
+  dataValidade          DateTime
+  status                StatusOrcamento      @default(RASCUNHO)
+  aprovadoCliente       Boolean?
+  dataAprovacao         DateTime?
+  comentariosCliente    String?
+  codigoAprovacao       String?              @unique
+  geradoAutomaticamente Boolean              @default(false)
+  createdAt             DateTime             @default(now())
+  updatedAt             DateTime             @updatedAt
+  ordemServicoId        String
+  laudoTecnicoId        String?
+  criadoPorId           String
+  anexos                AnexoOrcamento[]
+  historico             HistoricoOrcamento[]
+  itens                 ItemOrcamento[]
+  criadoPor             Colaborador          @relation("OrcamentoCriador", fields: [criadoPorId], references: [id])
+  laudoTecnico          LaudoTecnico?        @relation(fields: [laudoTecnicoId], references: [id])
+  ordemServico          OrdemServico         @relation(fields: [ordemServicoId], references: [id], onDelete: Cascade)
+
+  @@map("orcamentos")
+}
+
+model ItemOrcamento {
+  id            String            @id @default(cuid())
+  tipo          TipoItemOrcamento
+  descricao     String
+  quantidade    Float             @default(1)
+  unidade       String?
+  valorUnitario Float
+  valorTotal    Float
+  observacoes   String?
+  orcamentoId   String
+  itemLaudoId   String?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  itemLaudo     ItemLaudoTecnico? @relation(fields: [itemLaudoId], references: [id])
+  orcamento     Orcamento         @relation(fields: [orcamentoId], references: [id], onDelete: Cascade)
+
+  @@map("itens_orcamento")
+}
+
+model AnexoOrcamento {
+  id             String       @id @default(cuid())
+  nomeArquivo    String
+  caminhoArquivo String
+  tamanho        Int?
+  tipoMime       String?
+  descricao      String?
+  orcamentoId    String
+  uploadPor      String?
+  colaboradorId  String?
+  createdAt      DateTime     @default(now())
+  colaborador    Colaborador? @relation("AnexoOrcamento", fields: [colaboradorId], references: [id])
+  orcamento      Orcamento    @relation(fields: [orcamentoId], references: [id], onDelete: Cascade)
+
+  @@map("anexos_orcamento")
+}
+
+model HistoricoOrcamento {
+  id            String       @id @default(cuid())
+  acao          String
+  descricao     String
+  valorAnterior String?
+  valorNovo     String?
+  orcamentoId   String
+  colaboradorId String?
+  createdAt     DateTime     @default(now())
+  colaborador   Colaborador? @relation("HistoricoOrcamento", fields: [colaboradorId], references: [id])
+  orcamento     Orcamento    @relation(fields: [orcamentoId], references: [id], onDelete: Cascade)
+
+  @@map("historico_orcamento")
+}
+
+model ModuloSistema {
+  id        String             @id @default(cuid())
+  nome      String             @unique
+  titulo    String
+  descricao String?
+  ativo     Boolean            @default(true)
+  core      Boolean            @default(false)
+  icone     String?
+  ordem     Int                @default(0)
+  permissao String?
+  rota      String?
+  categoria String?
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+  logs      ModuloSistemaLog[]
+
+  @@map("modulos_sistema")
+}
+
+model ModuloSistemaLog {
+  id            String        @id @default(cuid())
+  moduloId      String
+  acao          String
+  valorAnterior String?
+  valorNovo     String?
+  observacoes   String?
+  autorId       String?
+  autorNome     String
+  autorEmail    String
+  createdAt     DateTime      @default(now())
+  autor         Colaborador?  @relation("ModuloSistemaLog", fields: [autorId], references: [id])
+  modulo        ModuloSistema @relation(fields: [moduloId], references: [id], onDelete: Cascade)
+
+  @@map("modulos_sistema_logs")
+}
+
+model CentroCusto {
+  id                   String                @id @default(cuid())
+  codigo               String                @unique
+  nome                 String
+  descricao            String?
+  ativo                Boolean               @default(true)
+  parentId             String?
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+  parent               CentroCusto?          @relation("CentroCustoHierarquia", fields: [parentId], references: [id])
+  children             CentroCusto[]         @relation("CentroCustoHierarquia")
+  itensTombamento      ItemTombamento[]
+  movimentacoesEstoque MovimentacaoEstoque[]
+  solicitacoesCompra   SolicitacaoCompra[]
+
+  @@map("centros_custo")
+}
+
+model Fornecedor {
+  id                String         @id @default(cuid())
+  razaoSocial       String
+  nomeFantasia      String?
+  cnpj              String?        @unique
+  cpf               String?        @unique
+  inscricaoEstadual String?
+  email             String?
+  telefone          String?
+  celular           String?
+  website           String?
+  cep               String?
+  logradouro        String?
+  numero            String?
+  complemento       String?
+  bairro            String?
+  cidade            String?
+  estado            String?
+  pais              String?        @default("Brasil")
+  banco             String?
+  agencia           String?
+  conta             String?
+  tipoConta         String?
+  pix               String?
+  qualificado       Boolean        @default(false)
+  observacoes       String?
+  ativo             Boolean        @default(true)
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  cotacoes          Cotacao[]
+  pedidosCompra     PedidoCompra[]
+
+  @@map("fornecedores")
+}
+
+model CategoriaProduto {
+  id        String             @id @default(cuid())
+  nome      String
+  descricao String?
+  ativo     Boolean            @default(true)
+  parentId  String?
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+  parent    CategoriaProduto?  @relation("CategoriaProdutoHierarquia", fields: [parentId], references: [id])
+  children  CategoriaProduto[] @relation("CategoriaProdutoHierarquia")
+  produtos  Produto[]
+
+  @@map("categorias_produto")
+}
+
+model Produto {
+  id               String                  @id @default(cuid())
+  codigo           String                  @unique
+  nome             String
+  descricao        String?
+  unidadeMedida    String
+  categoriaId      String
+  estoqueMinimo    Decimal?                @default(0)
+  estoqueMaximo    Decimal?
+  pontoReposicao   Decimal?                @default(0)
+  precoUnitario    Decimal?                @default(0)
+  precoMedio       Decimal?                @default(0)
+  ultimoPreco      Decimal?                @default(0)
+  controlEstoque   Boolean                 @default(true)
+  ativo            Boolean                 @default(true)
+  createdAt        DateTime                @default(now())
+  updatedAt        DateTime                @updatedAt
+  estoques         EstoqueProduto[]
+  itensCotacao     ItemCotacao[]
+  itensPedido      ItemPedidoCompra[]
+  itensSolicitacao ItemSolicitacaoCompra[]
+  itensTombamento  ItemTombamento[]
+  movimentacoes    MovimentacaoEstoque[]
+  categoria        CategoriaProduto        @relation(fields: [categoriaId], references: [id])
+
+  @@map("produtos")
+}
+
+model SolicitacaoCompra {
+  id              String                  @id @default(cuid())
+  numero          String                  @unique
+  descricao       String?
+  justificativa   String?
+  status          StatusSolicitacaoCompra @default(RASCUNHO)
+  prioridade      String?                 @default("NORMAL")
+  dataSolicitacao DateTime                @default(now())
+  dataNecessidade DateTime?
+  dataAprovacao   DateTime?
+  centroCustoId   String
+  solicitanteId   String
+  aprovadorId     String?
+  valorTotal      Decimal                 @default(0)
+  observacoes     String?
+  createdAt       DateTime                @default(now())
+  updatedAt       DateTime                @updatedAt
+  cotacoes        Cotacao[]
+  itens           ItemSolicitacaoCompra[]
+  aprovador       Colaborador?            @relation("SolicitacaoCompraAprovador", fields: [aprovadorId], references: [id])
+  centroCusto     CentroCusto             @relation(fields: [centroCustoId], references: [id])
+  solicitante     Colaborador             @relation("SolicitacaoCompraSolicitante", fields: [solicitanteId], references: [id])
+
+  @@map("solicitacoes_compra")
+}
+
+model ItemSolicitacaoCompra {
+  id            String            @id @default(cuid())
+  quantidade    Decimal
+  valorUnitario Decimal?          @default(0)
+  valorTotal    Decimal?          @default(0)
+  observacoes   String?
+  solicitacaoId String
+  produtoId     String
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  itensCotacao  ItemCotacao[]
+  produto       Produto           @relation(fields: [produtoId], references: [id])
+  solicitacao   SolicitacaoCompra @relation(fields: [solicitacaoId], references: [id], onDelete: Cascade)
+
+  @@map("itens_solicitacao_compra")
+}
+
+model Cotacao {
+  id                 String            @id @default(cuid())
+  numero             String            @unique
+  status             StatusCotacao     @default(PENDENTE)
+  dataCotacao        DateTime          @default(now())
+  dataValidade       DateTime?
+  dataAprovacao      DateTime?
+  solicitacaoId      String
+  fornecedorId       String
+  aprovadorNivel1Id  String?
+  aprovadorNivel2Id  String?
+  aprovadorFinalId   String?
+  valorTotal         Decimal           @default(0)
+  desconto           Decimal?          @default(0)
+  valorFinal         Decimal           @default(0)
+  prazoEntrega       String?
+  condicoesPagamento String?
+  observacoes        String?
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  aprovadorFinal     Colaborador?      @relation("CotacaoAprovadorFinal", fields: [aprovadorFinalId], references: [id])
+  aprovadorNivel1    Colaborador?      @relation("CotacaoAprovadorNivel1", fields: [aprovadorNivel1Id], references: [id])
+  aprovadorNivel2    Colaborador?      @relation("CotacaoAprovadorNivel2", fields: [aprovadorNivel2Id], references: [id])
+  fornecedor         Fornecedor        @relation(fields: [fornecedorId], references: [id])
+  solicitacao        SolicitacaoCompra @relation(fields: [solicitacaoId], references: [id])
+  itens              ItemCotacao[]
+  pedidosCompra      PedidoCompra[]
+
+  @@map("cotacoes")
+}
+
+model ItemCotacao {
+  id                String                @id @default(cuid())
+  quantidade        Decimal
+  valorUnitario     Decimal
+  valorTotal        Decimal
+  observacoes       String?
+  cotacaoId         String
+  produtoId         String
+  itemSolicitacaoId String
+  createdAt         DateTime              @default(now())
+  updatedAt         DateTime              @updatedAt
+  cotacao           Cotacao               @relation(fields: [cotacaoId], references: [id], onDelete: Cascade)
+  itemSolicitacao   ItemSolicitacaoCompra @relation(fields: [itemSolicitacaoId], references: [id])
+  produto           Produto               @relation(fields: [produtoId], references: [id])
+
+  @@map("itens_cotacao")
+}
+
+model PedidoCompra {
+  id                  String             @id @default(cuid())
+  numero              String             @unique
+  status              String             @default("PENDENTE")
+  dataPedido          DateTime           @default(now())
+  dataEntregaPrevista DateTime?
+  dataEntregaReal     DateTime?
+  cotacaoId           String
+  fornecedorId        String
+  valorTotal          Decimal            @default(0)
+  desconto            Decimal?           @default(0)
+  valorFinal          Decimal            @default(0)
+  prazoEntrega        String?
+  condicoesPagamento  String?
+  observacoes         String?
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+  itens               ItemPedidoCompra[]
+  cotacao             Cotacao            @relation(fields: [cotacaoId], references: [id])
+  fornecedor          Fornecedor         @relation(fields: [fornecedorId], references: [id])
+
+  @@map("pedidos_compra")
+}
+
+model ItemPedidoCompra {
+  id                 String       @id @default(cuid())
+  quantidade         Decimal
+  valorUnitario      Decimal
+  valorTotal         Decimal
+  quantidadeRecebida Decimal?     @default(0)
+  observacoes        String?
+  pedidoId           String
+  produtoId          String
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+  pedido             PedidoCompra @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
+  produto            Produto      @relation(fields: [produtoId], references: [id])
+
+  @@map("itens_pedido_compra")
+}
+
+model EstoqueProduto {
+  id                   String    @id @default(cuid())
+  quantidade           Decimal   @default(0)
+  quantidadeReservada  Decimal   @default(0)
+  quantidadeDisponivel Decimal   @default(0)
+  valorUnitario        Decimal?  @default(0)
+  valorTotal           Decimal?  @default(0)
+  localizacao          String?
+  lote                 String?
+  dataValidade         DateTime?
+  produtoId            String
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+  produto              Produto   @relation(fields: [produtoId], references: [id])
+
+  @@unique([produtoId, localizacao, lote])
+  @@map("estoque_produtos")
+}
+
+model MovimentacaoEstoque {
+  id                 String                  @id @default(cuid())
+  tipo               TipoMovimentacaoEstoque
+  quantidade         Decimal
+  valorUnitario      Decimal?                @default(0)
+  valorTotal         Decimal?                @default(0)
+  localizacaoOrigem  String?
+  localizacaoDestino String?
+  lote               String?
+  documentoTipo      String?
+  documentoId        String?
+  documentoNumero    String?
+  centroCustoId      String?
+  produtoId          String
+  responsavelId      String
+  observacoes        String?
+  createdAt          DateTime                @default(now())
+  updatedAt          DateTime                @updatedAt
+  centroCusto        CentroCusto?            @relation(fields: [centroCustoId], references: [id])
+  produto            Produto                 @relation(fields: [produtoId], references: [id])
+  responsavel        Colaborador             @relation("MovimentacaoEstoqueResponsavel", fields: [responsavelId], references: [id])
+
+  @@map("movimentacoes_estoque")
+}
+
+model ItemTombamento {
+  id               String                   @id @default(cuid())
+  numeroTombamento String                   @unique
+  descricao        String
+  status           StatusItemTombamento     @default(ATIVO)
+  marca            String?
+  modelo           String?
+  numeroSerie      String?
+  anoFabricacao    Int?
+  valorAquisicao   Decimal?                 @default(0)
+  valorAtual       Decimal?                 @default(0)
+  dataAquisicao    DateTime?
+  localizacao      String?
+  responsavel      String?
+  centroCustoId    String?
+  produtoId        String?
+  observacoes      String?
+  createdAt        DateTime                 @default(now())
+  updatedAt        DateTime                 @updatedAt
+  centroCusto      CentroCusto?             @relation(fields: [centroCustoId], references: [id])
+  produto          Produto?                 @relation(fields: [produtoId], references: [id])
+  movimentacoes    MovimentacaoTombamento[]
+
+  @@map("itens_tombamento")
+}
+
+model MovimentacaoTombamento {
+  id                 String         @id @default(cuid())
+  tipo               String
+  localizacaoOrigem  String?
+  localizacaoDestino String?
+  responsavelOrigem  String?
+  responsavelDestino String?
+  itemTombamentoId   String
+  responsavelId      String
+  observacoes        String?
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+  itemTombamento     ItemTombamento @relation(fields: [itemTombamentoId], references: [id])
+  responsavel        Colaborador    @relation("MovimentacaoTombamentoResponsavel", fields: [responsavelId], references: [id])
+
+  @@map("movimentacoes_tombamento")
+}
+
 enum TipoCliente {
   PESSOA_FISICA
   PESSOA_JURIDICA
@@ -453,150 +1495,6 @@ enum TipoEndereco {
   OUTRO
 }
 
-// Sistema de Email/Webmail
-
-// Configurações de email por colaborador
-model EmailConfig {
-  id String @id @default(cuid())
-
-  // Configurações IMAP (recebimento)
-  imapHost   String
-  imapPort   Int     @default(993)
-  imapSecure Boolean @default(true) // SSL/TLS
-
-  // Configurações SMTP (envio)
-  smtpHost   String
-  smtpPort   Int     @default(587)
-  smtpSecure Boolean @default(false) // STARTTLS
-
-  // Credenciais
-  email    String
-  password String // Criptografado
-
-  // Configurações de sincronização
-  syncEnabled  Boolean   @default(true)
-  syncInterval Int       @default(180) // segundos (3 minutos)
-  lastSync     DateTime?
-
-  // Metadados
-  ativo     Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relacionamentos
-  colaboradorId String      @unique
-  colaborador   Colaborador @relation(fields: [colaboradorId], references: [id], onDelete: Cascade)
-
-  // Pastas e emails
-  folders EmailFolder[]
-  emails  Email[]
-
-  @@map("email_configs")
-}
-
-// Pastas de email (INBOX, Sent, Drafts, etc.)
-model EmailFolder {
-  id         String  @id @default(cuid())
-  name       String // Nome da pasta
-  path       String // Caminho IMAP da pasta
-  delimiter  String  @default("/")
-  specialUse String? // \Inbox, \Sent, \Drafts, etc.
-  subscribed Boolean @default(true)
-
-  // Contadores
-  totalMessages  Int @default(0)
-  unreadMessages Int @default(0)
-
-  // Metadados
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relacionamentos
-  emailConfigId String
-  emailConfig   EmailConfig @relation(fields: [emailConfigId], references: [id], onDelete: Cascade)
-
-  emails Email[]
-
-  @@unique([emailConfigId, path])
-  @@map("email_folders")
-}
-
-// Emails
-model Email {
-  id String @id @default(cuid())
-
-  // Identificadores únicos
-  messageId String // Message-ID do email
-  uid       Int // UID no servidor IMAP
-
-  // Cabeçalhos principais
-  subject String?
-  from    String // JSON array de remetentes
-  to      String? // JSON array de destinatários
-  cc      String? // JSON array de cópias
-  bcc     String? // JSON array de cópias ocultas
-  replyTo String? // JSON array de reply-to
-
-  // Conteúdo
-  textContent String? // Conteúdo em texto puro
-  htmlContent String? // Conteúdo em HTML
-
-  // Metadados
-  date      DateTime // Data do email
-  size      Int? // Tamanho em bytes
-  flags     String? // JSON array de flags (\Seen, \Flagged, etc.)
-  isRead    Boolean  @default(false)
-  isFlagged Boolean  @default(false)
-  isDeleted Boolean  @default(false)
-
-  // Threading
-  inReplyTo  String? // Message-ID do email original
-  references String? // JSON array de Message-IDs referenciados
-  threadId   String? // ID da thread
-
-  // Sincronização
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relacionamentos
-  emailConfigId String
-  emailConfig   EmailConfig @relation(fields: [emailConfigId], references: [id], onDelete: Cascade)
-
-  folderId String
-  folder   EmailFolder @relation(fields: [folderId], references: [id], onDelete: Cascade)
-
-  attachments EmailAttachment[]
-
-  // Tarefas
-  tasks Task[]
-
-  @@unique([emailConfigId, messageId])
-  @@unique([emailConfigId, folderId, uid])
-  @@map("emails")
-}
-
-// Anexos de email
-model EmailAttachment {
-  id          String  @id @default(cuid())
-  filename    String
-  contentType String
-  size        Int
-  contentId   String? // Para anexos inline
-  disposition String? // attachment ou inline
-
-  // Armazenamento
-  filePath String? // Caminho no sistema de arquivos
-
-  // Metadados
-  createdAt DateTime @default(now())
-
-  // Relacionamentos
-  emailId String
-  email   Email  @relation(fields: [emailId], references: [id], onDelete: Cascade)
-
-  @@map("email_attachments")
-}
-
 enum EmailSyncStatus {
   IDLE
   SYNCING
@@ -604,138 +1502,6 @@ enum EmailSyncStatus {
   DISABLED
 }
 
-// Sistema de Helpdesk
-
-// Departamentos do Helpdesk
-model HelpdeskDepartamento {
-  id        String  @id @default(cuid())
-  nome      String
-  descricao String?
-  ativo     Boolean @default(true)
-
-  // Configurações IMAP específicas do departamento
-  imapHost     String?
-  imapPort     Int?    @default(993)
-  imapSecure   Boolean @default(true)
-  imapEmail    String?
-  imapPassword String? // Criptografado
-
-  // Configurações SMTP específicas do departamento
-  smtpHost     String?
-  smtpPort     Int?    @default(587)
-  smtpSecure   Boolean @default(false)
-  smtpEmail    String?
-  smtpPassword String? // Criptografado
-
-  // Configurações de sincronização
-  syncEnabled  Boolean   @default(true)
-  syncInterval Int       @default(300) // segundos (5 minutos)
-  lastSync     DateTime?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relacionamentos
-  grupoHierarquicoId String?
-  grupoHierarquico   GrupoHierarquico? @relation(fields: [grupoHierarquicoId], references: [id])
-
-  tickets HelpdeskTicket[]
-
-  @@map("helpdesk_departamentos")
-}
-
-// Tickets do Helpdesk
-model HelpdeskTicket {
-  id         String             @id @default(cuid())
-  numero     Int                @unique // Numeração sequencial
-  assunto    String
-  descricao  String?
-  prioridade HelpdeskPrioridade @default(MEDIA)
-  status     HelpdeskStatus     @default(ABERTO)
-
-  // Informações do solicitante
-  solicitanteNome     String
-  solicitanteEmail    String
-  solicitanteTelefone String?
-
-  // Dados de origem do email (se aplicável)
-  emailMessageId String? // Message-ID do email original
-  emailUid       Int? // UID do email no servidor IMAP
-
-  // Timestamps
-  dataAbertura       DateTime  @default(now())
-  dataFechamento     DateTime?
-  dataUltimaResposta DateTime?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relacionamentos
-  departamentoId String
-  departamento   HelpdeskDepartamento @relation(fields: [departamentoId], references: [id])
-
-  clienteId String?
-  cliente   Cliente? @relation(fields: [clienteId], references: [id])
-
-  responsavelId String?
-  responsavel   Colaborador? @relation(fields: [responsavelId], references: [id])
-
-  mensagens HelpdeskMensagem[]
-  logs      HelpdeskTicketLog[]
-
-  // Tarefas
-  tasks Task[]
-
-  @@map("helpdesk_tickets")
-}
-
-// Mensagens dos tickets
-model HelpdeskMensagem {
-  id           String               @id @default(cuid())
-  conteudo     String
-  tipoConteudo HelpdeskTipoConteudo @default(TEXTO)
-
-  // Informações do remetente
-  remetenteNome  String
-  remetenteEmail String
-  isInterno      Boolean @default(false) // true se for resposta interna da equipe
-
-  // Dados de origem do email (se aplicável)
-  emailMessageId String? // Message-ID do email
-  emailUid       Int? // UID do email no servidor IMAP
-
-  createdAt DateTime @default(now())
-
-  // Relacionamentos
-  ticketId String
-  ticket   HelpdeskTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
-
-  autorId String?
-  autor   Colaborador? @relation(fields: [autorId], references: [id])
-
-  anexos HelpdeskAnexo[]
-
-  @@map("helpdesk_mensagens")
-}
-
-// Anexos das mensagens
-model HelpdeskAnexo {
-  id             String @id @default(cuid())
-  nomeArquivo    String
-  tipoConteudo   String
-  tamanho        Int
-  caminhoArquivo String // Caminho no sistema de arquivos
-
-  createdAt DateTime @default(now())
-
-  // Relacionamentos
-  mensagemId String
-  mensagem   HelpdeskMensagem @relation(fields: [mensagemId], references: [id], onDelete: Cascade)
-
-  @@map("helpdesk_anexos")
-}
-
-// Enums do Helpdesk
 enum HelpdeskStatus {
   ABERTO
   EM_ANDAMENTO
@@ -770,200 +1536,6 @@ enum HelpdeskLogTipo {
   REABERTURA
 }
 
-// Log de alterações dos tickets
-model HelpdeskTicketLog {
-  id            String          @id @default(cuid())
-  tipo          HelpdeskLogTipo
-  descricao     String // Descrição da alteração
-  valorAnterior String? // Valor anterior (JSON ou texto)
-  valorNovo     String? // Novo valor (JSON ou texto)
-
-  // Informações do autor da alteração
-  autorNome  String
-  autorEmail String
-  autorId    String?
-
-  createdAt DateTime @default(now())
-
-  // Relacionamentos
-  ticketId String
-  ticket   HelpdeskTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
-
-  autor Colaborador? @relation(fields: [autorId], references: [id])
-
-  @@map("helpdesk_ticket_logs")
-}
-
-// Sistema de Tarefas
-
-// Tarefas
-model Task {
-  id         String         @id @default(cuid())
-  titulo     String
-  descricao  String? // Suporte a Markdown
-  prioridade TaskPrioridade @default(MEDIA)
-  status     TaskStatus     @default(PENDENTE)
-
-  // Datas
-  dataVencimento DateTime
-  dataInicio     DateTime?
-  dataConclusao  DateTime?
-
-  // Configurações
-  isRecorrente  Boolean @default(false)
-  tempoEstimado Int? // Em minutos
-  tempoGasto    Int? // Em minutos
-
-  // Metadados
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relacionamentos
-  responsavelId String
-  responsavel   Colaborador @relation(fields: [responsavelId], references: [id])
-
-  criadoPorId String
-  criadoPor   Colaborador @relation("TaskCriador", fields: [criadoPorId], references: [id])
-
-  // Associações opcionais
-  clienteId String?
-  cliente   Cliente? @relation(fields: [clienteId], references: [id])
-
-  oportunidadeId String?
-  oportunidade   Oportunidade? @relation(fields: [oportunidadeId], references: [id])
-
-  emailId String?
-  email   Email?  @relation(fields: [emailId], references: [id])
-
-  helpdeskTicketId String?
-  helpdeskTicket   HelpdeskTicket? @relation(fields: [helpdeskTicketId], references: [id])
-
-  ordemServicoId String?
-  ordemServico   OrdemServico? @relation(fields: [ordemServicoId], references: [id])
-
-  // Recorrência
-  recorrenciaId String?
-  recorrencia   TaskRecurrence? @relation(fields: [recorrenciaId], references: [id])
-
-  // Relacionamentos filhos
-  comentarios  TaskComment[]
-  anexos       TaskAttachment[]
-  logs         TaskLog[]
-  notificacoes TaskNotification[]
-
-  @@map("tasks")
-}
-
-// Comentários das tarefas
-model TaskComment {
-  id        String  @id @default(cuid())
-  conteudo  String
-  isInterno Boolean @default(false) // Comentário interno da equipe
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relacionamentos
-  taskId String
-  task   Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
-
-  autorId String
-  autor   Colaborador @relation(fields: [autorId], references: [id])
-
-  @@map("task_comments")
-}
-
-// Anexos das tarefas
-model TaskAttachment {
-  id             String @id @default(cuid())
-  nomeArquivo    String
-  tipoConteudo   String
-  tamanho        Int
-  caminhoArquivo String // Caminho no sistema de arquivos
-
-  createdAt DateTime @default(now())
-
-  // Relacionamentos
-  taskId String
-  task   Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
-
-  uploadPorId String
-  uploadPor   Colaborador @relation(fields: [uploadPorId], references: [id])
-
-  @@map("task_attachments")
-}
-
-// Configuração de recorrência
-model TaskRecurrence {
-  id             String             @id @default(cuid())
-  tipo           TaskRecurrenceType
-  intervalo      Int                @default(1) // A cada X dias/semanas/meses
-  diasSemana     String? // JSON array para recorrência semanal [1,2,3,4,5]
-  diaMes         Int? // Dia do mês para recorrência mensal
-  dataFim        DateTime? // Data limite para parar a recorrência
-  maxOcorrencias Int? // Número máximo de ocorrências
-
-  // Controle
-  ativo           Boolean   @default(true)
-  proximaExecucao DateTime?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relacionamentos
-  tasks Task[]
-
-  @@map("task_recurrences")
-}
-
-// Log de alterações das tarefas
-model TaskLog {
-  id            String      @id @default(cuid())
-  tipo          TaskLogType
-  descricao     String // Descrição da alteração
-  valorAnterior String? // Valor anterior (JSON)
-  valorNovo     String? // Novo valor (JSON)
-
-  createdAt DateTime @default(now())
-
-  // Relacionamentos
-  taskId String
-  task   Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
-
-  autorId String
-  autor   Colaborador @relation(fields: [autorId], references: [id])
-
-  @@map("task_logs")
-}
-
-// Notificações de tarefas
-model TaskNotification {
-  id       String               @id @default(cuid())
-  tipo     TaskNotificationType
-  titulo   String
-  mensagem String
-
-  // Controle de envio
-  enviado    Boolean   @default(false)
-  dataEnvio  DateTime?
-  tentativas Int       @default(0)
-
-  // Agendamento
-  agendadoPara DateTime
-
-  createdAt DateTime @default(now())
-
-  // Relacionamentos
-  taskId String
-  task   Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
-
-  destinatarioId String
-  destinatario   Colaborador @relation(fields: [destinatarioId], references: [id])
-
-  @@map("task_notifications")
-}
-
-// Enums do sistema de tarefas
 enum TaskPrioridade {
   BAIXA
   MEDIA
@@ -1011,146 +1583,6 @@ enum TaskNotificationType {
   ALERTA_GESTOR
 }
 
-// ===== MÓDULO WHATSAPP =====
-
-// Conexões WhatsApp
-model WhatsAppConnection {
-  id          String    @id @default(cuid())
-  sessionId   String    @unique
-  phoneNumber String?
-  isConnected Boolean   @default(false)
-  qrCode      String?
-  lastSeen    DateTime?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-
-  // Relacionamentos
-  messages WhatsAppMessage[]
-  contacts WhatsAppContact[]
-  groups   WhatsAppGroup[]
-
-  @@map("whatsapp_connections")
-}
-
-// Conversas WhatsApp
-model WhatsAppConversation {
-  id            String           @id @default(cuid())
-  colaboradorId String
-  chatId        String // ID do chat (contato ou grupo)
-  nome          String
-  telefone      String
-  avatar        String?
-  tipo          WhatsAppChatType @default(INDIVIDUAL)
-  lastMessageAt DateTime         @default(now())
-  createdAt     DateTime         @default(now())
-  updatedAt     DateTime         @updatedAt
-
-  // Relacionamentos
-  colaborador Colaborador       @relation(fields: [colaboradorId], references: [id], onDelete: Cascade)
-  messages    WhatsAppMessage[]
-
-  @@unique([colaboradorId, chatId])
-  @@map("whatsapp_conversations")
-}
-
-// Mensagens WhatsApp
-model WhatsAppMessage {
-  id            String                @id @default(cuid())
-  messageId     String?               @unique // ID da mensagem do WhatsApp
-  connectionId  String?
-  conversaId    String
-  colaboradorId String
-  from          String
-  to            String
-  body          String
-  messageType   WhatsAppMessageType   @default(TEXT)
-  mediaUrl      String?
-  mediaType     String?
-  timestamp     DateTime              @default(now())
-  isFromMe      Boolean               @default(false)
-  status        WhatsAppMessageStatus @default(SENT)
-  createdAt     DateTime              @default(now())
-
-  // Relacionamentos
-  connection  WhatsAppConnection?  @relation(fields: [connectionId], references: [id], onDelete: Cascade)
-  conversa    WhatsAppConversation @relation(fields: [conversaId], references: [id], onDelete: Cascade)
-  colaborador Colaborador          @relation(fields: [colaboradorId], references: [id], onDelete: Cascade)
-
-  @@map("whatsapp_messages")
-}
-
-// Contatos WhatsApp
-model WhatsAppContact {
-  id           String   @id @default(cuid())
-  connectionId String
-  contactId    String // ID do contato no WhatsApp
-  name         String?
-  phoneNumber  String
-  profilePic   String?
-  isBlocked    Boolean  @default(false)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  // Relacionamentos
-  connection WhatsAppConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
-
-  @@unique([connectionId, contactId])
-  @@map("whatsapp_contacts")
-}
-
-// Grupos WhatsApp
-model WhatsAppGroup {
-  id           String   @id @default(cuid())
-  connectionId String
-  groupId      String // ID do grupo no WhatsApp
-  name         String
-  description  String?
-  profilePic   String?
-  isAdmin      Boolean  @default(false)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  // Relacionamentos
-  connection WhatsAppConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
-
-  @@unique([connectionId, groupId])
-  @@map("whatsapp_groups")
-}
-
-// Sessões WhatsApp (para controle de estado)
-model WhatsAppSession {
-  id            String   @id @default(cuid())
-  colaboradorId String   @unique
-  status        String   @default("not_connected")
-  qrCode        String?
-  phoneNumber   String?
-  sessionData   Json?
-  lastActivity  DateTime @default(now())
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  // Relacionamentos
-  colaborador Colaborador @relation(fields: [colaboradorId], references: [id], onDelete: Cascade)
-
-  @@map("whatsapp_sessions")
-}
-
-// Automações WhatsApp
-model WhatsAppAutomation {
-  id          String              @id @default(cuid())
-  name        String
-  description String?
-  isActive    Boolean             @default(true)
-  trigger     WhatsAppTriggerType
-  conditions  Json // Condições em JSON
-  actions     Json // Ações em JSON
-  createdAt   DateTime            @default(now())
-  updatedAt   DateTime            @updatedAt
-
-  @@map("whatsapp_automations")
-}
-
-// Enums WhatsApp
 enum WhatsAppMessageType {
   TEXT
   IMAGE
@@ -1191,285 +1623,17 @@ enum WhatsAppTriggerType {
   @@map("whatsapp_trigger_type")
 }
 
-// ===== MÓDULO ORDEM DE SERVIÇO =====
-
-// Ordem de Serviço principal
-model OrdemServico {
-  id          String  @id @default(cuid())
-  numero      String  @unique // Número sequencial da OS
-  titulo      String
-  descricao   String
-  observacoes String?
-
-  // Dados do serviço
-  localExecucao String? // Local onde será executado o serviço
-  dataInicio    DateTime?
-  dataFim       DateTime?
-  prazoEstimado DateTime?
-
-  // Valores
-  valorOrcamento Float?
-  valorFinal     Float?
-
-  // Status e controle
-  status     StatusOrdemServico @default(RASCUNHO)
-  prioridade PrioridadeOS       @default(MEDIA)
-
-  // Aprovação do cliente
-  codigoAprovacao    String?   @unique // Código único para aprovação via email
-  dataAprovacao      DateTime?
-  aprovadoPor        String? // Nome/email de quem aprovou
-  comentariosCliente String?
-
-  // Timestamps
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relacionamentos
-  clienteId String
-  cliente   Cliente @relation(fields: [clienteId], references: [id])
-
-  responsavelId String?
-  responsavel   Colaborador? @relation("OrdemServicoResponsavel", fields: [responsavelId], references: [id])
-
-  criadoPorId String
-  criadoPor   Colaborador @relation("OrdemServicoCriador", fields: [criadoPorId], references: [id])
-
-  // Relacionamento com oportunidade/negócio
-  oportunidadeId String?
-  oportunidade   Oportunidade? @relation(fields: [oportunidadeId], references: [id])
-
-  // Itens da OS
-  itens ItemOrdemServico[]
-
-  // Checklist de procedimentos
-  checklists ChecklistOrdemServico[]
-
-  // Histórico de alterações
-  historico HistoricoOrdemServico[]
-
-  // Comentários
-  comentarios ComentarioOrdemServico[]
-
-  // Anexos
-  anexos AnexoOrdemServico[]
-
-  // Tarefas relacionadas
-  tasks Task[]
-
-  // Aprovações
-  aprovacoes AprovacaoOrdemServico[]
-
-  // Laudo Técnico
-  laudoTecnico LaudoTecnico?
-
-  // Orçamentos
-  orcamentos Orcamento[]
-
-  @@map("ordens_servico")
-}
-
-// Aprovações de Ordem de Serviço
-model AprovacaoOrdemServico {
-  id     String @id @default(cuid())
-  codigo String @unique // Código único para aprovação via email
-
-  // Status da aprovação
-  status StatusAprovacao @default(PENDENTE)
-
-  // Dados da aprovação
-  aprovadoPor        String? // Nome/email de quem aprovou
-  dataAprovacao      DateTime?
-  comentariosCliente String?
-  observacoes        String? // Observações internas
-
-  // Controle de expiração
-  dataExpiracao DateTime // Data limite para aprovação (72h)
-
-  // Timestamps
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relacionamentos
-  ordemServicoId String
-  ordemServico   OrdemServico @relation(fields: [ordemServicoId], references: [id], onDelete: Cascade)
-
-  @@map("aprovacoes_ordem_servico")
-}
-
-// Itens/Materiais da Ordem de Serviço
-model ItemOrdemServico {
-  id            String  @id @default(cuid())
-  descricao     String
-  quantidade    Float   @default(1)
-  unidade       String? // ex: "un", "m", "kg", "h"
-  valorUnitario Float?
-  valorTotal    Float?
-  observacoes   String?
-
-  // Relacionamentos
-  ordemServicoId String
-  ordemServico   OrdemServico @relation(fields: [ordemServicoId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("itens_ordem_servico")
-}
-
-// Templates de Checklist para procedimentos
-model TemplateChecklist {
-  id        String  @id @default(cuid())
-  nome      String
-  descricao String?
-  categoria String? // ex: "Instalação", "Manutenção", "Reparo"
-  ativo     Boolean @default(true)
-
-  // Itens do template
-  itens ItemTemplateChecklist[]
-
-  // Uso em OS
-  checklists ChecklistOrdemServico[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("templates_checklist")
-}
-
-// Itens do template de checklist
-model ItemTemplateChecklist {
-  id          String  @id @default(cuid())
-  descricao   String
-  obrigatorio Boolean @default(false)
-  ordem       Int // Ordem de exibição
-
-  templateId String
-  template   TemplateChecklist @relation(fields: [templateId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("itens_template_checklist")
-}
-
-// Checklist aplicado a uma OS específica
-model ChecklistOrdemServico {
-  id   String @id @default(cuid())
-  nome String
-
-  ordemServicoId String
-  ordemServico   OrdemServico @relation(fields: [ordemServicoId], references: [id], onDelete: Cascade)
-
-  templateId String?
-  template   TemplateChecklist? @relation(fields: [templateId], references: [id])
-
-  // Itens do checklist
-  itens ItemChecklistOS[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("checklists_ordem_servico")
-}
-
-// Itens do checklist da OS
-model ItemChecklistOS {
-  id          String  @id @default(cuid())
-  descricao   String
-  concluido   Boolean @default(false)
-  obrigatorio Boolean @default(false)
-  ordem       Int
-  observacoes String?
-
-  // Quem marcou como concluído
-  concluidoPor  String?
-  dataConclucao DateTime?
-
-  checklistId String
-  checklist   ChecklistOrdemServico @relation(fields: [checklistId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("itens_checklist_os")
-}
-
-// Histórico de alterações da OS
-model HistoricoOrdemServico {
-  id            String  @id @default(cuid())
-  acao          String // "criada", "status_alterado", "aprovada", etc.
-  descricao     String
-  valorAnterior String? // JSON com valores anteriores
-  valorNovo     String? // JSON com valores novos
-
-  ordemServicoId String
-  ordemServico   OrdemServico @relation(fields: [ordemServicoId], references: [id], onDelete: Cascade)
-
-  usuarioId     String?
-  usuario       String? // Nome do usuário que fez a alteração
-  colaboradorId String?
-  colaborador   Colaborador? @relation(fields: [colaboradorId], references: [id])
-
-  createdAt DateTime @default(now())
-
-  @@map("historico_ordem_servico")
-}
-
-// Comentários da OS (internos e do cliente)
-model ComentarioOrdemServico {
-  id         String  @id @default(cuid())
-  comentario String
-  interno    Boolean @default(true) // true = comentário interno, false = visível para cliente
-
-  ordemServicoId String
-  ordemServico   OrdemServico @relation(fields: [ordemServicoId], references: [id], onDelete: Cascade)
-
-  autorId       String?
-  autor         String // Nome do autor
-  autorEmail    String? // Email do autor
-  colaboradorId String?
-  colaborador   Colaborador? @relation(fields: [colaboradorId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("comentarios_ordem_servico")
-}
-
-// Anexos da OS
-model AnexoOrdemServico {
-  id             String  @id @default(cuid())
-  nomeArquivo    String
-  caminhoArquivo String
-  tamanho        Int? // Tamanho em bytes
-  tipoMime       String?
-  descricao      String?
-
-  ordemServicoId String
-  ordemServico   OrdemServico @relation(fields: [ordemServicoId], references: [id], onDelete: Cascade)
-
-  uploadPor     String? // Nome de quem fez upload
-  colaboradorId String?
-  colaborador   Colaborador? @relation(fields: [colaboradorId], references: [id])
-
-  createdAt DateTime @default(now())
-
-  @@map("anexos_ordem_servico")
-}
-
-// Enums para Ordem de Serviço
 enum StatusOrdemServico {
-  RASCUNHO // OS criada mas não enviada
-  AGUARDANDO_APROVACAO // Enviada para cliente aprovar
-  AGUARDANDO_APROVACAO_CLIENTE // Aguardando aprovação do cliente após laudo
-  ORCAMENTO_ENVIADO // Orçamento enviado para cliente
-  APROVADA // Cliente aprovou
-  REJEITADA // Cliente rejeitou
-  EM_ANDAMENTO // Serviço sendo executado
-  PAUSADA // Serviço pausado
-  CONCLUIDA // Serviço finalizado
-  CANCELADA // OS cancelada
+  RASCUNHO
+  AGUARDANDO_APROVACAO
+  APROVADA
+  REJEITADA
+  EM_ANDAMENTO
+  PAUSADA
+  CONCLUIDA
+  CANCELADA
+  AGUARDANDO_APROVACAO_CLIENTE
+  ORCAMENTO_ENVIADO
 
   @@map("status_ordem_servico")
 }
@@ -1492,357 +1656,109 @@ enum StatusAprovacao {
   @@map("status_aprovacao")
 }
 
-// ===== MÓDULO LAUDO TÉCNICO =====
-
-// Laudo Técnico
-model LaudoTecnico {
-  id                String   @id @default(cuid())
-  numero            String   @unique // Número sequencial do laudo
-  titulo            String
-  problemaRelatado  String   // Problema inicial relatado pelo cliente
-  analiseProblema   String   // Análise técnica detalhada do problema
-  diagnostico       String   // Diagnóstico final
-  solucaoRecomendada String  // Solução recomendada
-  observacoesTecnicas String? // Observações técnicas adicionais
-  
-  // Orçamento automático
-  gerarOrcamento    Boolean  @default(false) // Se deve gerar orçamento automaticamente
-  valorOrcamento    Float?   // Valor do orçamento gerado
-  justificativaValor String? // Justificativa do valor orçado
-  
-  // Status do laudo
-  status            StatusLaudo @default(RASCUNHO)
-  
-  // Aprovação do cliente
-  aprovadoCliente   Boolean? // null = pendente, true = aprovado, false = rejeitado
-  dataAprovacao     DateTime?
-  comentariosCliente String? // Comentários do cliente sobre o laudo
-  
-  // Timestamps
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  
-  // Relacionamentos
-  ordemServicoId    String   @unique // Um laudo por ordem de serviço
-  ordemServico      OrdemServico @relation(fields: [ordemServicoId], references: [id], onDelete: Cascade)
-  
-  tecnicoId         String
-  tecnico           Colaborador @relation("LaudoTecnico", fields: [tecnicoId], references: [id])
-  
-  // Itens do laudo (materiais/serviços necessários)
-  itens             ItemLaudoTecnico[]
-  
-  // Anexos do laudo (fotos, documentos técnicos)
-  anexos            AnexoLaudoTecnico[]
-  
-  // Histórico de alterações
-  historico         HistoricoLaudoTecnico[]
-
-  // Orçamentos gerados a partir deste laudo
-  orcamentos        Orcamento[]
-
-  @@map("laudos_tecnicos")
-}
-
-// Itens do Laudo Técnico (materiais/serviços necessários)
-model ItemLaudoTecnico {
-  id            String  @id @default(cuid())
-  tipo          TipoItemLaudo // MATERIAL, SERVICO, MAO_DE_OBRA
-  descricao     String
-  quantidade    Float   @default(1)
-  unidade       String? // ex: "un", "m", "kg", "h"
-  valorUnitario Float?
-  valorTotal    Float?
-  necessario    Boolean @default(true) // Se é necessário para a solução
-  observacoes   String?
-  
-  // Relacionamentos
-  laudoId       String
-  laudo         LaudoTecnico @relation(fields: [laudoId], references: [id], onDelete: Cascade)
-  
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  // Itens de orçamento gerados a partir deste item
-  itensOrcamento ItemOrcamento[]
-
-  @@map("itens_laudo_tecnico")
-}
-
-// Anexos do Laudo Técnico
-model AnexoLaudoTecnico {
-  id             String  @id @default(cuid())
-  nomeArquivo    String
-  caminhoArquivo String
-  tamanho        Int? // Tamanho em bytes
-  tipoMime       String?
-  descricao      String?
-  categoria      CategoriaAnexoLaudo? // FOTO_PROBLEMA, FOTO_SOLUCAO, DOCUMENTO_TECNICO, OUTRO
-  
-  // Relacionamentos
-  laudoId        String
-  laudo          LaudoTecnico @relation(fields: [laudoId], references: [id], onDelete: Cascade)
-  
-  uploadPor      String? // Nome de quem fez upload
-  tecnicoId      String?
-  tecnico        Colaborador? @relation("AnexoLaudoTecnico", fields: [tecnicoId], references: [id])
-  
-  createdAt      DateTime @default(now())
-
-  @@map("anexos_laudo_tecnico")
-}
-
-// Histórico de alterações do Laudo Técnico
-model HistoricoLaudoTecnico {
-  id            String  @id @default(cuid())
-  acao          String // "criado", "status_alterado", "aprovado_cliente", etc.
-  descricao     String
-  valorAnterior String? // JSON com valores anteriores
-  valorNovo     String? // JSON com valores novos
-  
-  // Relacionamentos
-  laudoId       String
-  laudo         LaudoTecnico @relation(fields: [laudoId], references: [id], onDelete: Cascade)
-  
-  tecnicoId     String?
-  tecnico       Colaborador? @relation("HistoricoLaudoTecnico", fields: [tecnicoId], references: [id])
-  
-  createdAt     DateTime @default(now())
-
-  @@map("historico_laudo_tecnico")
-}
-
-// Enums para Laudo Técnico
 enum StatusLaudo {
-  RASCUNHO // Laudo sendo elaborado
-  CONCLUIDO // Laudo concluído pelo técnico
-  FINALIZADO // Laudo finalizado pelo técnico
-  ENVIADO_CLIENTE // Enviado para aprovação do cliente
-  APROVADO_CLIENTE // Cliente aprovou o laudo
-  REJEITADO_CLIENTE // Cliente rejeitou o laudo
-  REVISAO // Em revisão pelo técnico
+  RASCUNHO
+  FINALIZADO
+  ENVIADO_CLIENTE
+  APROVADO_CLIENTE
+  REJEITADO_CLIENTE
+  REVISAO
+  CONCLUIDO
 
   @@map("status_laudo")
 }
 
 enum TipoItemLaudo {
-  MATERIAL // Material/peça necessária
-  SERVICO // Serviço a ser executado
-  MAO_DE_OBRA // Mão de obra
+  MATERIAL
+  SERVICO
+  MAO_DE_OBRA
 
   @@map("tipo_item_laudo")
 }
 
 enum CategoriaAnexoLaudo {
-  FOTO_PROBLEMA // Foto do problema identificado
-  FOTO_SOLUCAO // Foto da solução proposta
-  DOCUMENTO_TECNICO // Documento técnico
-  ESQUEMA // Esquema/diagrama
-  OUTRO // Outros tipos
+  FOTO_PROBLEMA
+  FOTO_SOLUCAO
+  DOCUMENTO_TECNICO
+  ESQUEMA
+  OUTRO
 
   @@map("categoria_anexo_laudo")
 }
 
-// ===== MÓDULO ORÇAMENTO =====
-
-// Orçamento
-model Orcamento {
-  id                String   @id @default(cuid())
-  numero            String   @unique // Número sequencial do orçamento
-  titulo            String
-  descricao         String?
-  observacoes       String?
-  
-  // Valores
-  valorSubtotal     Float    @default(0) // Soma dos itens
-  valorDesconto     Float    @default(0) // Desconto aplicado
-  percentualDesconto Float?  // Percentual de desconto
-  valorTotal        Float    @default(0) // Valor final
-  
-  // Validade
-  dataValidade      DateTime // Data de validade do orçamento
-  
-  // Status do orçamento
-  status            StatusOrcamento @default(RASCUNHO)
-  
-  // Aprovação do cliente
-  aprovadoCliente   Boolean? // null = pendente, true = aprovado, false = rejeitado
-  dataAprovacao     DateTime?
-  comentariosCliente String? // Comentários do cliente sobre o orçamento
-  codigoAprovacao   String?  @unique // Código único para aprovação via email
-  
-  // Geração automática
-  geradoAutomaticamente Boolean @default(false) // Se foi gerado automaticamente do laudo
-  
-  // Timestamps
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  
-  // Relacionamentos
-  ordemServicoId    String
-  ordemServico      OrdemServico @relation(fields: [ordemServicoId], references: [id], onDelete: Cascade)
-  
-  laudoTecnicoId    String? // Orçamento pode ser gerado de um laudo
-  laudoTecnico      LaudoTecnico? @relation(fields: [laudoTecnicoId], references: [id])
-  
-  criadoPorId       String
-  criadoPor         Colaborador @relation("OrcamentoCriador", fields: [criadoPorId], references: [id])
-  
-  // Itens do orçamento
-  itens             ItemOrcamento[]
-  
-  // Anexos do orçamento
-  anexos            AnexoOrcamento[]
-  
-  // Histórico de alterações
-  historico         HistoricoOrcamento[]
-
-  @@map("orcamentos")
-}
-
-// Itens do Orçamento
-model ItemOrcamento {
-  id            String  @id @default(cuid())
-  tipo          TipoItemOrcamento // MATERIAL, SERVICO, MAO_DE_OBRA
-  descricao     String
-  quantidade    Float   @default(1)
-  unidade       String? // ex: "un", "m", "kg", "h"
-  valorUnitario Float
-  valorTotal    Float
-  observacoes   String?
-  
-  // Relacionamentos
-  orcamentoId   String
-  orcamento     Orcamento @relation(fields: [orcamentoId], references: [id], onDelete: Cascade)
-  
-  // Referência ao item do laudo (se gerado automaticamente)
-  itemLaudoId   String?
-  itemLaudo     ItemLaudoTecnico? @relation(fields: [itemLaudoId], references: [id])
-  
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  @@map("itens_orcamento")
-}
-
-// Anexos do Orçamento
-model AnexoOrcamento {
-  id             String  @id @default(cuid())
-  nomeArquivo    String
-  caminhoArquivo String
-  tamanho        Int? // Tamanho em bytes
-  tipoMime       String?
-  descricao      String?
-  
-  // Relacionamentos
-  orcamentoId    String
-  orcamento      Orcamento @relation(fields: [orcamentoId], references: [id], onDelete: Cascade)
-  
-  uploadPor      String? // Nome de quem fez upload
-  colaboradorId  String?
-  colaborador    Colaborador? @relation("AnexoOrcamento", fields: [colaboradorId], references: [id])
-  
-  createdAt      DateTime @default(now())
-
-  @@map("anexos_orcamento")
-}
-
-// Histórico de alterações do Orçamento
-model HistoricoOrcamento {
-  id            String  @id @default(cuid())
-  acao          String // "criado", "status_alterado", "aprovado_cliente", etc.
-  descricao     String
-  valorAnterior String? // JSON com valores anteriores
-  valorNovo     String? // JSON com valores novos
-  
-  // Relacionamentos
-  orcamentoId   String
-  orcamento     Orcamento @relation(fields: [orcamentoId], references: [id], onDelete: Cascade)
-  
-  colaboradorId String?
-  colaborador   Colaborador? @relation("HistoricoOrcamento", fields: [colaboradorId], references: [id])
-  
-  createdAt     DateTime @default(now())
-
-  @@map("historico_orcamento")
-}
-
-// Enums para Orçamento
 enum StatusOrcamento {
-  RASCUNHO // Orçamento sendo elaborado
-  ENVIADO // Enviado para cliente
-  APROVADO // Cliente aprovou
-  REJEITADO // Cliente rejeitou
-  EXPIRADO // Orçamento expirou
-  CANCELADO // Orçamento cancelado
+  RASCUNHO
+  ENVIADO
+  APROVADO
+  REJEITADO
+  EXPIRADO
+  CANCELADO
 
   @@map("status_orcamento")
 }
 
 enum TipoItemOrcamento {
-  MATERIAL // Material/peça
-  SERVICO // Serviço a ser executado
-  MAO_DE_OBRA // Mão de obra
+  MATERIAL
+  SERVICO
+  MAO_DE_OBRA
 
   @@map("tipo_item_orcamento")
 }
 
-// Sistema de Gerenciamento de Módulos
-
-// Configuração de Módulos do Sistema
-model ModuloSistema {
-  id          String   @id @default(cuid())
-  nome        String   @unique // Identificador único do módulo (ex: "helpdesk", "whatsapp")
-  titulo      String   // Nome amigável para exibição (ex: "Sistema de Helpdesk")
-  descricao   String?  // Descrição detalhada do módulo
-  ativo       Boolean  @default(true) // Se o módulo está ativo
-  core        Boolean  @default(false) // Módulos core não podem ser desativados
-  icone       String?  // Nome do ícone (Lucide React)
-  ordem       Int      @default(0) // Ordem de exibição no menu
-  permissao   String?  // Permissão necessária para acessar o módulo
-  rota        String?  // Rota principal do módulo
-  categoria   String?  // Categoria do módulo (ex: "comunicacao", "vendas", "operacional")
-  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relacionamentos
-  logs ModuloSistemaLog[]
-
-  @@map("modulos_sistema")
-}
-
-// Log de alterações dos módulos
-model ModuloSistemaLog {
-  id            String   @id @default(cuid())
-  moduloId      String   // ID do módulo alterado
-  acao          String   // "ativado", "desativado", "configurado"
-  valorAnterior String?  // Valor anterior (JSON)
-  valorNovo     String?  // Novo valor (JSON)
-  observacoes   String?  // Observações sobre a alteração
-  
-  // Informações do autor da alteração
-  autorId       String?
-  autorNome     String
-  autorEmail    String
-  
-  createdAt     DateTime @default(now())
-  
-  // Relacionamentos
-  modulo        ModuloSistema @relation(fields: [moduloId], references: [id], onDelete: Cascade)
-  autor         Colaborador?  @relation("ModuloSistemaLog", fields: [autorId], references: [id])
-
-  @@map("modulos_sistema_logs")
-}
-
-// Enum para categorias de módulos
 enum CategoriaModulo {
-  CORE // Módulos essenciais do sistema
-  COMUNICACAO // Módulos de comunicação (email, whatsapp, etc)
-  VENDAS // Módulos de vendas e marketing
-  OPERACIONAL // Módulos operacionais (OS, tarefas, etc)
-  RELATORIOS // Módulos de relatórios e analytics
-  INTEGRACAO // Módulos de integração com sistemas externos
+  CORE
+  COMUNICACAO
+  VENDAS
+  OPERACIONAL
+  RELATORIOS
+  INTEGRACAO
 
   @@map("categoria_modulo")
+}
+
+enum StatusSolicitacaoCompra {
+  RASCUNHO
+  PENDENTE_APROVACAO
+  APROVADA
+  REJEITADA
+  EM_COTACAO
+  COTACAO_APROVADA
+  PEDIDO_ENVIADO
+  ENTREGUE
+  CANCELADA
+
+  @@map("status_solicitacao_compra")
+}
+
+enum StatusCotacao {
+  PENDENTE
+  EM_ANALISE
+  APROVADA_NIVEL1
+  APROVADA_NIVEL2
+  APROVADA_FINAL
+  REJEITADA
+  CANCELADA
+
+  @@map("status_cotacao")
+}
+
+enum TipoMovimentacaoEstoque {
+  ENTRADA
+  SAIDA
+  TRANSFERENCIA
+  AJUSTE
+  INVENTARIO
+
+  @@map("tipo_movimentacao_estoque")
+}
+
+enum StatusItemTombamento {
+  ATIVO
+  INATIVO
+  MANUTENCAO
+  BAIXADO
+  PERDIDO
+  DANIFICADO
+
+  @@map("status_item_tombamento")
 }

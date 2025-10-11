@@ -698,6 +698,16 @@ async function main() {
     console.log(`📊 Módulos já existem (${modulosCount} encontrados)`)
   }
 
+  // Criar permissões dos novos módulos
+  console.log('🔐 Criando permissões dos novos módulos...')
+  const { execSync } = require('child_process')
+  try {
+    execSync('tsx prisma/seeds/new-modules-permissions.ts', { stdio: 'inherit' })
+    console.log('✅ Permissões dos novos módulos criadas com sucesso!')
+  } catch (error) {
+    console.error('❌ Erro ao criar permissões dos novos módulos:', error)
+  }
+
   console.log('✅ Seed concluído com sucesso!')
   console.log('📧 Email: admin@garapasystem.com')
   console.log('🔑 Senha: password')

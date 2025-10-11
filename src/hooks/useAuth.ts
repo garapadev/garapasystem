@@ -177,7 +177,68 @@ export function useAuth() {
           viewAuditLogs: WebmailPermissionUtils.hasWebmailPermission(permissions.map(p => p.nome), WEBMAIL_PERMISSIONS.ADMIN_LOGS),
           manageUsers: WebmailPermissionUtils.hasWebmailPermission(permissions.map(p => p.nome), WEBMAIL_PERMISSIONS.ADMIN_MANAGE_USERS),
           any: WebmailPermissionUtils.hasAnyWebmailPermission(permissions.map(p => p.nome), [WEBMAIL_PERMISSIONS.EMAIL_READ, WEBMAIL_PERMISSIONS.EMAIL_CONFIG_READ])
-        }
+        },
+      // Compras
+      compras: {
+        create: hasPermission('compras', 'criar'),
+        read: hasPermission('compras', 'ler'),
+        update: hasPermission('compras', 'editar'),
+        delete: hasPermission('compras', 'excluir'),
+        approve: hasPermission('compras', 'aprovar'),
+        any: hasAnyPermission('compras', ['criar', 'ler', 'editar', 'excluir', 'aprovar'])
+      },
+      // Estoque
+      estoque: {
+        create: hasPermission('estoque', 'criar'),
+        read: hasPermission('estoque', 'ler'),
+        update: hasPermission('estoque', 'editar'),
+        delete: hasPermission('estoque', 'excluir'),
+        move: hasPermission('estoque', 'movimentar'),
+        reports: hasPermission('estoque', 'relatorios'),
+        any: hasAnyPermission('estoque', ['criar', 'ler', 'editar', 'excluir', 'movimentar', 'relatorios'])
+      },
+      // Tombamento
+      tombamento: {
+        create: hasPermission('tombamento', 'criar'),
+        read: hasPermission('tombamento', 'ler'),
+        update: hasPermission('tombamento', 'editar'),
+        delete: hasPermission('tombamento', 'excluir'),
+        move: hasPermission('tombamento', 'movimentar'),
+        reports: hasPermission('tombamento', 'relatorios'),
+        any: hasAnyPermission('tombamento', ['criar', 'ler', 'editar', 'excluir', 'movimentar', 'relatorios'])
+      },
+      // Produtos
+      produtos: {
+        create: hasPermission('produtos', 'criar'),
+        read: hasPermission('produtos', 'ler'),
+        update: hasPermission('produtos', 'editar'),
+        delete: hasPermission('produtos', 'excluir'),
+        any: hasAnyPermission('produtos', ['criar', 'ler', 'editar', 'excluir'])
+      },
+      // Fornecedores
+      fornecedores: {
+        create: hasPermission('fornecedores', 'criar'),
+        read: hasPermission('fornecedores', 'ler'),
+        update: hasPermission('fornecedores', 'editar'),
+        delete: hasPermission('fornecedores', 'excluir'),
+        any: hasAnyPermission('fornecedores', ['criar', 'ler', 'editar', 'excluir'])
+      },
+      // Centros de Custo
+      centros_custo: {
+        create: hasPermission('centros_custo', 'criar'),
+        read: hasPermission('centros_custo', 'ler'),
+        update: hasPermission('centros_custo', 'editar'),
+        delete: hasPermission('centros_custo', 'excluir'),
+        any: hasAnyPermission('centros_custo', ['criar', 'ler', 'editar', 'excluir'])
+      },
+      // Categorias de Produto
+      categorias_produto: {
+        create: hasPermission('categorias_produto', 'criar'),
+        read: hasPermission('categorias_produto', 'ler'),
+        update: hasPermission('categorias_produto', 'editar'),
+        delete: hasPermission('categorias_produto', 'excluir'),
+        any: hasAnyPermission('categorias_produto', ['criar', 'ler', 'editar', 'excluir'])
+      }
     }
   }, [hasPermission, hasAnyPermission])
 

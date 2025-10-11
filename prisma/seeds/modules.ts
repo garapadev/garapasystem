@@ -139,6 +139,40 @@ export async function seedModules() {
       categoria: 'operacional',
       permissao: 'laudos.view',
     },
+    // Novos módulos integrados
+    {
+      nome: 'compras',
+      titulo: 'Compras',
+      ativo: false,
+      core: false,
+      icone: 'ShoppingCart',
+      ordem: 25,
+      rota: '/compras',
+      categoria: 'operacional',
+      permissao: 'procurement.read',
+    },
+    {
+      nome: 'tombamento',
+      titulo: 'Tombamento',
+      ativo: false,
+      core: false,
+      icone: 'Package',
+      ordem: 26,
+      rota: '/tombamento',
+      categoria: 'operacional',
+      permissao: 'inventory.read',
+    },
+    {
+      nome: 'estoque',
+      titulo: 'Estoque',
+      ativo: false,
+      core: false,
+      icone: 'Warehouse',
+      ordem: 27,
+      rota: '/estoque',
+      categoria: 'operacional',
+      permissao: 'stock.read',
+    },
   ];
 
   const allModules = [...coreModules, ...optionalModules];
