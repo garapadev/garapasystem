@@ -4,6 +4,20 @@
 
 Sistema integrado de gestão empresarial desenvolvido com Next.js 15, TypeScript e Prisma, oferecendo funcionalidades completas para gerenciamento de clientes, tarefas, helpdesk, webmail e integração WhatsApp.
 
+## Modules do Sistema
+
+- **Gestão de Clientes (CRM)**: Cadastro, histórico de interações, pipeline de vendas, orçamentos e ordens de serviço.
+- **Financeiro**: Gestão de contas a pagar e receber, fluxo de caixa, conciliação bancária e relatórios financeiros.
+- **Estoque**: Controle de entradas e saídas, gestão de produtos, múltiplos depósitos e inventário.
+- **Compras**: Requisições de compra, cotações, ordens de compra e recebimento de mercadorias.
+- **Vendas**: Orçamentos, pedidos de venda, faturamento, emissão de notas fiscais e comissões.
+- **Helpdesk**: Sistema de tickets, automação, base de conhecimento e relatórios de atendimento.
+- **Tarefas**: Criação e gerenciamento de tarefas, calendário, recorrência e integração com outros módulos.
+- **Webmail**: Cliente de e-mail corporativo integrado ao sistema.
+- **Tombamento**: Rastreamento e gestão de ativos fixos da empresa.
+- **Laudos Técnicos**: Criação e gerenciamento de laudos técnicos para serviços prestados.
+- **Configurações**: Administração de usuários, perfis, permissões, e configurações gerais do sistema.
+
 ## ✨ Funcionalidades Principais
 
 ### 📋 Sistema de Tarefas
