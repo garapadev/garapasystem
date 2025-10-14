@@ -143,6 +143,40 @@ npx prisma generate || {
 }
 log_success "Cliente Prisma gerado"
 
+# Validar migração específica e garantir seed pós-upgrade
+log_info "Validando migração v0.3.38.23 e estado das permissões..."
+
+# Verificar contagem de permissões e garantir seed idempotente
+PERM_COUNT=$(node -e "const { PrismaClient } = require('@prisma/client'); const prisma = new PrismaClient(); prisma.permissao.count().then(c => { console.log(c); return prisma.$disconnect(); }).catch(() => { console.log('0'); prisma.$disconnect(); });" 2>/dev/null || echo "0")
+if [ "$PERM_COUNT" -lt 80 ]; then
+    log_warning "Permissões abaixo do esperado ($PERM_COUNT) - executando seed..."
+    npm run db:seed || {
+        log_warning "Falha ao executar seed de permissões"
+    }
+fi
+
+# Garantir permissões/módulos essenciais (compras, estoque, tombamento) e vínculo ao perfil Administrador
+if [ -f "/app/scripts/ensure-core-permissions-and-modules.js" ]; then
+    log_info "Garantindo permissões e módulos essenciais (compras, estoque, tombamento)..."
+    node /app/scripts/ensure-core-permissions-and-modules.js || {
+        log_warning "Falha ao garantir permissões/módulos essenciais"
+    }
+fi
+
+# Rodar validação detalhada se script existir
+if [ -f "/app/scripts/validate-migration-0.3.38.23.js" ]; then
+    node /app/scripts/validate-migration-0.3.38.23.js || {
+        log_warning "Validação falhou - reaplicando migrações e seed e tentando novamente..."
+        npx prisma migrate deploy || log_warning "Falha ao reaplicar migrações"
+        npm run db:seed || log_warning "Falha ao executar seed"
+        # Reforçar vínculo de permissões essenciais ao perfil Administrador
+        if [ -f "/app/scripts/ensure-core-permissions-and-modules.js" ]; then
+            node /app/scripts/ensure-core-permissions-and-modules.js || log_warning "Falha ao reforçar permissões/módulos essenciais"
+        fi
+        node /app/scripts/validate-migration-0.3.38.23.js || log_warning "Validação da migração ainda falhou"
+    }
+fi
+
 echo ""
 log_success "🎉 Inicialização automática do banco concluída com sucesso!"
 echo "============================================================"

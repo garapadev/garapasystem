@@ -350,6 +350,48 @@ export async function seedNewModulesPermissions() {
       }
     }),
 
+    // FINANCEIRO - CRUD básico
+    prisma.permissao.upsert({
+      where: { nome: 'financeiro_criar' },
+      update: {},
+      create: {
+        nome: 'financeiro_criar',
+        descricao: 'Criar registros financeiros',
+        recurso: 'financeiro',
+        acao: 'criar'
+      }
+    }),
+    prisma.permissao.upsert({
+      where: { nome: 'financeiro_ler' },
+      update: {},
+      create: {
+        nome: 'financeiro_ler',
+        descricao: 'Visualizar registros financeiros',
+        recurso: 'financeiro',
+        acao: 'ler'
+      }
+    }),
+    prisma.permissao.upsert({
+      where: { nome: 'financeiro_editar' },
+      update: {},
+      create: {
+        nome: 'financeiro_editar',
+        descricao: 'Editar registros financeiros',
+        recurso: 'financeiro',
+        acao: 'editar'
+      }
+    }),
+    prisma.permissao.upsert({
+      where: { nome: 'financeiro_excluir' },
+      update: {},
+      create: {
+        nome: 'financeiro_excluir',
+        descricao: 'Excluir registros financeiros',
+        recurso: 'financeiro',
+        acao: 'excluir'
+      }
+    }),
+
     // Permissão de administrador do sistema
     prisma.permissao.upsert({
       where: { nome: 'sistema_administrar' },

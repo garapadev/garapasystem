@@ -8,7 +8,9 @@ import { initializeAutoSync } from './src/lib/email/auto-sync-initializer';
 
 const dev = process.env.NODE_ENV !== 'production';
 const currentPort = parseInt(process.env.PORT || '3000', 10);
-const hostname = '0.0.0.0';
+// Bind to IPv6 unspecified address by default for dual-stack support.
+// Override via HOST env (use '0.0.0.0' to force IPv4-only if needed).
+const hostname = process.env.HOST || '::';
 
 // Custom server with Socket.IO integration
 async function createCustomServer() {
@@ -26,8 +28,8 @@ async function createCustomServer() {
 
     // Create HTTP server that will handle both Next.js and Socket.IO
     const server = createServer({
-      // Increase limits to prevent 431 errors
-      maxHeaderSize: 32768, // 32KB instead of default 8KB
+      // Increase limits to prevent 431 errors (some browsers send large cookies on localhost)
+      maxHeaderSize: 131072, // 128KB
       headersTimeout: 60000,
       requestTimeout: 60000
     }, (req, res) => {
@@ -65,6 +67,7 @@ async function createCustomServer() {
     server.listen(currentPort, hostname, async () => {
       console.log(`> Ready on http://${hostname}:${currentPort}`);
       console.log(`> Socket.IO server running at ws://${hostname}:${currentPort}/api/socketio`);
+      console.log(`> Access: http://localhost:${currentPort} (IPv4/IPv6), http://127.0.0.1:${currentPort}, http://<your-ip>:${currentPort}`);
       
       // Inicializar sincronização automática de e-mail após o servidor estar pronto
       try {

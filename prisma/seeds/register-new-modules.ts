@@ -41,6 +41,18 @@ async function registerNewModules() {
       categoria: 'operacional',
       ordem: 62,
       permissao: 'tombamento.ler'
+    },
+    {
+      nome: 'financeiro',
+      titulo: 'Financeiro',
+      rota: '/financeiro',
+      icone: 'DollarSign',
+      descricao: 'Gestão financeira: contas, fluxo e relatórios',
+      ativo: true,
+      core: false,
+      categoria: 'financeiro',
+      ordem: 55,
+      permissao: 'financeiro_ler'
     }
   ]
 

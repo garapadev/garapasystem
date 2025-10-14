@@ -4,6 +4,9 @@ import { db } from '@/lib/db'
 import bcrypt from 'bcryptjs'
 
 export const authOptions: NextAuthOptions = {
+  // Trust the incoming host header to avoid 403 due to host mismatch
+  trustHost: true,
+  debug: false,
   providers: [
     CredentialsProvider({
       name: 'credentials',
@@ -13,9 +16,11 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
+          console.warn('[auth] authorize: missing email or password')
           return null
         }
 
+        // Buscar usuário com carga mínima necessária para reduzir tamanho do JWT/cookie
         const usuario = await db.usuario.findUnique({
           where: {
             email: credentials.email
@@ -24,21 +29,29 @@ export const authOptions: NextAuthOptions = {
             colaborador: {
               include: {
                 perfil: {
-                  include: {
-                    permissoes: {
-                      include: {
-                        permissao: true
-                      }
-                    }
+                  select: {
+                    id: true,
+                    nome: true
                   }
                 },
-                grupoHierarquico: true
+                grupoHierarquico: {
+                  select: {
+                    id: true,
+                    nome: true
+                  }
+                }
               }
             }
           }
         })
 
-        if (!usuario || !usuario.ativo) {
+        if (!usuario) {
+          console.warn('[auth] authorize: user not found for', credentials.email)
+          return null
+        }
+
+        if (!usuario.ativo) {
+          console.warn('[auth] authorize: user inactive', credentials.email)
           return null
         }
 
@@ -48,14 +61,29 @@ export const authOptions: NextAuthOptions = {
         )
 
         if (!isPasswordValid) {
+          console.warn('[auth] authorize: invalid password for', credentials.email)
           return null
         }
+
+        // Montar objeto compacto para armazenar no token
+        const compactColaborador = usuario.colaborador ? {
+          id: usuario.colaborador.id,
+          nome: usuario.colaborador.nome,
+          perfil: usuario.colaborador.perfil ? {
+            id: usuario.colaborador.perfil.id,
+            nome: usuario.colaborador.perfil.nome
+          } : null,
+          grupoHierarquico: usuario.colaborador.grupoHierarquico ? {
+            id: usuario.colaborador.grupoHierarquico.id,
+            nome: usuario.colaborador.grupoHierarquico.nome
+          } : null
+        } : null
 
         return {
           id: usuario.id,
           email: usuario.email,
           name: usuario.nome,
-          colaborador: usuario.colaborador
+          colaborador: compactColaborador
         }
       }
     })
@@ -67,6 +95,7 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id
+        // Armazenar apenas dados compactos do colaborador para evitar exceder limite de header
         token.colaborador = user.colaborador
       }
       return token

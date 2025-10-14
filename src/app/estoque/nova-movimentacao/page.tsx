@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft, Plus, Trash2, Package, Loader2 } from 'lucide-react';
+import { CentroCustoCreateDialog } from '@/components/centros-custo/CentroCustoCreateDialog';
 import { useAuth } from '@/hooks/useAuth';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { toast } from 'sonner';
@@ -45,6 +46,7 @@ export default function NovaMovimentacaoPage() {
   const [produtos, setProdutos] = useState<Produto[]>([]);
   const [centrosCusto, setCentrosCusto] = useState<CentroCusto[]>([]);
   const [loadingData, setLoadingData] = useState(true);
+  const [createCentroDialogOpen, setCreateCentroDialogOpen] = useState(false);
 
   const [formData, setFormData] = useState({
     tipo: '',
@@ -257,21 +259,33 @@ export default function NovaMovimentacaoPage() {
 
                 <div className="space-y-2">
                   <Label htmlFor="centroCusto">Centro de Custo</Label>
-                  <Select
-                    value={formData.centroCustoId}
-                    onValueChange={(value) => handleInputChange('centroCustoId', value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione o centro de custo" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {centrosCusto.map((centro) => (
-                        <SelectItem key={centro.id} value={centro.id}>
-                          {centro.codigo} - {centro.nome}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <div className="flex items-center gap-2">
+                    <Select
+                      value={formData.centroCustoId}
+                      onValueChange={(value) => handleInputChange('centroCustoId', value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione o centro de custo" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {centrosCusto.map((centro) => (
+                          <SelectItem key={centro.id} value={centro.id}>
+                            {centro.codigo} - {centro.nome}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      aria-label="Novo Centro de Custo"
+                      onClick={() => setCreateCentroDialogOpen(true)}
+                      className="h-10 w-10"
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               </div>
 
@@ -442,6 +456,14 @@ export default function NovaMovimentacaoPage() {
           </div>
         </form>
       </div>
+      <CentroCustoCreateDialog
+        open={createCentroDialogOpen}
+        onOpenChange={setCreateCentroDialogOpen}
+        onCreated={(created) => {
+          setCentrosCusto((prev) => [created, ...prev]);
+          setFormData((prev) => ({ ...prev, centroCustoId: created.id }));
+        }}
+      />
     </ProtectedRoute>
   );
 }

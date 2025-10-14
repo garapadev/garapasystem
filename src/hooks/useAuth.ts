@@ -1,5 +1,5 @@
 import { useSession } from 'next-auth/react'
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { 
   WEBMAIL_PERMISSIONS, 
   WEBMAIL_ACCESS_LEVELS,
@@ -36,6 +36,10 @@ export interface UserProfile {
 export function useAuth() {
   const { data: session, status } = useSession()
 
+  const [permissionsState, setPermissionsState] = useState<Permission[]>([])
+  const [isAdminState, setIsAdminState] = useState(false)
+  const [permissionsLoading, setPermissionsLoading] = useState(false)
+
   const user = useMemo(() => {
     if (!session?.user) return null
     return {
@@ -51,9 +55,38 @@ export function useAuth() {
   }, [session])
 
   const permissions = useMemo(() => {
+    if (permissionsState.length) return permissionsState
     if (!colaborador?.perfil?.permissoes) return []
     return colaborador.perfil.permissoes.map(p => p.permissao)
-  }, [colaborador])
+  }, [colaborador, permissionsState])
+
+  useEffect(() => {
+    let cancelled = false
+    const fetchPermissions = async () => {
+      if (status !== 'authenticated') return
+      setPermissionsLoading(true)
+      try {
+        const res = await fetch('/api/auth/permissions', {
+          headers: { 'Accept': 'application/json' },
+          cache: 'no-store'
+        })
+        if (!res.ok) {
+          throw new Error(`Failed to load permissions: ${res.status}`)
+        }
+        const data = await res.json()
+        if (!cancelled) {
+          setPermissionsState(Array.isArray(data.permissions) ? data.permissions : [])
+          setIsAdminState(Boolean(data.isAdmin))
+        }
+      } catch (err) {
+        console.warn('useAuth: erro ao carregar permissões', err)
+      } finally {
+        if (!cancelled) setPermissionsLoading(false)
+      }
+    }
+    fetchPermissions()
+    return () => { cancelled = true }
+  }, [status])
 
   const hasPermission = useMemo(() => {
     return (recurso: string, acao: string) => {
@@ -80,8 +113,8 @@ export function useAuth() {
   }, [hasPermission])
 
   const isAdmin = useMemo(() => {
-    return hasPermission('sistema', 'administrar')
-  }, [hasPermission])
+    return isAdminState || hasPermission('sistema', 'administrar')
+  }, [hasPermission, isAdminState])
 
   const canAccess = useMemo(() => {
     return {
@@ -250,7 +283,7 @@ export function useAuth() {
     hasAnyPermission,
     isAdmin,
     canAccess,
-    isLoading: status === 'loading',
+    isLoading: status === 'loading' || permissionsLoading,
     isAuthenticated: status === 'authenticated'
   }
 }

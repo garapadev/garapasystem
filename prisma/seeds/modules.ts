@@ -139,6 +139,17 @@ export async function seedModules() {
       categoria: 'operacional',
       permissao: 'laudos.view',
     },
+    {
+      nome: 'financeiro',
+      titulo: 'Financeiro',
+      ativo: true,
+      core: false,
+      icone: 'DollarSign',
+      ordem: 55,
+      rota: '/financeiro',
+      categoria: 'financeiro',
+      permissao: 'financeiro_ler',
+    },
     // Novos módulos integrados
     {
       nome: 'compras',

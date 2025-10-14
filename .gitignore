@@ -52,3 +52,9 @@ server.log
 logs/server-combined-*.log
 logs/server-out-*.log
 logs/server-error-*.log
+# ignore all log files under logs/
+logs/**/*.log
+logs/*.log
+# specific workers
+logs/helpdesk*.log
+logs/webmail*.log

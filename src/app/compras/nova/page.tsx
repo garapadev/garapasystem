@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Plus, Trash2, Save, ArrowLeft, Loader2 } from 'lucide-react';
+import { CentroCustoCreateDialog } from '@/components/centros-custo/CentroCustoCreateDialog';
 import { useAuth } from '@/hooks/useAuth';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { toast } from 'sonner';
@@ -41,6 +42,7 @@ export default function NovaSolicitacaoPage() {
   const [loading, setLoading] = useState(false);
   const [centrosCusto, setCentrosCusto] = useState<CentroCusto[]>([]);
   const [produtos, setProdutos] = useState<Produto[]>([]);
+  const [createCentroDialogOpen, setCreateCentroDialogOpen] = useState(false);
   
   const [formData, setFormData] = useState({
     descricao: '',
@@ -239,21 +241,32 @@ export default function NovaSolicitacaoPage() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="centroCusto">Centro de Custo *</Label>
-                  <Select
-                    value={formData.centroCustoId}
-                    onValueChange={(value) => handleInputChange('centroCustoId', value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione o centro de custo" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {centrosCusto.map((centro) => (
-                        <SelectItem key={centro.id} value={centro.id}>
-                          {centro.codigo} - {centro.nome}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <div className="flex items-center gap-2">
+                    <Select
+                      value={formData.centroCustoId}
+                      onValueChange={(value) => handleInputChange('centroCustoId', value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione o centro de custo" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {centrosCusto.map((centro) => (
+                          <SelectItem key={centro.id} value={centro.id}>
+                            {centro.codigo} - {centro.nome}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      aria-label="Novo Centro de Custo"
+                      onClick={() => setCreateCentroDialogOpen(true)}
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               </div>
               
@@ -413,6 +426,14 @@ export default function NovaSolicitacaoPage() {
             </Button>
           </div>
         </form>
+        <CentroCustoCreateDialog
+          open={createCentroDialogOpen}
+          onOpenChange={setCreateCentroDialogOpen}
+          onCreated={(created) => {
+            setCentrosCusto((prev) => [created, ...prev]);
+            setFormData((prev) => ({ ...prev, centroCustoId: created.id }));
+          }}
+        />
       </div>
     </ProtectedRoute>
   );

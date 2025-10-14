@@ -142,15 +142,22 @@ const navigation: NavigationItem[] = [
   { 
     name: 'Tombamento', 
     href: '/tombamento', 
-    icon: Archive,
-    requiredPermission: { recurso: 'tombamento', acao: 'ler' },
-    moduleName: 'tombamento'
+    icon: Archive, 
+    requiredPermission: { recurso: 'tombamento', acao: 'ler' }, 
+    moduleName: 'tombamento' 
+  },
+
+  { 
+    name: 'Financeiro', 
+    href: '/financeiro', 
+    icon: TrendingUp, 
+    requiredPermission: { recurso: 'financeiro', acao: 'ler' }
   },
 
   { 
     name: 'Configurações', 
     href: '/configuracoes', 
-    icon: Settings,
+    icon: Settings, 
     requireAdmin: true
   },
 ];

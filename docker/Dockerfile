@@ -1,9 +1,10 @@
-# Dockerfile para aplicação Next.js com servidor customizado e módulo de webmail
-# Multi-stage build para otimização de performance e segurança
+# Dockerfile para GarapaSystem v0.3.38.23
+# Multi-stage build otimizado para produção com compatibilidade total de migrations e seeds
+# Inclui suporte completo para módulos: Compras, Estoque, Tombamento, Laudos Técnicos
 
 # Stage 1: Dependencies
 FROM node:20-alpine AS deps
-RUN apk add --no-cache libc6-compat python3 make g++ openssl
+RUN apk add --no-cache libc6-compat python3 make g++ openssl curl
 WORKDIR /app
 
 # Copiar arquivos de dependências
@@ -82,7 +83,7 @@ ENV WEBMAIL_ENABLE_NOTIFICATIONS=true
 # Script de inicialização otimizado com verificações de saúde
 RUN echo '#!/bin/sh' > /app/start.sh && \
     echo 'set -e' >> /app/start.sh && \
-    echo 'echo "🚀 GarapaSystem v0.2.38.22 - Iniciando configuração..."' >> /app/start.sh && \
+    echo 'echo "🚀 GarapaSystem v0.3.38.23 - Iniciando configuração..."' >> /app/start.sh && \
     echo 'if [ "$SKIP_DB_CHECK" != "true" ]; then' >> /app/start.sh && \
     echo '  echo "🗄️  Configurando banco de dados..."' >> /app/start.sh && \
     echo '  # Usar o novo script de inicialização automática' >> /app/start.sh && \

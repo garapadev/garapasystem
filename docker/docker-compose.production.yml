@@ -1,0 +1,138 @@
+version: '3.8'
+
+services:
+  # Aplicação GarapaSystem
+  garapasystem-app:
+    image: garapadev/garapasystem:0.3.38.23
+    container_name: garapasystem-app
+    restart: unless-stopped
+    environment:
+      # Database
+      DB_HOST: garapasystem-postgres
+      DB_PORT: 5432
+      DB_NAME: garapasystem
+      DB_USER: postgres
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      DATABASE_URL: "postgresql://postgres:${DB_PASSWORD:-postgres}@garapasystem-postgres:5432/garapasystem?schema=public"
+      
+      # Auth
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-KmYl85qqhLFfe0VMH+k+bAelK+r1fWcGem+F+beJj+M=}
+      NEXTAUTH_URL: ${NEXTAUTH_URL:-http://localhost:3000}
+      
+      # App
+      NODE_ENV: production
+      PORT: 3000
+      TZ: America/Fortaleza
+      
+      # Webmail
+      WEBMAIL_SECURE: "true"
+      WEBMAIL_TLS_REJECT_UNAUTHORIZED: "true"
+      WEBMAIL_ENCRYPTION_KEY: ${WEBMAIL_ENCRYPTION_KEY:-default-encryption-key-change-in-production}
+      WEBMAIL_SYNC_INTERVAL: "300"
+      WEBMAIL_MAX_ATTACHMENTS_SIZE: "25"
+      WEBMAIL_ENABLE_NOTIFICATIONS: "true"
+      
+      # Sistema
+      SKIP_DB_CHECK: "false"
+      AUTO_MIGRATE: "true"
+      AUTO_SEED: "true"
+      
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    depends_on:
+      garapasystem-postgres:
+        condition: service_healthy
+    networks:
+      - garapasystem-network
+    volumes:
+      - app_uploads:/app/uploads
+      - app_logs:/app/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Banco de Dados PostgreSQL
+  garapasystem-postgres:
+    image: postgres:15-alpine
+    container_name: garapasystem-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: garapasystem
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=pt_BR.UTF-8"
+      TZ: America/Fortaleza
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    networks:
+      - garapasystem-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d garapasystem"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # Redis para Cache e Sessões
+  garapasystem-redis:
+    image: redis:7-alpine
+    container_name: garapasystem-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redis123}
+    environment:
+      TZ: America/Fortaleza
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - garapasystem-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # Nginx Reverse Proxy (Opcional)
+  garapasystem-nginx:
+    image: nginx:alpine
+    container_name: garapasystem-nginx
+    restart: unless-stopped
+    ports:
+      - "${NGINX_HTTP_PORT:-80}:80"
+      - "${NGINX_HTTPS_PORT:-443}:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - nginx_logs:/var/log/nginx
+    depends_on:
+      - garapasystem-app
+    networks:
+      - garapasystem-network
+    profiles:
+      - nginx
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  app_uploads:
+    driver: local
+  app_logs:
+    driver: local
+  nginx_logs:
+    driver: local
+
+networks:
+  garapasystem-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   gaparasystem-app:
-    image: garapadev/garapasystem:0.3.38.18
+    image: garapadev/garapasystem:0.3.38.23
     environment:
       DB_HOST: garapasystem-postgres
       DB_PORT: 5432
