@@ -151,7 +151,8 @@ const navigation: NavigationItem[] = [
     name: 'Financeiro', 
     href: '/financeiro', 
     icon: TrendingUp, 
-    requiredPermission: { recurso: 'financeiro', acao: 'ler' }
+    requiredPermission: { recurso: 'financeiro', acao: 'read' },
+    moduleName: 'financeiro'
   },
 
   { 
@@ -178,6 +179,7 @@ export function Sidebar() {
       '/helpdesk': 'helpdesk',
       '/whatsappchat': 'whatsapp',
       '/orcamentos': 'orcamentos',
+      '/financeiro': 'financeiro',
       '/tasks': 'tarefas',
       '/tasks/dashboard': 'tarefas',
       '/tasks/calendar': 'tarefas',
