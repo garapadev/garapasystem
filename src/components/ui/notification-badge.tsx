@@ -1,6 +1,7 @@
 'use client';
 
 import { cn } from '@/lib/utils';
+import type { HTMLAttributes, ReactNode } from 'react';
 
 type BadgeVariant = 'default' | 'info' | 'success' | 'warning' | 'error' | 'urgent';
 type BadgeSize = 'sm' | 'md' | 'lg';
@@ -38,7 +39,7 @@ const getPositionClasses = (position: BadgePosition): string => {
   return positions[position];
 };
 
-export interface NotificationBadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
+export interface NotificationBadgeProps extends HTMLAttributes<HTMLSpanElement> {
   variant?: BadgeVariant;
   size?: BadgeSize;
   position?: BadgePosition;
@@ -92,7 +93,7 @@ export function NotificationBadge({
 
 // Componente wrapper para facilitar o uso com ícones
 export interface BadgeWrapperProps {
-  children: React.ReactNode;
+  children?: ReactNode;
   badge?: NotificationBadgeProps;
   className?: string;
 }

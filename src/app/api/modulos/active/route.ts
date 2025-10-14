@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
     const includePermissions = searchParams.get('includePermissions') === 'true';
 
     // Buscar módulos ativos ordenados
-    const modulos = await db.ModuloSistema.findMany({
+    const modulos = await db.moduloSistema.findMany({
       where: {
         ativo: true
       },
@@ -61,27 +61,47 @@ export async function GET(request: NextRequest) {
         }
       });
 
-      const userPermissions = new Set(
+      // Coletar permissões do usuário
+      const userPermissions = new Set<string>(
         usuario?.colaborador?.perfil?.permissoes.map(p => p.permissao.nome) || []
       );
 
-      // Adicionar permissões de admin se for admin
-      if (usuario?.admin) {
-        userPermissions.add('*'); // Admin tem todas as permissões
+      // Normalizar nomes de permissões para comparação robusta
+      const normalizePerm = (name?: string | null) =>
+        (name || '')
+          .toLowerCase()
+          .trim()
+          .replace(/[\s:_\.]+/g, '.');
+
+      const normalizedUserPermissions = new Set<string>();
+      for (const perm of userPermissions) {
+        normalizedUserPermissions.add(normalizePerm(perm));
       }
 
-      // Filtrar módulos baseado nas permissões
-      const modulosComPermissao = modulos.map(modulo => ({
-        ...modulo,
-        hasPermission: !modulo.permissao || 
-                      userPermissions.has('*') || 
-                      userPermissions.has(modulo.permissao)
-      }));
+      // Determinar se é admin por perfil ou por permissão
+      const isAdminByProfile =
+        usuario?.colaborador?.perfil?.nome?.toLowerCase() === 'administrador';
+      const isAdminByPermission = normalizedUserPermissions.has('sistema.administrar');
+      const isAdmin = !!(isAdminByProfile || isAdminByPermission);
+
+      // Garantir poderes de admin na comparação
+      if (isAdmin) {
+        normalizedUserPermissions.add('*');
+        normalizedUserPermissions.add('sistema.administrar');
+      }
+
+      // Filtrar módulos baseado nas permissões normalizadas
+      const modulosComPermissao = modulos.map(modulo => {
+        const required = normalizePerm(modulo.permissao || undefined);
+        const hasAdmin = isAdmin || normalizedUserPermissions.has('*');
+        const has = !required || required === '' || hasAdmin || normalizedUserPermissions.has(required);
+        return { ...modulo, hasPermission: has };
+      });
 
       return NextResponse.json({
         data: modulosComPermissao,
-        userPermissions: Array.from(userPermissions),
-        isAdmin: usuario?.admin || false
+        userPermissions: Array.from(normalizedUserPermissions),
+        isAdmin
       });
     }
 

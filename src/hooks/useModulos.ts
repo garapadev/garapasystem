@@ -70,20 +70,17 @@ export function useModulos(): UseModulosReturn {
     fetchModulos();
   }, [fetchModulos]);
 
+  const normalizeName = (name: string) => name.toLowerCase().trim().replace(/\s+/g, '-');
   const modulosAtivos = modulos.filter(modulo => modulo.ativo);
 
   const isModuleActive = useCallback((moduleName: string): boolean => {
-    return modulosAtivos.some(modulo => 
-      modulo.nome === moduleName || 
-      modulo.nome === moduleName.toLowerCase().replace(/\s+/g, '-')
-    );
+    const target = normalizeName(moduleName);
+    return modulosAtivos.some(modulo => normalizeName(modulo.nome) === target);
   }, [modulosAtivos]);
 
   const getModuleByName = useCallback((moduleName: string): Modulo | undefined => {
-    return modulos.find(modulo => 
-      modulo.nome === moduleName || 
-      modulo.nome === moduleName.toLowerCase().replace(/\s+/g, '-')
-    );
+    const target = normalizeName(moduleName);
+    return modulos.find(modulo => normalizeName(modulo.nome) === target);
   }, [modulos]);
 
   const getModuleByRoute = useCallback((route: string): Modulo | undefined => {

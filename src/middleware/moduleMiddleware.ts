@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { prisma } from '@/lib/prisma';
+import { db as prisma } from '@/lib/db';
 
 // Mapeamento de rotas para módulos
 const ROUTE_MODULE_MAP: Record<string, string> = {
@@ -12,6 +12,7 @@ const ROUTE_MODULE_MAP: Record<string, string> = {
   '/clientes': 'clientes',
   '/orcamentos': 'orcamentos',
   '/ordens-servico': 'ordens-servico',
+  '/financeiro': 'financeiro',
   '/configuracoes': 'configuracoes',
   '/admin': 'admin',
 };
@@ -59,7 +60,7 @@ function getModuleNameFromRoute(pathname: string): string | null {
  */
 async function isModuleActive(moduleName: string): Promise<boolean> {
   try {
-    const modulo = await prisma.modulo.findFirst({
+    const modulo = await prisma.moduloSistema.findFirst({
       where: {
         nome: moduleName,
         ativo: true,
@@ -128,7 +129,7 @@ export async function checkModuleActive(moduleName: string): Promise<boolean> {
  */
 export async function getActiveModules(): Promise<Array<{ nome: string; titulo: string; ativo: boolean }>> {
   try {
-    const modulos = await prisma.modulo.findMany({
+    const modulos = await prisma.moduloSistema.findMany({
       where: {
         ativo: true,
       },
