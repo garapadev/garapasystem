@@ -10,7 +10,7 @@ export async function middleware(request: NextRequest) {
   const isPublicPage = publicPages.some(page => pathname.startsWith(page))
   
   // Páginas de API que não precisam de verificação de autenticação
-  const apiAuthPages = ['/api/auth']
+  const apiAuthPages = ['/api/auth', '/api/system/version']
   const isApiAuthPage = apiAuthPages.some(page => pathname.startsWith(page))
   
   // Recursos estáticos
