@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { useConfiguracoes } from '@/hooks/useConfiguracoes'
 import { performLogout } from '@/lib/logout'
