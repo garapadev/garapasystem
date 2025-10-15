@@ -36,9 +36,16 @@ export function Header() {
 
   const handleProfileClick = () => {
     if (colaborador?.id) {
-      router.push(`/colaboradores/${colaborador.id}`)
+      router.push(`/configuracoes/colaboradores/${colaborador.id}`)
     }
   }
+
+  // Prefetch da página de detalhes do colaborador para transição mais suave
+  useEffect(() => {
+    if (colaborador?.id) {
+      router.prefetch(`/configuracoes/colaboradores/${colaborador.id}`)
+    }
+  }, [colaborador?.id, router])
 
   const getUserInitials = () => {
     if (colaborador?.nome) {
