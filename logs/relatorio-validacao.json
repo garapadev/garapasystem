@@ -2,18 +2,15 @@
   "modulos": {
     "Ordens de Serviço": {
       "status": "REPROVADO",
-      "sucessos": 4,
+      "sucessos": 1,
       "avisos": 0,
       "erros": 1,
       "detalhes": {
         "sucessos": [
-          "Banco de dados: 1 ordens encontradas",
-          "Interface: 1 elementos de lista/tabela encontrados",
-          "Interface: Ordem OS-001 encontrada na interface",
-          "Interface: Botão para criar nova ordem encontrado"
+          "Banco de dados: 1 ordens encontradas"
         ],
         "erros": [
-          "Interface: Título da página não encontrado ou incorreto"
+          "Erro geral: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/login\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/login\", waiting until \"load\"\u001b[22m\n"
         ],
         "avisos": []
       }
@@ -21,46 +18,38 @@
     "Orçamentos": {
       "status": "REPROVADO",
       "sucessos": 1,
-      "avisos": 2,
-      "erros": 2,
+      "avisos": 0,
+      "erros": 1,
       "detalhes": {
         "sucessos": [
           "Banco de dados: 1 orçamentos encontrados"
         ],
-        "avisos": [
-          "Interface: Orçamento ORC-001 não encontrado na interface",
-          "Interface: Botão para criar novo orçamento não encontrado"
-        ],
+        "avisos": [],
         "erros": [
-          "Interface: Título da página não encontrado ou incorreto",
-          "Interface: Nenhum elemento de lista/tabela encontrado"
+          "Erro geral: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/login\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/login\", waiting until \"load\"\u001b[22m\n"
         ]
       }
     },
     "Laudos Técnicos": {
       "status": "REPROVADO",
       "sucessos": 1,
-      "avisos": 2,
-      "erros": 2,
+      "avisos": 0,
+      "erros": 1,
       "detalhes": {
         "sucessos": [
           "Banco de dados: 1 laudos técnicos encontrados"
         ],
-        "avisos": [
-          "Interface: Laudo LT-001 não encontrado na interface",
-          "Interface: Botão para criar novo laudo não encontrado"
-        ],
+        "avisos": [],
         "erros": [
-          "Interface: Título da página não encontrado ou incorreto",
-          "Interface: Nenhum elemento de lista/tabela encontrado"
+          "Erro geral: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/login\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/login\", waiting until \"load\"\u001b[22m\n"
         ]
       }
     }
   },
   "resumo": {
-    "totalSucessos": 6,
-    "totalAvisos": 4,
-    "totalErros": 5,
+    "totalSucessos": 3,
+    "totalAvisos": 0,
+    "totalErros": 3,
     "modulosAprovados": 0,
     "modulosReprovados": 3
   }

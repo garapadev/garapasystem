@@ -3,7 +3,7 @@ version: '3.8'
 services:
   # Aplicação GarapaSystem
   garapasystem-app:
-    image: garapadev/garapasystem:0.3.38.23
+    image: garapadev/garapasystem:0.3.38.25
     container_name: garapasystem-app
     restart: unless-stopped
     environment:
@@ -36,6 +36,7 @@ services:
       SKIP_DB_CHECK: "false"
       AUTO_MIGRATE: "true"
       AUTO_SEED: "true"
+      DEMO_VERSION: ${DEMO_VERSION:-false}
       
     ports:
       - "${APP_PORT:-3000}:3000"

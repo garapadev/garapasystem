@@ -207,11 +207,24 @@ export async function PUT(
       }
     });
 
+    // Determinar se estamos em modo DEMO e se o colaborador é admin
+    const demoEnabled = process.env.DEMO_VERSION === 'true';
+    const adminEmails = new Set(['admin@garapasystem.com', 'admin@local.test']);
+    const usuarioAssoc: any = Array.isArray(colaborador.usuarios)
+      ? (colaborador.usuarios[0] ?? null)
+      : (colaborador.usuarios ?? null);
+    const usuarioEmail = usuarioAssoc?.email
+      ? String(usuarioAssoc.email).toLowerCase()
+      : String(body.email || existingColaborador.email || '').toLowerCase();
+    const isAdminByEmail = adminEmails.has(usuarioEmail);
+    const isAdminByPerfil = (colaborador.perfil?.nome || '').toLowerCase() === 'administrador';
+    const isAdminInDemo = demoEnabled && (isAdminByEmail || isAdminByPerfil);
+
     // Sincronizar email do usuário se o email do colaborador foi alterado
-    if (body.email !== existingColaborador.email && colaborador.usuarios.length > 0) {
+    if (body.email !== existingColaborador.email && usuarioAssoc?.id) {
       try {
         await db.usuario.update({
-          where: { id: colaborador.usuarios[0].id },
+          where: { id: usuarioAssoc.id },
           data: {
             email: body.email,
             nome: body.nome // Também sincronizar o nome
@@ -224,7 +237,14 @@ export async function PUT(
     }
 
     // Se o colaborador não tem usuário associado e foi solicitada a criação
-    if (colaborador.usuarios.length === 0 && body.criarUsuario && body.senhaNovoUsuario) {
+    const hasUsuario = Boolean(usuarioAssoc?.id);
+    if (!hasUsuario && body.criarUsuario && body.senhaNovoUsuario) {
+      if (isAdminInDemo) {
+        return NextResponse.json(
+          { error: 'Em modo demo, não é permitido criar usuário/alterar senha para administrador' },
+          { status: 403 }
+        );
+      }
       try {
         const hashedPassword = await bcrypt.hash(body.senhaNovoUsuario, 10);
         
@@ -247,11 +267,17 @@ export async function PUT(
     }
 
     // Atualizar senha do usuário se solicitado
-    if (body.alterarSenha && colaborador.usuarios.length > 0) {
+    if (body.alterarSenha && usuarioAssoc?.id) {
+      if (isAdminInDemo) {
+        return NextResponse.json(
+          { error: 'Em modo demo, não é permitido criar usuário/alterar senha para administrador' },
+          { status: 403 }
+        );
+      }
       const hashedPassword = await bcrypt.hash(body.novaSenha, 10);
       
       await db.usuario.update({
-        where: { id: colaborador.usuarios[0].id },
+        where: { id: usuarioAssoc.id },
         data: {
           senha: hashedPassword
         }

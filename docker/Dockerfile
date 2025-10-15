@@ -1,4 +1,4 @@
-# Dockerfile para GarapaSystem v0.3.38.23
+# Dockerfile para GarapaSystem v0.3.38.25
 # Multi-stage build otimizado para produção com compatibilidade total de migrations e seeds
 # Inclui suporte completo para módulos: Compras, Estoque, Tombamento, Laudos Técnicos
 
@@ -83,7 +83,7 @@ ENV WEBMAIL_ENABLE_NOTIFICATIONS=true
 # Script de inicialização otimizado com verificações de saúde
 RUN echo '#!/bin/sh' > /app/start.sh && \
     echo 'set -e' >> /app/start.sh && \
-    echo 'echo "🚀 GarapaSystem v0.3.38.23 - Iniciando configuração..."' >> /app/start.sh && \
+    echo 'echo "🚀 GarapaSystem v0.3.38.25 - Iniciando configuração..."' >> /app/start.sh && \
     echo 'if [ "$SKIP_DB_CHECK" != "true" ]; then' >> /app/start.sh && \
     echo '  echo "🗄️  Configurando banco de dados..."' >> /app/start.sh && \
     echo '  # Usar o novo script de inicialização automática' >> /app/start.sh && \

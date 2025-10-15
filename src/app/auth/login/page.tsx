@@ -17,6 +17,7 @@ export default function LoginPage() {
   const [rememberMe, setRememberMe] = useState(false)
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [demoEnabled, setDemoEnabled] = useState(false)
   const router = useRouter()
 
   // Carregar email salvo ao montar o componente
@@ -30,6 +31,22 @@ export default function LoginPage() {
         setRememberMe(true)
       }
     }
+  }, [])
+
+  // Consultar flag DEMO_VERSION do backend
+  useEffect(() => {
+    const checkDemo = async () => {
+      try {
+        const res = await fetch('/api/system/version')
+        if (!res.ok) return
+        const data = await res.json()
+        const enabled = Boolean(data?.system?.demo?.enabled)
+        setDemoEnabled(enabled)
+      } catch (_) {
+        // mantém default false
+      }
+    }
+    checkDemo()
   }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -137,16 +154,18 @@ export default function LoginPage() {
             </Button>
           </form>
           
-          {/* Credenciais do Admin */}
-          <div className="mt-6 pt-4 border-t border-gray-200">
-            <div className="text-center">
-              <p className="text-sm text-gray-600 mb-2">Credenciais do Administrador:</p>
-              <div className="bg-gray-50 p-3 rounded-md text-sm">
-                <p className="font-medium text-gray-700">Email: admin@garapasystem.com</p>
-                <p className="font-medium text-gray-700">Senha: password</p>
+          {/* Credenciais do Admin - apenas quando DEMO_VERSION=true */}
+          {demoEnabled && (
+            <div className="mt-6 pt-4 border-t border-gray-200">
+              <div className="text-center">
+                <p className="text-sm text-gray-600 mb-2">Credenciais do Administrador (Demo):</p>
+                <div className="bg-gray-50 p-3 rounded-md text-sm">
+                  <p className="font-medium text-gray-700">Email: admin@garapasystem.com</p>
+                  <p className="font-medium text-gray-700">Senha: password</p>
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </CardContent>
       </Card>
     </div>

@@ -135,7 +135,10 @@ export async function GET(request: NextRequest) {
         total: heapTotalMb,
         percentage: heapTotalMb > 0 ? Math.round((heapUsedMb / heapTotalMb) * 100) : 0
       },
-      environment: process.env.NODE_ENV || 'development'
+      environment: process.env.NODE_ENV || 'development',
+      demo: {
+        enabled: String(process.env.DEMO_VERSION || 'false').toLowerCase() === 'true'
+      }
     };
     
     return NextResponse.json({

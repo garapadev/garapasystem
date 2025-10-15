@@ -1,6 +1,6 @@
 # GarapaSystem
 
-Versão: 0.3.38.23
+Versão: 0.3.38.25
 
 Sistema integrado de gestão empresarial construído com Next.js 15, TypeScript e Prisma, cobrindo CRM, Financeiro, Compras, Estoque, Helpdesk, Webmail, Tarefas e integrações (WhatsApp/GAZAPI). Operação em produção com PM2 e suporte a workers dedicados.
 

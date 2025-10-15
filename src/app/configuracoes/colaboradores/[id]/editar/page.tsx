@@ -24,6 +24,7 @@ export default function EditarColaboradorPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [demoEnabled, setDemoEnabled] = useState(false);
   const [formData, setFormData] = useState({
     nome: '',
     email: '',
@@ -47,6 +48,22 @@ export default function EditarColaboradorPage() {
   const { colaborador, loading, error: fetchError } = useColaborador(params.id as string);
   const { perfis, loading: perfisLoading } = usePerfis({ page: 1, limit: 100 });
   const { grupos, loading: gruposLoading } = useGruposHierarquicos({ page: 1, limit: 100 });
+
+  // Buscar flag de DEMO no backend
+  useEffect(() => {
+    const fetchDemoFlag = async () => {
+      try {
+        const res = await fetch('/api/system/version');
+        const data = await res.json();
+        // Corrige a leitura do flag de demo para seguir o formato da API
+        setDemoEnabled(Boolean(data?.system?.demo?.enabled));
+      } catch (e) {
+        console.error('Falha ao obter flag de demo:', e);
+        setDemoEnabled(false);
+      }
+    };
+    fetchDemoFlag();
+  }, []);
 
   useEffect(() => {
     if (colaborador) {
@@ -88,10 +105,51 @@ export default function EditarColaboradorPage() {
     }
   }, [perfisLoading, gruposLoading, perfis, grupos, formData.perfilId, formData.grupoHierarquicoId]);
 
+  // Identificar se é admin no modo demo (por email ou perfil "Administrador")
+  const adminEmails = new Set(['admin@garapasystem.com', 'admin@local.test']);
+  // Suportar ambas as formas (array legado e objeto atual) para relação de usuário
+  const usuarioAssoc: any = Array.isArray(colaborador?.usuarios)
+    ? (colaborador?.usuarios?.[0] ?? null)
+    : (colaborador?.usuarios ?? null);
+  const usuarioEmail = (
+    (usuarioAssoc?.email) ||
+    (colaborador?.email) ||
+    formData.email ||
+    ''
+  ).toLowerCase();
+  const isAdminByEmail = adminEmails.has(usuarioEmail);
+  // Considera também o perfil carregado do colaborador
+  const isAdminByPerfil =
+    (colaborador?.perfil?.nome || '').toLowerCase() === 'administrador' ||
+    (perfis?.some((p) => p.nome?.toLowerCase() === 'administrador' && String(p.id) === formData.perfilId) ?? false);
+  const isAdminInDemo = demoEnabled && (isAdminByEmail || isAdminByPerfil);
+
+  // Se demo ativo e admin, limpar quaisquer campos de senha e impedir toggles ativos
+  useEffect(() => {
+    if (isAdminInDemo) {
+      setFormData(prev => ({
+        ...prev,
+        alterarSenha: false,
+        novaSenha: '',
+        confirmarSenha: '',
+        criarUsuario: false,
+        senhaNovoUsuario: '',
+        confirmarSenhaNovoUsuario: ''
+      }));
+    }
+  }, [isAdminInDemo]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
     setError(null);
+
+    // Bloquear tentativa de alteração/criação de senha do admin em modo demo (defesa extra no cliente)
+    if (isAdminInDemo && (formData.alterarSenha || formData.criarUsuario)) {
+      setError('Em modo demo, não é permitido alterar ou criar senha do administrador.');
+      setSubmitting(false);
+      return;
+    }
 
     // Validar senhas se alterarSenha for true
     if (formData.alterarSenha) {
@@ -226,6 +284,15 @@ export default function EditarColaboradorPage() {
             </div>
           </div>
         </div>
+
+        {/* Aviso global de modo demo/admin */}
+        {isAdminInDemo && (
+          <Alert className="bg-orange-50 border-orange-200">
+            <AlertDescription>
+              Modo demo ativo: ações de senha para administrador estão desativadas.
+            </AlertDescription>
+          </Alert>
+        )}
 
         <form onSubmit={handleSubmit}>
           <div className="grid gap-6 md:grid-cols-2">
@@ -368,11 +435,11 @@ export default function EditarColaboradorPage() {
                     <h4 className="font-medium">Usuário de Acesso</h4>
                   </div>
                   
-                  {colaborador?.usuarios && colaborador.usuarios.length > 0 ? (
+                  {usuarioAssoc ? (
                     <div className="space-y-3">
                       <div className="text-sm text-gray-600">
-                        <p>Email: {colaborador.usuarios[0].email}</p>
-                        <p>Status: {colaborador.usuarios[0].ativo ? 'Ativo' : 'Inativo'}</p>
+                        <p>Email: {usuarioAssoc.email}</p>
+                        <p>Status: {usuarioAssoc.ativo ? 'Ativo' : 'Inativo'}</p>
                       </div>
                       
                       <div className="flex items-center space-x-2">
@@ -382,11 +449,17 @@ export default function EditarColaboradorPage() {
                           checked={formData.alterarSenha}
                           onChange={(e) => handleChange('alterarSenha', e.target.checked)}
                           className="rounded border-gray-300"
+                          disabled={isAdminInDemo}
                         />
                         <Label htmlFor="alterarSenha" className="text-sm font-medium">
                           Alterar senha de acesso
                         </Label>
                       </div>
+                      {isAdminInDemo && (
+                        <div className="p-3 bg-orange-50 border border-orange-200 rounded-lg text-sm text-orange-800">
+                          Em modo demo, a alteração de senha do administrador está desativada.
+                        </div>
+                      )}
                       
                       {formData.alterarSenha && (
                         <div className="space-y-3">
@@ -399,7 +472,8 @@ export default function EditarColaboradorPage() {
                                 value={formData.novaSenha}
                                 onChange={(e) => handleChange('novaSenha', e.target.value)}
                                 placeholder="Digite a nova senha"
-                                required={formData.alterarSenha}
+                                required={formData.alterarSenha && !isAdminInDemo}
+                                disabled={isAdminInDemo}
                               />
                               <Button
                                 type="button"
@@ -425,7 +499,8 @@ export default function EditarColaboradorPage() {
                               value={formData.confirmarSenha}
                               onChange={(e) => handleChange('confirmarSenha', e.target.value)}
                               placeholder="Confirme a nova senha"
-                              required={formData.alterarSenha}
+                              required={formData.alterarSenha && !isAdminInDemo}
+                              disabled={isAdminInDemo}
                             />
                           </div>
                         </div>
@@ -450,11 +525,17 @@ export default function EditarColaboradorPage() {
                           checked={formData.criarUsuario}
                           onChange={(e) => handleChange('criarUsuario', e.target.checked)}
                           className="rounded border-gray-300"
+                          disabled={isAdminInDemo}
                         />
                         <Label htmlFor="criarUsuario" className="text-sm font-medium">
                           Criar nova conta de usuário
                         </Label>
                       </div>
+                      {isAdminInDemo && (
+                        <div className="p-3 bg-orange-50 border border-orange-200 rounded-lg text-sm text-orange-800">
+                          Em modo demo, a criação de conta para o administrador está desativada.
+                        </div>
+                      )}
                       
                       {formData.criarUsuario && (
                         <div className="space-y-3">
@@ -479,7 +560,8 @@ export default function EditarColaboradorPage() {
                                 value={formData.senhaNovoUsuario}
                                 onChange={(e) => handleChange('senhaNovoUsuario', e.target.value)}
                                 placeholder="Digite a senha para o novo usuário"
-                                required={formData.criarUsuario}
+                                required={formData.criarUsuario && !isAdminInDemo}
+                                disabled={isAdminInDemo}
                               />
                               <Button
                                 type="button"
@@ -505,7 +587,8 @@ export default function EditarColaboradorPage() {
                               value={formData.confirmarSenhaNovoUsuario}
                               onChange={(e) => handleChange('confirmarSenhaNovoUsuario', e.target.value)}
                               placeholder="Confirme a senha"
-                              required={formData.criarUsuario}
+                              required={formData.criarUsuario && !isAdminInDemo}
+                              disabled={isAdminInDemo}
                             />
                           </div>
                         </div>
