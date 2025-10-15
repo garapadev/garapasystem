@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { readFileSync } from 'fs';
+import { readFileSync, readdirSync, statSync } from 'fs';
 import { join } from 'path';
+import { db } from '@/lib/db';
 
 /**
  * @swagger
@@ -72,55 +73,75 @@ export async function GET(request: NextRequest) {
     const packageJsonPath = join(process.cwd(), 'package.json');
     const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'));
     
-    // Informações da aplicação
+    // Informações da aplicação (apenas dados reais do package.json)
     const appInfo = {
       name: packageJson.name || 'GarapaSystem',
-      version: packageJson.version || '0.1.35',
-      buildDate: new Date().toISOString(), // Data atual de build
-      description: 'Sistema Integrado de Gestão Empresarial - CRM, ERP, Helpdesk e Automação'
+      version: packageJson.version || '0.0.0'
     };
-    
+
+    // Verificação de saúde (banco de dados)
+    let databaseStatus: 'connected' | 'disconnected' = 'disconnected';
+    try {
+      await db.$queryRaw`SELECT 1`;
+      databaseStatus = 'connected';
+    } catch (e) {
+      databaseStatus = 'disconnected';
+    }
+
+    // Contagem dinâmica de endpoints via file system
+    const apiDir = join(process.cwd(), 'src', 'app', 'api');
+    const countEndpoints = (dir: string): number => {
+      let count = 0;
+      try {
+        const entries = readdirSync(dir);
+        for (const entry of entries) {
+          const fullPath = join(dir, entry);
+          const stat = statSync(fullPath);
+          if (stat.isDirectory()) {
+            count += countEndpoints(fullPath);
+          } else if (stat.isFile() && entry === 'route.ts') {
+            count += 1;
+          }
+        }
+      } catch (_) {
+        // Se o diretório não existir ou não puder ser lido, mantemos contagem em 0
+      }
+      return count;
+    };
+
+    const endpointsTotal = countEndpoints(apiDir);
+
     // Informações da API
     const apiInfo = {
-      version: packageJson.version || '0.1.35',
-      status: 'online',
+      version: packageJson.version || '0.0.0',
+      status: databaseStatus === 'connected' ? 'healthy' : 'unhealthy',
       endpoints: {
-        total: 45, // Número real baseado na estrutura de API
-        authenticated: 38,
-        public: 7
-      }
+        total: endpointsTotal
+      },
+      database: databaseStatus
     };
     
-    // Informações do sistema
+    // Informações do sistema (reais do processo)
+    const mem = process.memoryUsage();
+    const heapUsedMb = Math.round(mem.heapUsed / 1024 / 1024);
+    const heapTotalMb = Math.round(mem.heapTotal / 1024 / 1024);
     const systemInfo = {
-      nodeVersion: process.version,
+      node: process.version,
       platform: process.platform,
       arch: process.arch,
       uptime: Math.floor(process.uptime()),
       memory: {
-        used: Math.round(process.memoryUsage().heapUsed / 1024 / 1024),
-        total: Math.round(process.memoryUsage().heapTotal / 1024 / 1024)
+        used: heapUsedMb,
+        total: heapTotalMb,
+        percentage: heapTotalMb > 0 ? Math.round((heapUsedMb / heapTotalMb) * 100) : 0
       },
       environment: process.env.NODE_ENV || 'development'
     };
-    
-    // Verificação de atualizações (simulada)
-    const updateInfo = await checkForUpdates(packageJson.version);
     
     return NextResponse.json({
       app: appInfo,
       api: apiInfo,
       system: systemInfo,
-      updates: updateInfo,
-      features: {
-        crm: 'Sistema completo de gestão de clientes e relacionamentos',
-        helpdesk: 'Central de atendimento e suporte técnico',
-        tasks: 'Gerenciamento de tarefas e projetos',
-        automation: 'Automação de processos empresariais',
-        whatsapp: 'Integração com WhatsApp Business API',
-        email: 'Sistema de e-mail integrado',
-        reports: 'Relatórios e dashboards analíticos'
-      },
       timestamp: new Date().toISOString()
     });
     
@@ -133,37 +154,4 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// Função para verificar atualizações
-async function checkForUpdates(currentVersion: string) {
-  try {
-    // Informações sobre a versão atual
-    const versionParts = currentVersion.split('.').map(Number);
-    const [major, minor, patch] = versionParts;
-    
-    // Para este sistema, consideramos que está sempre atualizado
-    // Em produção, isso consultaria um repositório ou API de releases
-    
-    return {
-      available: false,
-      latestVersion: currentVersion,
-      currentVersion,
-      releaseNotes: 'Sistema atualizado com as últimas funcionalidades e correções de segurança.',
-      lastChecked: new Date().toISOString(),
-      changelog: [
-        'Melhorias no sistema de helpdesk',
-        'Otimizações de performance',
-        'Correções de segurança',
-        'Interface aprimorada'
-      ]
-    };
-    
-  } catch (error) {
-    console.error('Erro ao verificar atualizações:', error);
-    return {
-      available: false,
-      currentVersion,
-      error: 'Não foi possível verificar atualizações no momento',
-      lastChecked: new Date().toISOString()
-    };
-  }
-}
+// Removido: verificação de atualizações simulada e lista estática de funcionalidades

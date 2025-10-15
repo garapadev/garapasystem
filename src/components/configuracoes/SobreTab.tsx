@@ -3,18 +3,13 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { 
   Loader2, 
   Server, 
   Smartphone, 
-  Download, 
   CheckCircle, 
-  AlertCircle,
-  RefreshCw,
-  Info
+  AlertCircle
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -22,44 +17,14 @@ interface VersionInfo {
   app: {
     name: string;
     version: string;
-    buildDate: string;
-    description: string;
   };
   api: {
     version: string;
     status: string;
     endpoints: {
       total: number;
-      authenticated: number;
-      public: number;
     };
-  };
-  system: {
-    node: string;
-    platform: string;
-    arch: string;
-    uptime: number;
-    memory: {
-      used: number;
-      total: number;
-      percentage: number;
-    };
-    environment: string;
-  };
-  updates: {
-    available: boolean;
-    latestVersion: string;
-    currentVersion: string;
-    releaseNotes: string;
-    lastChecked?: string;
-    releaseDate?: string;
-    severity?: string;
-    downloadUrl?: string;
-    error?: string;
-    changelog?: string[];
-  };
-  features?: {
-    [key: string]: string;
+    database?: string;
   };
   timestamp?: string;
 }
@@ -68,7 +33,6 @@ export default function SobreTab() {
   const { toast } = useToast();
   const [versionInfo, setVersionInfo] = useState<VersionInfo | null>(null);
   const [loading, setLoading] = useState(true);
-  const [checking, setChecking] = useState(false);
 
   const fetchVersionInfo = async () => {
     try {
@@ -90,25 +54,6 @@ export default function SobreTab() {
       });
     } finally {
       setLoading(false);
-    }
-  };
-
-  const checkForUpdates = async () => {
-    try {
-      setChecking(true);
-      await fetchVersionInfo(); // Recarrega as informações
-      toast({
-        title: 'Verificação concluída',
-        description: 'Informações de atualização foram verificadas.',
-      });
-    } catch (error) {
-      toast({
-        title: 'Erro',
-        description: 'Erro ao verificar atualizações.',
-        variant: 'destructive',
-      });
-    } finally {
-      setChecking(false);
     }
   };
 
@@ -163,7 +108,7 @@ export default function SobreTab() {
             Informações da Aplicação
           </CardTitle>
           <CardDescription>
-            Detalhes sobre a versão atual do sistema
+            Nome e versão atuais da aplicação
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -180,14 +125,6 @@ export default function SobreTab() {
                 </Badge>
               </div>
             </div>
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">Descrição</p>
-              <p className="text-sm">{versionInfo.app.description}</p>
-            </div>
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">Build</p>
-              <p className="text-sm">{formatDate(versionInfo.app.buildDate)}</p>
-            </div>
           </div>
         </CardContent>
       </Card>
@@ -200,7 +137,7 @@ export default function SobreTab() {
             Informações da API
           </CardTitle>
           <CardDescription>
-            Status e detalhes da API do sistema
+            Versão e status de saúde da API
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -214,7 +151,11 @@ export default function SobreTab() {
             <div>
               <p className="text-sm font-medium text-muted-foreground">Status</p>
               <div className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-green-500" />
+                {versionInfo.api.status === 'healthy' ? (
+                  <CheckCircle className="h-4 w-4 text-green-500" />
+                ) : (
+                  <AlertCircle className="h-4 w-4 text-yellow-500" />
+                )}
                 <span className="text-sm capitalize">{versionInfo.api.status}</span>
               </div>
             </div>
@@ -223,121 +164,13 @@ export default function SobreTab() {
               <p className="text-sm">{versionInfo.api.endpoints.total}</p>
             </div>
             <div>
-              <p className="text-sm font-medium text-muted-foreground">Endpoints Autenticados</p>
-              <p className="text-sm">{versionInfo.api.endpoints.authenticated}</p>
+              <p className="text-sm font-medium text-muted-foreground">Banco de Dados</p>
+              <p className="text-sm">{versionInfo.api.database || 'desconhecido'}</p>
             </div>
           </div>
         </CardContent>
       </Card>
-
-      {/* Verificação de Atualizações */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Download className="h-5 w-5" />
-            Atualizações
-          </CardTitle>
-          <CardDescription>
-            Verificar e gerenciar atualizações do sistema
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {versionInfo.updates.error ? (
-            <Alert>
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>
-                {versionInfo.updates.error}
-              </AlertDescription>
-            </Alert>
-          ) : versionInfo.updates.available ? (
-            <Alert>
-              <Info className="h-4 w-4" />
-              <AlertDescription>
-                <div className="space-y-2">
-                  <p className="font-medium">
-                    Nova versão disponível: v{versionInfo.updates.latestVersion}
-                  </p>
-                  <p className="text-sm">{versionInfo.updates.releaseNotes}</p>
-                  {versionInfo.updates.releaseDate && (
-                    <p className="text-xs text-muted-foreground">
-                      Lançada em: {formatDate(versionInfo.updates.releaseDate)}
-                    </p>
-                  )}
-                </div>
-              </AlertDescription>
-            </Alert>
-          ) : (
-            <Alert>
-              <CheckCircle className="h-4 w-4" />
-              <AlertDescription>
-                <div className="space-y-2">
-                  <p>Você está usando a versão mais recente do sistema.</p>
-                  <p className="text-sm">{versionInfo.updates.releaseNotes}</p>
-                  {versionInfo.updates.changelog && versionInfo.updates.changelog.length > 0 && (
-                    <div className="mt-3">
-                      <p className="text-sm font-medium mb-2">Últimas melhorias:</p>
-                      <ul className="text-xs space-y-1">
-                        {versionInfo.updates.changelog.map((item, index) => (
-                          <li key={index} className="flex items-start space-x-2">
-                            <span className="text-green-500 mt-1">•</span>
-                            <span>{item}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-              </AlertDescription>
-            </Alert>
-          )}
-
-          <Separator />
-
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium">Última verificação</p>
-              <p className="text-xs text-muted-foreground">
-                {formatDate(versionInfo.updates.lastChecked)}
-              </p>
-            </div>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={checkForUpdates}
-              disabled={checking}
-            >
-              {checking ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <RefreshCw className="mr-2 h-4 w-4" />
-              )}
-              Verificar Atualizações
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Funcionalidades do Sistema */}
-      {versionInfo.features && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm">Funcionalidades Disponíveis</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 gap-3">
-              {Object.entries(versionInfo.features).map(([key, description]) => (
-                <div key={key} className="flex items-start space-x-3">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0" />
-                  <div>
-                    <p className="text-sm font-medium capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</p>
-                    <p className="text-xs text-muted-foreground">{description}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
+      {/* Removidos: cards de Atualizações e Funcionalidades Disponíveis para manter apenas dados essenciais e reais */}
 
       {/* Informações de Debug */}
       <Card>
