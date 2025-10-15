@@ -14,7 +14,7 @@ services:
       NEXTAUTH_URL: "http://localhost:3000"
       NODE_ENV: "production"
       PORT: "3000"
-      DEMO_VERSION: true
+      DEMO_VERSION: "true"
       # Configurações específicas do webmail
       WEBMAIL_SECURE: "true"
       WEBMAIL_TLS_REJECT_UNAUTHORIZED: "true"
