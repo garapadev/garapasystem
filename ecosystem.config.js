@@ -2,9 +2,9 @@ module.exports = {
   apps: [
     {
       name: 'garapasystem',
-      script: 'server.ts',
-      interpreter: 'npx',
-      interpreter_args: 'tsx',
+      script: './scripts/start-with-build.sh',
+      interpreter: '/bin/bash',
+      interpreter_args: '',
       instances: 1,
       exec_mode: 'fork',
       watch: false,
