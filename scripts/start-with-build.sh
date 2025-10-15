@@ -21,5 +21,8 @@ else
   fi
 fi
 
+echo "🧭 Executando orquestrador de upgrade"
+node ./scripts/orchestrate-upgrade.js
+
 echo "🚀 Iniciando server.ts com tsx"
 exec npx tsx server.ts

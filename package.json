@@ -16,6 +16,10 @@
     "db:seed": "tsx prisma/seed.ts",
     "postinstall": "./scripts/auto-setup.sh",
     "setup": "./scripts/auto-setup.sh",
+    "upgrade:orchestrate": "node ./scripts/orchestrate-upgrade.js",
+    "upgrade:validate": "node ./scripts/validacao-completa.js",
+    "upgrade:baseline": "./scripts/baseline-migrations.sh",
+    "upgrade:db-check": "node ./scripts/check-database-empty.js",
     "pm2:start": "./scripts/pm2-safe-start.sh",
     "pm2:start-unsafe": "pm2 start ecosystem.config.js",
     "pm2:stop": "pm2 stop ecosystem.config.js",
@@ -27,7 +31,10 @@
     "pm2:status": "pm2 status",
     "pm2:dev": "./scripts/pm2-safe-start.sh",
     "pm2:prod": "./scripts/pm2-safe-start-prod.sh",
-    "pm2:clean-restart": "pm2 stop all && pm2 delete all && rm -rf .next && npm run build && pm2 start ecosystem.config.js"
+    "pm2:clean-restart": "pm2 stop all && pm2 delete all && rm -rf .next && npm run build && pm2 start ecosystem.config.js",
+    "docker:build": "docker build -t garapadev/garapasystem:${npm_package_version} -f Dockerfile .",
+    "docker:push": "docker push garapadev/garapasystem:${npm_package_version}",
+    "docker:release": "npm run docker:build && npm run docker:push"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",

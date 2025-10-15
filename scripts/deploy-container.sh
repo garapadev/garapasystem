@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # Script para deploy no container
-echo "🚀 Iniciando deploy do GarapaSystem v0.2.38.16 para container..."
+APP_VERSION=$(node -p "require('./package.json').version")
+echo "🚀 Iniciando build e deploy do GarapaSystem v$APP_VERSION para container..."
 
 # Backup do .env atual
 if [ -f ".env" ]; then
@@ -17,23 +18,17 @@ cp .env.container .env
 echo "🔍 Verificando status das migrações..."
 npx prisma migrate status
 
-# Fazer build da aplicação
-echo "🔨 Fazendo build da aplicação..."
-npm run build
+echo "🔨 Fazendo build da imagem Docker..."
+npm run docker:build
 
 # Verificar se o build foi bem-sucedido
 if [ $? -eq 0 ]; then
-    echo "✅ Build concluído com sucesso!"
-    
-    # Reiniciar PM2
-    echo "🔄 Reiniciando PM2..."
-    pm2 restart garapasystem
-    
-    echo "🎉 Deploy concluído com sucesso!"
-    echo "📊 Status dos processos PM2:"
-    pm2 list
+    echo "✅ Imagem criada com sucesso!"
+    echo "📤 Publicando a imagem no DockerHub..."
+    npm run docker:push
+    echo "🎉 Deploy de container concluído! Imagem: garapadev/garapasystem:$APP_VERSION"
 else
-    echo "❌ Erro no build. Restaurando configurações anteriores..."
+    echo "❌ Erro no build de imagem. Restaurando configurações anteriores..."
     if [ -f ".env.backup" ]; then
         cp .env.backup .env
     fi
