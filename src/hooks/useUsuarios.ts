@@ -128,8 +128,9 @@ export function useUsuarios(params: UseUsuariosParams = {}): UseUsuariosReturn {
 export async function updateUsuario(id: string, data: {
   email: string;
   nome?: string | null;
-  ativo: boolean;
+  ativo?: boolean;
   colaboradorId?: string | null;
+  senha?: string;
 }) {
   const response = await fetch(`/api/usuarios/${id}`, {
     method: 'PUT',

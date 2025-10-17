@@ -1,6 +1,5 @@
 'use client'
 
-import { useEffect } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { useConfiguracoes } from '@/hooks/useConfiguracoes'
 import { performLogout } from '@/lib/logout'
@@ -18,6 +17,7 @@ import { LogOut, Settings, User } from 'lucide-react'
 import { NotificationCenter } from '@/components/realtime/NotificationCenter'
 import { GlobalSearch } from '@/components/search/GlobalSearch'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 export function Header() {
   const { user, colaborador, isAuthenticated } = useAuth()
@@ -35,18 +35,9 @@ export function Header() {
     })
   }
 
-  const handleProfileClick = () => {
-    if (colaborador?.id) {
-      router.push(`/configuracoes/colaboradores/${colaborador.id}`)
-    }
-  }
-
-  // Prefetch da página de detalhes do colaborador para transição mais suave
-  useEffect(() => {
-    if (colaborador?.id) {
-      router.prefetch(`/configuracoes/colaboradores/${colaborador.id}`)
-    }
-  }, [colaborador?.id, router])
+  const profileHref = colaborador?.id
+    ? `/perfil`
+    : undefined
 
   const getUserInitials = () => {
     if (colaborador?.nome) {
@@ -123,10 +114,19 @@ export function Header() {
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleProfileClick}>
-                <User className="mr-2 h-4 w-4" />
-                <span>Perfil</span>
-              </DropdownMenuItem>
+              {profileHref ? (
+                <DropdownMenuItem asChild>
+                  <Link href={profileHref} prefetch>
+                    <User className="mr-2 h-4 w-4" />
+                    <span>Perfil</span>
+                  </Link>
+                </DropdownMenuItem>
+              ) : (
+                <DropdownMenuItem disabled>
+                  <User className="mr-2 h-4 w-4" />
+                  <span>Perfil</span>
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem onClick={() => router.push('/configuracoes')}>
                 <Settings className="mr-2 h-4 w-4" />
                 <span>Configurações</span>

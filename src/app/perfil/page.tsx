@@ -1,25 +1,37 @@
 'use client';
 
-import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { ArrowLeft, Edit, UserCircle, Mail, Phone, Building2, Shield, Calendar, Hash, Briefcase, Loader2 } from 'lucide-react';
+import { UserCircle, Mail, Phone, Building2, Shield, Calendar, Hash, Edit, Loader2 } from 'lucide-react';
 import Link from 'next/link';
-import { useColaborador } from '@/hooks/useColaboradores';
 import { useAuth } from '@/hooks/useAuth';
+import { useColaborador } from '@/hooks/useColaboradores';
 
-export default function ColaboradorDetalhePage() {
-  const params = useParams();
-  const router = useRouter();
-  const { colaborador, loading, error } = useColaborador(params.id as string);
-  const { colaborador: currentColaborador } = useAuth() as any;
+export default function MeuPerfilPage() {
+  const { colaborador: currentColaborador, isAuthenticated } = useAuth() as any;
+  const colaboradorId = currentColaborador?.id as string | undefined;
+  const { colaborador, loading, error } = useColaborador(colaboradorId || '');
 
-  // Redireciona para /perfil se o ID acessado for o do próprio colaborador
-  if (currentColaborador && params.id === String(currentColaborador.id)) {
-    router.replace('/perfil');
-    return null;
+  if (!isAuthenticated) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Alert className="max-w-md">
+          <AlertDescription>Você precisa estar autenticado para acessar seu perfil.</AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
+
+  if (!colaboradorId) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Alert className="max-w-md">
+          <AlertDescription>Não foi possível identificar seu colaborador vinculado.</AlertDescription>
+        </Alert>
+      </div>
+    );
   }
 
   if (loading) {
@@ -27,7 +39,7 @@ export default function ColaboradorDetalhePage() {
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
           <Loader2 className="h-8 w-8 animate-spin mx-auto" />
-          <p className="mt-2 text-gray-600">Carregando colaborador...</p>
+          <p className="mt-2 text-gray-600">Carregando meu perfil...</p>
         </div>
       </div>
     );
@@ -37,9 +49,7 @@ export default function ColaboradorDetalhePage() {
     return (
       <div className="flex items-center justify-center h-64">
         <Alert variant="destructive" className="max-w-md">
-          <AlertDescription>
-            Erro ao carregar colaborador: {error}
-          </AlertDescription>
+          <AlertDescription>Erro ao carregar perfil: {error}</AlertDescription>
         </Alert>
       </div>
     );
@@ -49,9 +59,7 @@ export default function ColaboradorDetalhePage() {
     return (
       <div className="flex items-center justify-center h-64">
         <Alert className="max-w-md">
-          <AlertDescription>
-            Colaborador não encontrado.
-          </AlertDescription>
+          <AlertDescription>Perfil não encontrado.</AlertDescription>
         </Alert>
       </div>
     );
@@ -60,27 +68,17 @@ export default function ColaboradorDetalhePage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <Link href="/colaboradores">
-            <Button variant="ghost" size="sm">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Voltar
-            </Button>
-          </Link>
-          <div className="flex items-center space-x-2">
-            <UserCircle className="h-6 w-6" />
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight">{colaborador.nome}</h1>
-              <p className="text-muted-foreground">
-                Detalhes do colaborador
-              </p>
-            </div>
+        <div className="flex items-center space-x-2">
+          <UserCircle className="h-6 w-6" />
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Meu Perfil</h1>
+            <p className="text-muted-foreground">Visualize suas informações pessoais</p>
           </div>
         </div>
-        <Link href={`/colaboradores/${colaborador.id}/editar`}>
+        <Link href={`/perfil/editar`}>
           <Button>
             <Edit className="mr-2 h-4 w-4" />
-            Editar
+            Editar meus dados
           </Button>
         </Link>
       </div>
@@ -120,7 +118,6 @@ export default function ColaboradorDetalhePage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center space-x-2">
-              <Briefcase className="h-4 w-4 text-muted-foreground" />
               <span className="font-medium">Cargo:</span>
               <span>{colaborador.cargo}</span>
             </div>
@@ -155,82 +152,11 @@ export default function ColaboradorDetalhePage() {
         </Card>
       </div>
 
-      {/* Perfil de Acesso */}
-      {colaborador.perfil && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Shield className="h-5 w-5" />
-              <span>Perfil de Acesso</span>
-            </CardTitle>
-            <CardDescription>
-              Informações sobre o perfil e permissões do colaborador
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <span className="font-medium">Perfil:</span>
-                  <span className="ml-2">{colaborador.perfil.nome}</span>
-                </div>
-                <div>
-                  <span className="font-medium">Descrição:</span>
-                  <span className="ml-2">{colaborador.perfil.descricao}</span>
-                </div>
-              </div>
-              <div className="p-4 bg-gray-50 rounded-lg">
-                <h4 className="font-medium mb-2">Permissões do Perfil</h4>
-                <p className="text-sm text-gray-600">
-                  Este perfil concede acesso às funcionalidades do sistema de acordo com as permissões associadas.
-                  Para gerenciar as permissões, acesse a seção de Permissões do sistema.
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Grupo Hierárquico */}
-      {colaborador.grupoHierarquico && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Building2 className="h-5 w-5" />
-              <span>Grupo Hierárquico</span>
-            </CardTitle>
-            <CardDescription>
-              Posição do colaborador na estrutura organizacional
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <span className="font-medium">Grupo:</span>
-                  <span className="ml-2">{colaborador.grupoHierarquico.nome}</span>
-                </div>
-                <div>
-                  <span className="font-medium">Descrição:</span>
-                  <span className="ml-2">{colaborador.grupoHierarquico.descricao}</span>
-                </div>
-              </div>
-              <div className="p-4 bg-gray-50 rounded-lg">
-                <h4 className="font-medium mb-2">Informações sobre o Grupo</h4>
-                <p className="text-sm text-gray-600">
-                  Este grupo faz parte da estrutura organizacional da empresa e pode ter subgrupos.
-                  Colaboradores do mesmo grupo geralmente compartilham responsabilidades e metas.
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
       {/* Informações do Sistema */}
       <Card>
         <CardHeader>
           <CardTitle>Informações do Sistema</CardTitle>
+          <CardDescription>Dados técnicos vinculados ao seu cadastro</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 gap-4">
@@ -247,6 +173,8 @@ export default function ColaboradorDetalhePage() {
           </div>
         </CardContent>
       </Card>
+
+
     </div>
   );
 }
