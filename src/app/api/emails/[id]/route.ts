@@ -33,7 +33,7 @@ export async function GET(
     const colaborador = await db.colaborador.findFirst({
       where: {
         usuarios: {
-          some: {
+          is: {
             email: session.user.email
           }
         }
@@ -205,7 +205,7 @@ export async function DELETE(
     const colaborador = await db.colaborador.findFirst({
       where: {
         usuarios: {
-          some: {
+          is: {
             email: session.user.email
           }
         }

@@ -34,6 +34,7 @@ export function GlobalLayout({ children }: GlobalLayoutProps) {
   // Páginas que não devem mostrar o sidebar (login, etc.)
   const authPages = ['/auth/login', '/auth/register'];
   const isAuthPage = authPages.includes(pathname);
+  const isWebmail = pathname.startsWith('/webmail');
 
   // Debug logs
   console.log('GlobalLayout render:', { 
@@ -66,11 +67,11 @@ export function GlobalLayout({ children }: GlobalLayoutProps) {
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header />
-        <div className="border-b border-gray-200 bg-white px-6 py-3">
+        <div className={`border-b border-gray-200 bg-white ${isWebmail ? 'px-0 py-0' : 'px-6 py-3'}`}>
           <Breadcrumbs />
         </div>
         <main className="flex-1 overflow-auto">
-          <div className="p-6">
+          <div className={isWebmail ? 'p-0' : 'p-6'}>
             {children}
           </div>
         </main>

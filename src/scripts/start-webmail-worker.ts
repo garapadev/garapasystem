@@ -105,7 +105,9 @@ class WebmailWorker {
     // Tratamento de erros não capturados
     process.on('uncaughtException', (error) => {
       console.error('Erro não capturado:', error);
-      this.stop().finally(() => process.exit(1));
+      // Tentar parar, mas sem derrubar todo worker imediatamente
+      this.stop().catch(err => console.error('Erro ao parar worker:', err));
+      // Não encerrar o processo para permitir restart automático via PM2
     });
 
     process.on('unhandledRejection', (reason, promise) => {

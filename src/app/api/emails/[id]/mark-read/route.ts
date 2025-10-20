@@ -28,7 +28,7 @@ export async function POST(
     const colaborador = await prisma.colaborador.findFirst({
       where: {
         usuarios: {
-          some: {
+          is: {
             email: session.user.email
           }
         }

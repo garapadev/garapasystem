@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
     const colaborador = await prisma.colaborador.findFirst({
       where: {
         usuarios: {
-          some: {
+          is: {
             email: session.user.email
           }
         }

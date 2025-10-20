@@ -125,6 +125,7 @@ export async function GET(request: NextRequest) {
     const mem = process.memoryUsage();
     const heapUsedMb = Math.round(mem.heapUsed / 1024 / 1024);
     const heapTotalMb = Math.round(mem.heapTotal / 1024 / 1024);
+    const pm2Active = typeof process.env.pm_id !== 'undefined' || typeof process.env.PM2_HOME !== 'undefined' || typeof process.env.NODE_APP_INSTANCE !== 'undefined';
     const systemInfo = {
       node: process.version,
       platform: process.platform,
@@ -136,6 +137,10 @@ export async function GET(request: NextRequest) {
         percentage: heapTotalMb > 0 ? Math.round((heapUsedMb / heapTotalMb) * 100) : 0
       },
       environment: process.env.NODE_ENV || 'development',
+      pm2: {
+        active: pm2Active,
+        pm_id: process.env.pm_id || process.env.NODE_APP_INSTANCE || undefined
+      },
       demo: {
         enabled: String(process.env.DEMO_VERSION || 'false').toLowerCase() === 'true'
       }

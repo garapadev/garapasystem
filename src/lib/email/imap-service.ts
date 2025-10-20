@@ -168,7 +168,7 @@ class ImapConnectionPool {
           },
           connectionTimeout: 20000, // Reduzido para detectar problemas mais rápido
           greetingTimeout: 15000,
-          socketTimeout: 45000, // Reduzido
+          socketTimeout: 120000, // Aumentado para evitar timeout durante sincronização pesada
           maxIdleTime: 180000, // 3 minutos
           clientInfo: {
             name: 'GarapaSystem WebMail',
@@ -176,6 +176,14 @@ class ImapConnectionPool {
           },
           disableAutoIdle: true,
           emitLogs: false
+        });
+
+        // Evitar exceções não capturadas do cliente IMAP
+        client.on('error', (err) => {
+          console.error(`Erro no cliente IMAP (${config.email}):`, err);
+        });
+        client.on('close', () => {
+          console.log(`Conexão IMAP fechada (${config.email})`);
         });
 
         // Conectar com timeout
@@ -366,7 +374,7 @@ export class ImapService {
     }
   }
 
-  async syncEmails(folderPath: string = 'INBOX', limit: number = 50): Promise<void> {
+  async syncEmails(folderPath: string = 'INBOX', limit: number = 200): Promise<number> {
     if (!this.client || !this.config) {
       throw new Error('Cliente IMAP não conectado');
     }
@@ -427,11 +435,12 @@ export class ImapService {
       const totalMessages = mailboxInfo.messages || 0;
       if (totalMessages === 0) {
         console.log(`Pasta ${folderPath} está vazia`);
-        return;
+        return 0;
       }
 
-      // Buscar UIDs dos emails mais recentes
-      const startUid = Math.max(1, totalMessages - limit + 1);
+      // Buscar UIDs dos emails mais recentes com base em uidNext
+      const uidNext = mailboxInfo.uidNext || 1;
+      const startUid = Math.max(1, uidNext - limit);
       const messages = this.client.fetch(
         `${startUid}:*`,
         {
@@ -448,13 +457,11 @@ export class ImapService {
         const msg = message as ImapMessage;
         await this.saveEmail(msg, folder.id);
         processedCount++;
-        
-        // Limitar processamento para evitar sobrecarga
         if (processedCount >= limit) break;
       }
 
       console.log(`Sincronização de emails da pasta ${folderPath} concluída (${processedCount} emails processados)`);
-
+      return processedCount;
     } catch (error) {
       console.error(`Erro ao sincronizar emails da pasta ${folderPath}:`, error);
       throw error;
@@ -930,8 +937,8 @@ export async function startEmailSync(emailConfigId: string): Promise<void> {
     // Sincronizar pastas
     await imapService.syncFolders();
 
-    // Sincronizar emails da INBOX
-    await imapService.syncEmails('INBOX', 100);
+    // Sincronizar emails da INBOX com limite mínimo de 10
+    const processedCount = await imapService.syncEmails('INBOX', 10);
 
     // Atualizar timestamp da última sincronização
     await db.emailConfig.update({
@@ -941,9 +948,16 @@ export async function startEmailSync(emailConfigId: string): Promise<void> {
       }
     });
 
+    return processedCount;
+
   } catch (error) {
     console.error('Erro na sincronização de email:', error);
+    return 0;
   } finally {
-    await imapService.disconnect();
+    try {
+      await imapService.disconnect();
+    } catch (e) {
+      console.warn('Erro ao desconectar IMAP:', e);
+    }
   }
 }

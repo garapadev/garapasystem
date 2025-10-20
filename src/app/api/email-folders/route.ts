@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
     const colaborador = await prisma.colaborador.findFirst({
       where: {
         usuarios: {
-          some: {
+          is: {
             email: session.user.email
           }
         }
@@ -25,10 +25,12 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Colaborador não encontrado' }, { status: 404 });
     }
 
-    // Buscar configuração de email do colaborador
-    const emailConfig = await prisma.EmailConfig.findFirst({
+    // Buscar configuração de email ativa do colaborador
+    const emailConfig = await prisma.emailConfig.findFirst({
       where: {
-        colaboradorId: colaborador.id
+        colaboradorId: colaborador.id,
+        ativo: true,
+        syncEnabled: true
       }
     });
 
@@ -37,7 +39,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Buscar pastas do colaborador
-    const folders = await prisma.EmailFolder.findMany({
+    const folders = await prisma.emailFolder.findMany({
       where: {
         emailConfigId: emailConfig.id
       },
@@ -50,14 +52,14 @@ export async function GET(request: NextRequest) {
     // Contar emails não lidos por pasta
     const foldersWithCounts = await Promise.all(
       folders.map(async (folder) => {
-        const unreadCount = await prisma.Email.count({
+        const unreadCount = await prisma.email.count({
           where: {
             folderId: folder.id,
             isRead: false
           }
         });
 
-        const totalCount = await prisma.Email.count({
+        const totalCount = await prisma.email.count({
           where: {
             folderId: folder.id
           }

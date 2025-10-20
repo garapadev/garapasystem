@@ -55,6 +55,24 @@ class EmailSyncScheduler {
     return null;
   }
 
+  // Loop de agendamento encadeado para evitar sobreposição de sincronizações
+  private scheduleSyncLoop(emailConfigId: string, intervalMs: number): void {
+    const job = this.jobs.get(emailConfigId);
+    if (!job) return;
+
+    job.intervalId = setTimeout(async () => {
+      try {
+        await this.performSync(emailConfigId);
+      } finally {
+        // Reagendar somente após a conclusão da sincronização
+        const currentJob = this.jobs.get(emailConfigId);
+        if (currentJob) {
+          this.scheduleSyncLoop(emailConfigId, intervalMs);
+        }
+      }
+    }, intervalMs);
+  }
+
   async startSyncForUser(colaboradorId: string): Promise<boolean> {
     try {
       // Buscar configuração de email do colaborador
@@ -76,20 +94,22 @@ class EmailSyncScheduler {
         return true;
       }
 
-      // Executar sincronização inicial
-      await this.performSync(emailConfig.id);
+      // Definir intervalo baseado na configuração ou padrão (180s)
+      const interval = (emailConfig.syncInterval || 180) * 1000;
 
-      // Agendar sincronizações periódicas
-      const intervalId = setInterval(async () => {
-        await this.performSync(emailConfig.id);
-      }, this.SYNC_INTERVAL);
-
-      // Armazenar job
+      // Registrar job primeiro com isRunning=false e timer placeholder
+      const placeholderTimer = setTimeout(() => {}, 0);
       this.jobs.set(emailConfig.id, {
         emailConfigId: emailConfig.id,
-        intervalId,
-        isRunning: true
+        intervalId: placeholderTimer,
+        isRunning: false
       });
+
+      // Executar sincronização inicial (imediata)
+      await this.performSync(emailConfig.id);
+
+      // Agendar próximas sincronizações sem sobreposição
+      this.scheduleSyncLoop(emailConfig.id, interval);
 
       console.log(`[Worker] Sincronização iniciada para configuração ${emailConfig.id} (colaborador ${colaboradorId})`);
       return true;
@@ -117,8 +137,8 @@ class EmailSyncScheduler {
 
       const [configId, job] = jobEntry;
       
-      // Parar intervalo
-      clearInterval(job.intervalId);
+      // Parar timer
+      clearTimeout(job.intervalId);
       
       // Remover job
       this.jobs.delete(configId);
@@ -150,23 +170,22 @@ class EmailSyncScheduler {
         return false;
       }
 
-      // Executar sincronização inicial
-      await this.performSync(emailConfigId);
-
       // Usar intervalo personalizado ou padrão
       const interval = (syncInterval || emailConfig.syncInterval || 180) * 1000;
 
-      // Agendar sincronizações periódicas
-      const intervalId = setInterval(async () => {
-        await this.performSync(emailConfigId);
-      }, interval);
-
-      // Armazenar job
+      // Registrar job primeiro com isRunning=false e timer placeholder
+      const placeholderTimer = setTimeout(() => {}, 0);
       this.jobs.set(emailConfigId, {
         emailConfigId,
-        intervalId,
-        isRunning: true
+        intervalId: placeholderTimer,
+        isRunning: false
       });
+
+      // Executar sincronização inicial (imediata)
+      await this.performSync(emailConfigId);
+
+      // Agendar próximas sincronizações sem sobreposição
+      this.scheduleSyncLoop(emailConfigId, interval);
 
       console.log(`[Worker] Sincronização iniciada para configuração ${emailConfigId}`);
       return true;
@@ -185,8 +204,8 @@ class EmailSyncScheduler {
       return false;
     }
 
-    // Parar intervalo
-    clearInterval(job.intervalId);
+    // Parar timer
+    clearTimeout(job.intervalId);
     
     // Remover job
     this.jobs.delete(emailConfigId);
@@ -217,49 +236,8 @@ class EmailSyncScheduler {
     try {
       job.isRunning = true;
       
-      // Contar emails antes da sincronização
-      const emailsBefore = await db.email.count({
-        where: {
-          emailConfigId: emailConfigId,
-          isRead: false
-        }
-      });
-
-      // Executar sincronização
-      await startEmailSync(emailConfigId);
-      
-      // Incrementar contador de sincronizações
-      this.syncCount++;
-      
-      // Verificar consistência a cada 5 sincronizações (aproximadamente 15 minutos)
-      const shouldCheckConsistency = this.syncCount % 5 === 0;
-      if (shouldCheckConsistency) {
-        try {
-          const { FolderConsistencyService } = await import('./folder-consistency');
-          const consistencyService = new FolderConsistencyService(emailConfigId);
-          const result = await consistencyService.maintainConsistency();
-          
-          if (result.success && result.fixes) {
-            console.log(`[Worker] Consistência verificada para configuração ${emailConfigId}: ${result.fixes.foldersFixed} pastas corrigidas`);
-          }
-        } catch (consistencyError) {
-          console.error(`[Worker] Erro na verificação de consistência para configuração ${emailConfigId}:`, consistencyError);
-        }
-      }
-      
-      // Contar emails após a sincronização
-      const emailsAfter = await db.email.count({
-        where: {
-          emailConfigId: emailConfigId,
-          isRead: false
-        }
-      });
-
-      // Se há novos emails, emitir notificação
-      if (emailsAfter > emailsBefore) {
-        const newEmailsCount = emailsAfter - emailsBefore;
-        await this.notifyNewEmails(emailConfigId, newEmailsCount);
-      }
+      // Executar sincronização e obter contagem processada
+      const processedCount = await startEmailSync(emailConfigId);
 
       // Atualizar timestamp da última sincronização
       await db.emailConfig.update({
@@ -271,8 +249,7 @@ class EmailSyncScheduler {
 
       // Log de sucesso com métricas
       const duration = Date.now() - startTime;
-      const newEmails = emailsAfter - emailsBefore;
-      emailSyncMonitor.logSyncSuccess(emailConfigId, duration, newEmails);
+      emailSyncMonitor.logSyncSuccess(emailConfigId, duration, processedCount);
 
     } catch (error) {
       const duration = Date.now() - startTime;
@@ -334,17 +311,18 @@ class EmailSyncScheduler {
 
   async startAllActiveConfigs(): Promise<void> {
     try {
-      // Buscar todas as configurações ativas
+      // Buscar todas as configurações ativas e habilitadas
       const activeConfigs = await db.emailConfig.findMany({
         where: {
-          ativo: true
+          ativo: true,
+          syncEnabled: true
         },
         include: {
           colaborador: true
         }
       });
 
-      console.log(`Iniciando sincronização para ${activeConfigs.length} configuração(ões) ativa(s)`);
+      console.log(`Iniciando sincronização para ${activeConfigs.length} configuração(ões) ativa(s e habilitadas)`);
 
       // Iniciar sincronização para cada configuração
       for (const config of activeConfigs) {
@@ -362,7 +340,7 @@ class EmailSyncScheduler {
     console.log('Parando todas as sincronizações...');
     
     for (const [emailConfigId, job] of this.jobs) {
-      clearInterval(job.intervalId);
+      clearTimeout(job.intervalId);
       console.log(`Sincronização parada para configuração ${emailConfigId}`);
     }
     

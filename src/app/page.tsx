@@ -1,10 +1,12 @@
 'use client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Users, Building2, Shield, UserCircle, TrendingUp, Loader2 } from 'lucide-react';
+import { Users, Building2, Shield, UserCircle, Loader2, Database, Server } from 'lucide-react';
 import { useDashboard } from '@/hooks/useDashboard';
+import { useSystemStatus } from '@/hooks/useSystemStatus';
 
 export default function Home() {
   const { stats, recentActivities, loading, error } = useDashboard();
+  const { health, version } = useSystemStatus();
 
   // Configuração dos cards de estatísticas
   const statsConfig = [
@@ -13,28 +15,24 @@ export default function Home() {
       value: stats?.totalClientes || 0,
       description: 'Clientes cadastrados no sistema',
       icon: Users,
-      trend: 'stable'
     },
     {
       title: 'Grupos Hierárquicos',
       value: stats?.totalGruposHierarquicos || 0,
       description: 'Grupos organizacionais',
       icon: Building2,
-      trend: 'stable'
     },
     {
       title: 'Colaboradores',
       value: stats?.totalColaboradores || 0,
       description: 'Colaboradores ativos',
       icon: UserCircle,
-      trend: 'stable'
     },
     {
       title: 'Permissões Ativas',
       value: stats?.totalPermissoes || 0,
       description: 'Sistema de segurança',
       icon: Shield,
-      trend: 'stable'
     }
   ];
 
@@ -132,20 +130,20 @@ export default function Home() {
             <CardContent>
               <div className="space-y-3">
                 <div className="flex items-center space-x-3 p-2 rounded-lg">
-                  <div className="w-3 h-3 bg-green-500 rounded-full flex-shrink-0"></div>
-                  <span className="text-sm font-medium">Sistema Online</span>
+                  <div className={`w-3 h-3 rounded-full flex-shrink-0 ${health?.status === 'healthy' ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                  <span className="text-sm font-medium">{health?.status === 'healthy' ? 'Sistema Online' : 'Sistema com problemas'}</span>
                 </div>
                 <div className="flex items-center space-x-3 p-2 rounded-lg">
-                  <div className="w-3 h-3 bg-green-500 rounded-full flex-shrink-0"></div>
-                  <span className="text-sm font-medium">Banco de Dados Conectado</span>
+                  <Database className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm font-medium">Banco de Dados: {health?.database === 'connected' ? 'Conectado' : 'Desconectado'}</span>
                 </div>
                 <div className="flex items-center space-x-3 p-2 rounded-lg">
-                  <div className="w-3 h-3 bg-green-500 rounded-full flex-shrink-0"></div>
-                  <span className="text-sm font-medium">PM2 Ativo</span>
+                  <Server className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm font-medium">PM2: {version?.system?.pm2?.active ? 'Ativo' : 'Inativo'}</span>
                 </div>
                 <div className="flex items-center space-x-3 p-2 rounded-lg">
                   <div className="w-3 h-3 bg-blue-500 rounded-full flex-shrink-0"></div>
-                  <span className="text-sm font-medium">Versão 0.2.37.9</span>
+                  <span className="text-sm font-medium">Versão {version?.app?.version || 'N/D'}</span>
                 </div>
               </div>
             </CardContent>

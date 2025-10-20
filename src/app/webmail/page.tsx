@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
@@ -33,6 +34,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { EmailToTaskDialog } from '@/components/tasks/EmailToTaskDialog';
+
 
 interface EmailFolder {
   id: string;
@@ -81,6 +83,16 @@ export default function WebmailPage() {
   const [showConfig, setShowConfig] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [testEmailTo, setTestEmailTo] = useState('');
+  
+  // Estados de loading para botões de ação
+  const [loadingActions, setLoadingActions] = useState<{
+    [emailId: string]: {
+      flag?: boolean;
+      read?: boolean;
+      delete?: boolean;
+    }
+  }>({});
 
   useEffect(() => {
     if (status === 'authenticated' && session?.user) {
@@ -95,6 +107,8 @@ export default function WebmailPage() {
       loadFolders();
     }
   }, [emailConfig]);
+
+
 
   useEffect(() => {
     if (selectedFolder) {
@@ -187,7 +201,18 @@ export default function WebmailPage() {
     }
   };
 
-  const markAsRead = async (emailId: string) => {
+  const markAsRead = async (emailId: string, options?: { silent?: boolean }) => {
+    const silent = options?.silent ?? false;
+    
+    // Prevenir cliques duplicados
+    if (loadingActions[emailId]?.read) return;
+    
+    // Definir loading state
+    setLoadingActions(prev => ({
+      ...prev,
+      [emailId]: { ...prev[emailId], read: true }
+    }));
+    
     try {
       const response = await fetch(`/api/emails/${emailId}/read`, {
         method: 'PATCH'
@@ -204,13 +229,48 @@ export default function WebmailPage() {
             ? { ...folder, unreadCount: Math.max(0, folder.unreadCount - 1) }
             : folder
         ));
+
+        // Atualizar estado do email selecionado, se aplicável
+        setSelectedEmail(prev => prev && prev.id === emailId ? { ...prev, isRead: true } : prev);
+
+        if (!silent) {
+          try {
+            const data = await response.json();
+            if (data?.message) {
+              toast.success(data.message);
+            } else {
+              toast.success('Email marcado como lido');
+            }
+          } catch {
+            if (!silent) toast.success('Email marcado como lido');
+          }
+        }
+      } else {
+        const err = await response.json().catch(() => ({}));
+        if (!silent) toast.error((err as any)?.error || 'Erro ao marcar como lido');
       }
     } catch (error) {
       console.error('Erro ao marcar como lido:', error);
+      if (!silent) toast.error('Erro ao marcar como lido');
+    } finally {
+      // Limpar loading state
+      setLoadingActions(prev => ({
+        ...prev,
+        [emailId]: { ...prev[emailId], read: false }
+      }));
     }
   };
 
   const markAsUnread = async (emailId: string) => {
+    // Prevenir cliques duplicados
+    if (loadingActions[emailId]?.read) return;
+    
+    // Definir loading state
+    setLoadingActions(prev => ({
+      ...prev,
+      [emailId]: { ...prev[emailId], read: true }
+    }));
+    
     try {
       const response = await fetch(`/api/emails/${emailId}/unread`, {
         method: 'PATCH'
@@ -227,30 +287,79 @@ export default function WebmailPage() {
             ? { ...folder, unreadCount: folder.unreadCount + 1 }
             : folder
         ));
+
+        // Atualizar estado do email selecionado, se aplicável
+        setSelectedEmail(prev => prev && prev.id === emailId ? { ...prev, isRead: false } : prev);
+
+        try {
+          const data = await response.json();
+          if (data?.message) {
+            toast.success(data.message);
+          } else {
+            toast.success('Email marcado como não lido');
+          }
+        } catch {
+          toast.success('Email marcado como não lido');
+        }
+      } else {
+        const err = await response.json().catch(() => ({}));
+        toast.error((err as any)?.error || 'Erro ao marcar como não lido');
       }
     } catch (error) {
       console.error('Erro ao marcar como não lido:', error);
+      toast.error('Erro ao marcar como não lido');
+    } finally {
+      // Limpar loading state
+      setLoadingActions(prev => ({
+        ...prev,
+        [emailId]: { ...prev[emailId], read: false }
+      }));
     }
   };
 
   const toggleFlag = async (emailId: string) => {
+    // Prevenir cliques duplicados
+    if (loadingActions[emailId]?.flag) return;
+    
+    // Definir loading state
+    setLoadingActions(prev => ({
+      ...prev,
+      [emailId]: { ...prev[emailId], flag: true }
+    }));
+    
     try {
       const email = emails.find(e => e.id === emailId);
       if (!email) return;
       
+      const newFlagged = !email.isFlagged;
       const response = await fetch(`/api/emails/${emailId}/flag`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ flagged: !email.isFlagged })
+        body: JSON.stringify({ flagged: newFlagged })
       });
       
       if (response.ok) {
         setEmails(emails.map(e => 
-          e.id === emailId ? { ...e, isFlagged: !e.isFlagged } : e
+          e.id === emailId ? { ...e, isFlagged: newFlagged } : e
         ));
+  
+        // Atualizar estado do email selecionado, se aplicável
+        setSelectedEmail(prev => prev && prev.id === emailId ? { ...prev, isFlagged: newFlagged } : prev);
+  
+        toast.success(newFlagged ? 'Favorito adicionado' : 'Favorito removido');
+      } else {
+        const err = await response.json().catch(() => ({}));
+        toast.error((err as any)?.error || 'Erro ao atualizar favorito');
       }
     } catch (error) {
       console.error('Erro ao alterar flag:', error);
+      toast.error('Erro ao atualizar favorito');
+    } finally {
+      // Limpar loading state
+      setLoadingActions(prev => ({
+        ...prev,
+        [emailId]: { ...prev[emailId], flag: false }
+      }));
     }
   };
 
@@ -297,6 +406,19 @@ export default function WebmailPage() {
   };
 
   const deleteEmail = async (emailId: string) => {
+    // Prevenir cliques duplicados
+    if (loadingActions[emailId]?.delete) return;
+    
+    // Confirmação antes de mover para Lixeira
+    const confirmed = window.confirm('Deseja mover este email para a Lixeira?');
+    if (!confirmed) return;
+    
+    // Definir loading state
+    setLoadingActions(prev => ({
+      ...prev,
+      [emailId]: { ...prev[emailId], delete: true }
+    }));
+    
     try {
       // Encontrar a pasta Lixeira
       const trashFolder = folders.find(folder => 
@@ -322,6 +444,12 @@ export default function WebmailPage() {
     } catch (error) {
       console.error('Erro ao mover email para lixeira:', error);
       toast.error('Erro ao mover email para lixeira');
+    } finally {
+      // Limpar loading state
+      setLoadingActions(prev => ({
+        ...prev,
+        [emailId]: { ...prev[emailId], delete: false }
+      }));
     }
   };
 
@@ -421,6 +549,16 @@ export default function WebmailPage() {
     }
   }
 
+
+
+
+
+
+
+
+
+
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -434,7 +572,7 @@ export default function WebmailPage() {
 
   if (showConfig || !emailConfig) {
     return (
-      <div className="container mx-auto p-6 max-w-2xl">
+      <div className="container mx-auto p-0 max-w-2xl">
         <Card>
           <CardHeader>
             <CardTitle>Configuração de Email</CardTitle>
@@ -443,7 +581,7 @@ export default function WebmailPage() {
             <p className="text-muted-foreground mb-4">
               Configure sua conta de email para começar a usar o webmail.
             </p>
-            <Button onClick={() => router.push('/webmail/config')}>
+            <Button onClick={() => router.push('/webmail/admin')}>
               Configurar Email
             </Button>
           </CardContent>
@@ -452,26 +590,27 @@ export default function WebmailPage() {
     );
   }
 
-  return (
-    <div className="flex h-screen bg-gray-50">
+  return (<div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
       <div className="w-64 bg-white border-r border-gray-200 flex flex-col">
         {/* Header */}
-        <div className="p-4 border-b border-gray-200">
-          <div className="flex items-center justify-between mb-4">
+        <div className="p-0 border-b border-gray-200">
+          <div className="flex items-center justify-between mb-2">
             <h1 className="text-xl font-semibold flex items-center gap-2">
               <Mail className="h-6 w-6" />
               Webmail
             </h1>
-            <Button
-              onClick={() => router.push('/webmail/admin')}
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-2"
-              title="Administração do Webmail"
-            >
-              <Settings className="h-4 w-4" />
-            </Button>
+            <div className="flex items-center gap-1.5">
+              <Button
+                onClick={() => router.push('/webmail/admin')}
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2"
+                title="Administração do Webmail"
+              >
+                <Settings className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
           
           <Button 
@@ -485,8 +624,8 @@ export default function WebmailPage() {
 
         {/* Folders */}
         <ScrollArea className="flex-1">
-          <div className="p-2">
-            <div className="space-y-0.5">
+          <div className="p-0">
+            <div className="space-y-0">
               {/* Filtrar e exibir apenas as pastas essenciais */}
               {folders
                 .filter(folder => {
@@ -513,7 +652,7 @@ export default function WebmailPage() {
                 })
                 .sort((a, b) => {
                   // Ordem específica: Inbox, Sent, Drafts, Trash, Spam
-                  const getOrder = (folder: EmailFolder) => {
+                  const getOrder = (folder) => {
                     if (folder.specialUse === '\\Inbox' || folder.name.toLowerCase() === 'inbox') return 1;
                     if (folder.specialUse === '\\Sent' || ['sent', 'sent items', 'sent mail'].includes(folder.name.toLowerCase())) return 2;
                     if (folder.specialUse === '\\Drafts' || folder.name.toLowerCase() === 'drafts') return 3;
@@ -528,7 +667,7 @@ export default function WebmailPage() {
                     key={folder.id}
                     onClick={() => setSelectedFolder(folder.id)}
                     variant={selectedFolder === folder.id ? "secondary" : "ghost"}
-                    className="w-full justify-start h-auto p-2"
+                    className="w-full justify-start h-auto p-1"
                   >
                     <div className="flex items-center gap-2 w-full">
                       {getFolderIcon(folder)}
@@ -562,8 +701,8 @@ export default function WebmailPage() {
         </ScrollArea>
 
         {/* User Info */}
-        <div className="p-3 border-t border-gray-200">
-          <div className="flex items-center gap-2">
+        <div className="p-0 border-t border-gray-200">
+          <div className="flex items-center gap-1.5">
             <Avatar className="h-6 w-6">
               <AvatarFallback className="text-xs">
                 {emailConfig?.displayName?.[0] || emailConfig?.email?.[0]?.toUpperCase() || 'U'}
@@ -584,7 +723,7 @@ export default function WebmailPage() {
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         {/* Search Bar */}
-        <div className="p-3 bg-white border-b border-gray-200">
+        <div className="p-0 bg-white border-b border-gray-200">
           <div className="relative">
             <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-gray-400" />
             <Input
@@ -596,10 +735,11 @@ export default function WebmailPage() {
           </div>
         </div>
 
-        <div className="flex-1 flex">
+
+        <div className="flex flex-1">
           {/* Email List */}
-          <div className="w-80 bg-white border-r border-gray-200">
-            <ScrollArea className="h-full">
+          <div className="w-80 bg-white border-r border-gray-200 flex flex-col">
+            <ScrollArea className="flex-1 p-0">
               {loading ? (
                 <div className="p-4 text-center">
                   <RefreshCw className="h-6 w-6 animate-spin mx-auto mb-2" />
@@ -620,7 +760,7 @@ export default function WebmailPage() {
                       onClick={async () => {
                         setSelectedEmail(email);
                         if (!email.isRead) {
-                          markAsRead(email.id);
+                          markAsRead(email.id, { silent: true });
                         }
                         
                         // Carregar conteúdo completo do email
@@ -679,184 +819,199 @@ export default function WebmailPage() {
                         </div>
                       </div>
                     </div>
-                  ))}
-                </div>
-              )}
-            </ScrollArea>
-            
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="p-2 border-t border-gray-200 bg-white">
-                <div className="flex items-center justify-between">
-                  <Button
-                    onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                    disabled={currentPage === 1}
-                    variant="outline"
-                    size="sm"
-                    className="h-7 px-2"
-                  >
-                    <ChevronLeft className="h-3 w-3" />
-                    <span className="text-xs">Anterior</span>
-                  </Button>
-                  
-                  <span className="text-xs text-muted-foreground">
-                    Página {currentPage} de {totalPages}
-                  </span>
-                  
-                  <Button
-                    onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                    disabled={currentPage === totalPages}
-                    variant="outline"
-                    size="sm"
-                    className="h-7 px-2"
-                  >
-                    <span className="text-xs">Próxima</span>
-                    <ChevronRight className="h-3 w-3" />
-                  </Button>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Email Content */}
-          <div className="flex-1 bg-white">
-            {selectedEmail ? (
-              <div className="h-full flex flex-col">
-                {/* Email Header */}
-                <div className="p-4 border-b border-gray-200">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex-1">
-                      <h2 className="text-lg font-semibold mb-2">
-                        {selectedEmail.subject || '(sem assunto)'}
-                      </h2>
-                      <div className="space-y-0.5 text-xs text-muted-foreground">
-                        <div>
-                          <strong>De:</strong> {getEmailSender(selectedEmail)}
-                        </div>
-                        <div>
-                          <strong>Para:</strong> {selectedEmail.to.map(t => t.name || t.address).join(', ')}
-                        </div>
-                        <div>
-                          <strong>Data:</strong> {new Date(selectedEmail.date).toLocaleString('pt-BR')}
-                        </div>
-                      </div>
-                    </div>
+                    ))}
+                  </div>
+                )}
+              </ScrollArea>
+              
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="p-2 border-t border-gray-200 bg-white">
+                  <div className="flex items-center justify-between">
+                    <Button
+                      onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                      disabled={currentPage === 1}
+                      variant="outline"
+                      size="sm"
+                      className="h-7 px-2"
+                    >
+                      <ChevronLeft className="h-3 w-3" />
+                      <span className="text-xs">Anterior</span>
+                    </Button>
                     
-                    {/* Email Actions */}
-                    <div className="flex items-center gap-1">
-                      <Button
-                        onClick={() => toggleFlag(selectedEmail.id)}
-                        variant="outline"
-                        size="sm"
-                        className={`h-7 w-7 p-0 ${selectedEmail.isFlagged ? 'text-yellow-600' : ''}`}
-                        title="Favoritar"
-                      >
-                        <Star className={`h-3 w-3 ${selectedEmail.isFlagged ? 'fill-current' : ''}`} />
-                      </Button>
-                      
-                      <Button
-                        onClick={() => selectedEmail.isRead ? markAsUnread(selectedEmail.id) : markAsRead(selectedEmail.id)}
-                        variant="outline"
-                        size="sm"
-                        className="h-7 w-7 p-0"
-                        title="Marcar como lido"
-                      >
-                        <MailOpen className="h-3 w-3" />
-                      </Button>
-                      
-                      <Button
-                        onClick={() => router.push(`/webmail/compose?reply=${selectedEmail.id}`)}
-                        variant="outline"
-                        size="sm"
-                        className="h-7 w-7 p-0"
-                        title="Responder"
-                      >
-                        <Reply className="h-3 w-3" />
-                      </Button>
-                      
-                      <Button
-                        onClick={() => router.push(`/webmail/compose?replyAll=${selectedEmail.id}`)}
-                        variant="outline"
-                        size="sm"
-                        className="h-7 w-7 p-0"
-                        title="Responder a todos"
-                      >
-                        <ReplyAll className="h-3 w-3" />
-                      </Button>
-                      
-                      <Button
-                        onClick={() => router.push(`/webmail/compose?forward=${selectedEmail.id}`)}
-                        variant="outline"
-                        size="sm"
-                        className="h-7 w-7 p-0"
-                        title="Encaminhar"
-                      >
-                        <Forward className="h-3 w-3" />
-                      </Button>
-                      
-                      <EmailToTaskDialog
-                        emailId={selectedEmail.id}
-                        emailSubject={selectedEmail.subject}
-                        onTaskCreated={(task) => {
-                          toast.success('Tarefa criada com sucesso!');
-                        }}
-                      >
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="h-7 w-7 p-0"
-                          title="Transformar em Tarefa"
-                        >
-                          <CheckSquare className="h-3 w-3" />
-                        </Button>
-                      </EmailToTaskDialog>
-                      
-                      <Button
-                        onClick={() => deleteEmail(selectedEmail.id)}
-                        variant="outline"
-                        size="sm"
-                        className="h-7 w-7 p-0 text-red-600 hover:text-red-700"
-                        title="Mover para Lixeira"
-                      >
-                        <Trash2 className="h-3 w-3" />
-                      </Button>
-                    </div>
+                    <span className="text-xs text-muted-foreground">
+                      Página {currentPage} de {totalPages}
+                    </span>
+                    
+                    <Button
+                      onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                      disabled={currentPage === totalPages}
+                      variant="outline"
+                      size="sm"
+                      className="h-7 px-2"
+                    >
+                      <span className="text-xs">Próxima</span>
+                      <ChevronRight className="h-3 w-3" />
+                    </Button>
                   </div>
                 </div>
+              )}
+            </div>
 
-                {/* Email Body */}
-                <ScrollArea className="flex-1 p-4">
-                  {loadingEmailContent ? (
-                    <div className="flex items-center justify-center h-32">
-                      <RefreshCw className="h-6 w-6 animate-spin" />
-                      <span className="ml-2 text-sm text-muted-foreground">Carregando conteúdo...</span>
+            {/* Email Content */}
+            <div className="flex-1 bg-white">
+              {selectedEmail ? (
+                <div className="h-full flex flex-col">
+                  {/* Email Header */}
+                  <div className="p-4 border-b border-gray-200">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex-1">
+                        <h2 className="text-xl font-semibold mb-2">
+                          {selectedEmail.subject || '(sem assunto)'}
+                        </h2>
+                        <div className="space-y-1 text-sm text-muted-foreground">
+                          <div>
+                            <strong>De:</strong> {getEmailSender(selectedEmail)}
+                          </div>
+                          <div>
+                            <strong>Para:</strong> {selectedEmail.to.map(t => t.name || t.address).join(', ')}
+                          </div>
+                          <div>
+                            <strong>Data:</strong> {new Date(selectedEmail.date).toLocaleString('pt-BR')}
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Email Actions */}
+                      <div className="flex items-center gap-1.5">
+                        <Button
+                          onClick={() => toggleFlag(selectedEmail.id)}
+                          variant="ghost"
+                          size="sm"
+                          className={`p-1.5 ${selectedEmail.isFlagged ? 'text-yellow-500' : 'text-gray-500'}`}
+                          title="Favoritar"
+                          disabled={loadingActions[selectedEmail.id]?.flag}
+                        >
+                          {loadingActions[selectedEmail.id]?.flag ? (
+                            <RefreshCw className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <Star className={`h-4 w-4 ${selectedEmail.isFlagged ? 'fill-current' : ''}`} />
+                          )}
+                        </Button>
+                        
+                        <Button
+                          onClick={() => selectedEmail.isRead ? markAsUnread(selectedEmail.id) : markAsRead(selectedEmail.id)}
+                          variant="ghost"
+                          size="sm"
+                          className="p-1.5 text-gray-500"
+                          title={selectedEmail.isRead ? "Marcar como não lido" : "Marcar como lido"}
+                          disabled={loadingActions[selectedEmail.id]?.read}
+                        >
+                          {loadingActions[selectedEmail.id]?.read ? (
+                            <RefreshCw className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <MailOpen className="h-4 w-4" />
+                          )}
+                        </Button>
+                        
+                        <Button
+                          onClick={() => router.push(`/webmail/compose?reply=${selectedEmail.id}`)}
+                          variant="ghost"
+                          size="sm"
+                          className="p-1.5 text-gray-500"
+                          title="Responder"
+                        >
+                          <Reply className="h-4 w-4" />
+                        </Button>
+                        
+                        <Button
+                          onClick={() => router.push(`/webmail/compose?replyAll=${selectedEmail.id}`)}
+                          variant="ghost"
+                          size="sm"
+                          className="p-1.5 text-gray-500"
+                          title="Responder a todos"
+                        >
+                          <ReplyAll className="h-4 w-4" />
+                        </Button>
+                        
+                        <Button
+                          onClick={() => router.push(`/webmail/compose?forward=${selectedEmail.id}`)}
+                          variant="ghost"
+                          size="sm"
+                          className="p-1.5 text-gray-500"
+                          title="Encaminhar"
+                        >
+                          <Forward className="h-4 w-4" />
+                        </Button>
+                        
+                        <EmailToTaskDialog
+                          emailId={selectedEmail.id}
+                          emailSubject={selectedEmail.subject}
+                          onTaskCreated={(task) => {
+                            toast.success('Tarefa criada com sucesso!');
+                          }}
+                        >
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="p-1.5 text-gray-500"
+                            title="Transformar em Tarefa"
+                          >
+                            <CheckSquare className="h-4 w-4" />
+                          </Button>
+                        </EmailToTaskDialog>
+                        
+                        <Button
+                          onClick={() => deleteEmail(selectedEmail.id)}
+                          variant="ghost"
+                          size="sm"
+                          className="p-1.5 text-red-600 hover:text-red-700"
+                          title="Mover para Lixeira"
+                          disabled={loadingActions[selectedEmail.id]?.delete}
+                        >
+                          {loadingActions[selectedEmail.id]?.delete ? (
+                            <RefreshCw className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <Trash2 className="h-4 w-4" />
+                          )}
+                        </Button>
+                      </div>
                     </div>
-                  ) : (
-                    <div className="prose max-w-none text-sm">
-                      {selectedEmail.body ? (
-                        selectedEmail.bodyType === 'html' ? (
-                          <div dangerouslySetInnerHTML={{ __html: selectedEmail.body }} />
+                  </div>
+
+                  {/* Email Body */}
+                  <ScrollArea className="flex-1 p-4">
+                    {loadingEmailContent ? (
+                      <div className="flex items-center justify-center h-full">
+                        <RefreshCw className="h-6 w-6 animate-spin text-gray-400" />
+                        <span className="ml-3 text-muted-foreground">Carregando conteúdo...</span>
+                      </div>
+                    ) : (
+                      <div className="prose max-w-none text-sm">
+                        {selectedEmail.body ? (
+                          selectedEmail.bodyType === 'html' ? (
+                            <div dangerouslySetInnerHTML={{ __html: selectedEmail.body }} />
+                          ) : (
+                            <pre className="whitespace-pre-wrap font-sans">{selectedEmail.body}</pre>
+                          )
                         ) : (
-                          <pre className="whitespace-pre-wrap font-sans">{selectedEmail.body}</pre>
-                        )
-                      ) : (
-                        <div className="text-muted-foreground italic">Conteúdo não disponível</div>
-                      )}
-                    </div>
-                  )}
-                </ScrollArea>
-              </div>
-            ) : (
-              <div className="h-full flex items-center justify-center">
-                <div className="text-center">
-                  <Mail className="h-16 w-16 mx-auto mb-4 text-gray-300" />
-                  <p className="text-lg text-muted-foreground">Selecione um email para visualizar</p>
+                          <div className="text-center text-muted-foreground italic py-8">Conteúdo do email não disponível</div>
+                        )}
+                      </div>
+                    )}
+                  </ScrollArea>
                 </div>
-              </div>
-            )}
+              ) : (
+                <div className="h-full flex items-center justify-center bg-gray-50">
+                  <div className="text-center">
+                    <Mail className="h-16 w-16 mx-auto mb-4 text-gray-300" />
+                    <p className="text-lg text-muted-foreground">Selecione um email para visualizar</p>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
-      </div>
     </div>
   );
 }
